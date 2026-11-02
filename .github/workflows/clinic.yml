@@ -39,11 +39,24 @@
      "run": "pyinstaller --onefile --name ClinicSync \\\n --add-data \"pc/app.html;.\" --add-data \"pc/sw.js;.\" --add-data \"pc/manifest.webmanifest;.\" \\\n --add-data \"pc/icon.svg;.\" --add-data \"pc/jameel.woff;.\" \\\n pc/clinic_sync.py\n"
     },
     {
-     "uses": "actions/upload-artifact@v4",
+     "uses": "softprops/action-gh-release@v2",
      "with": {
-      "name": "ClinicSync-exe",
-      "path": "dist/ClinicSync.exe"
+      "tag_name": "latest",
+      "name": "Latest build",
+      "make_latest": "true",
+      "files": "dist/ClinicSync.exe"
      }
+    },
+    {
+     "name": "Publish to updates repo (skipped if no UPDATE_TOKEN)",
+     "shell": "bash",
+     "env": {
+      "UPDATE_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
+      "GH_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
+      "UPD_REPO": "salmanabbasinm-hash/clinic-updates",
+      "VER": "2026-11-02a"
+     },
+     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest dist/ClinicSync.exe -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:30px auto;padding:0 16px;text-align:center\">\n<h2>سلمان ہربل کلینک - ایپ ڈاؤنلوڈ</h2>\n<p><a style=\"display:block;padding:16px;margin:12px 0;background:#2e7d32;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicApp.apk\">📱 Android (APK)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#1565c0;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicSync.exe\">💻 Windows (EXE)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#6a1b9a;color:#fff;border-radius:10px;text-decoration:none\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone (ویب ایپ - Add to Home Screen)</a></p>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; git push -q"
     }
    ]
   },
@@ -69,14 +82,27 @@
     },
     {
      "name": "Build debug APK",
-     "run": "mkdir -p www\ncp index.html manifest.webmanifest sw.js icon.svg jameel.woff www/\necho '{\"appId\":\"com.salman.clinic\",\"appName\":\"Clinic\",\"webDir\":\"www\",\"server\":{\"androidScheme\":\"http\",\"cleartext\":true}}' > capacitor.config.json\nnpm init -y\nnpm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6\nnpx cap add android\nnpx cap sync android\ncd android && chmod +x gradlew && ./gradlew assembleDebug\n"
+     "run": "mkdir -p www\ncp index.html manifest.webmanifest sw.js icon.svg jameel.woff www/\necho '{\"appId\":\"com.salman.clinic\",\"appName\":\"Clinic\",\"webDir\":\"www\",\"server\":{\"androidScheme\":\"http\",\"cleartext\":true}}' > capacitor.config.json\nnpm init -y\nnpm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6\nmkdir -p ~/.android && cp ci/debug.keystore ~/.android/debug.keystore\nnpx cap add android\nnpx cap sync android\ncd android && chmod +x gradlew && ./gradlew assembleDebug\ncd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ClinicApp.apk\n"
     },
     {
-     "uses": "actions/upload-artifact@v4",
+     "uses": "softprops/action-gh-release@v2",
      "with": {
-      "name": "ClinicApp-apk",
-      "path": "android/app/build/outputs/apk/debug/app-debug.apk"
+      "tag_name": "latest",
+      "name": "Latest build",
+      "make_latest": "true",
+      "files": "ClinicApp.apk"
      }
+    },
+    {
+     "name": "Publish to updates repo (skipped if no UPDATE_TOKEN)",
+     "shell": "bash",
+     "env": {
+      "UPDATE_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
+      "GH_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
+      "UPD_REPO": "salmanabbasinm-hash/clinic-updates",
+      "VER": "2026-11-02a"
+     },
+     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest ClinicApp.apk -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:30px auto;padding:0 16px;text-align:center\">\n<h2>سلمان ہربل کلینک - ایپ ڈاؤنلوڈ</h2>\n<p><a style=\"display:block;padding:16px;margin:12px 0;background:#2e7d32;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicApp.apk\">📱 Android (APK)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#1565c0;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicSync.exe\">💻 Windows (EXE)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#6a1b9a;color:#fff;border-radius:10px;text-decoration:none\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone (ویب ایپ - Add to Home Screen)</a></p>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; git push -q"
     }
    ]
   }
