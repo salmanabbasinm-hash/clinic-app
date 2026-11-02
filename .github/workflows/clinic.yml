@@ -1,0 +1,59 @@
+name: clinic
+on:
+  push:
+    paths:
+      - 'clinic-app-repo.zip'
+  workflow_dispatch:
+    inputs:
+      what:
+        description: 'Build which?'
+        type: choice
+        default: exe
+        options:
+          - exe
+          - apk
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip into repository
+        run: | unzip -o clinic-app-repo.zip -x ".github/*" -d . rm -f clinic-app-repo.zip git config user.name "github-actions" git config user.email "actions@users.noreply.github.com" git add -A git commit -m "unpack clinic-app-repo.zip" || echo "nothing to commit" git push 
+  exe:
+    if: github.event_name == 'workflow_dispatch' && inputs.what == 'exe'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyinstaller pyodbc
+      - name: Build ClinicSync.exe
+        shell: bash
+        run: | pyinstaller --onefile --name ClinicSync \ --add-data "pc/app.html;." --add-data "pc/sw.js;." --add-data "pc/manifest.webmanifest;." \ --add-data "pc/icon.svg;." --add-data "pc/jameel.woff;." \ pc/clinic_sync.py       - uses: actions/upload-artifact@v4
+        with:
+          name: ClinicSync-exe
+          path: dist/ClinicSync.exe
+
+  apk:
+    if: github.event_name == 'workflow_dispatch' && inputs.what == 'apk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build debug APK
+        run: | mkdir -p www cp index.html manifest.webmanifest sw.js icon.svg jameel.woff www/ echo '{"appId":"com.salman.clinic","appName":"Clinic","webDir":"www","server":{"androidScheme":"http","cleartext":true}}' > capacitor.config.json npm init -y npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 npx cap add android npx cap sync android cd android && chmod +x gradlew && ./gradlew assembleDebug       - uses: actions/upload-artifact@v4
+        with:
+          name: ClinicApp-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
