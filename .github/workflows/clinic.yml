@@ -18,11 +18,14 @@
    ]
   },
   "exe": {
-   "if": "github.event_name == 'workflow_dispatch' && inputs.what == 'exe'",
+   "if": "${{ always() && ((github.event_name == 'push' && needs.unpack.result == 'success') || (github.event_name == 'workflow_dispatch' && inputs.what == 'exe')) }}",
    "runs-on": "windows-latest",
    "steps": [
     {
-     "uses": "actions/checkout@v4"
+     "uses": "actions/checkout@v4",
+     "with": {
+      "ref": "main"
+     }
     },
     {
      "uses": "actions/setup-python@v5",
@@ -56,16 +59,20 @@
       "UPD_REPO": "salmanabbasinm-hash/clinic-updates",
       "VER": "2026-11-02a"
      },
-     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest dist/ClinicSync.exe -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:30px auto;padding:0 16px;text-align:center\">\n<h2>سلمان ہربل کلینک - ایپ ڈاؤنلوڈ</h2>\n<p><a style=\"display:block;padding:16px;margin:12px 0;background:#2e7d32;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicApp.apk\">📱 Android (APK)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#1565c0;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicSync.exe\">💻 Windows (EXE)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#6a1b9a;color:#fff;border-radius:10px;text-decoration:none\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone (ویب ایپ - Add to Home Screen)</a></p>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; git push -q"
+     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest dist/ClinicSync.exe -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic - Downloads</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:0 auto;padding:24px 16px;text-align:center;background:#f4f7f4\">\n<h2 style=\"color:#1b5e20\">سلمان ہربل کلینک</h2><p>اپنی مرضی کی ایپ ڈاؤنلوڈ کریں</p>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#2e7d32;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"$B/ClinicApp.apk\">📱 Android ایپ (APK)</a>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#1565c0;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"$B/ClinicSync.exe\">💻 Windows ایپ (EXE)</a>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#6a1b9a;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone / ویب ایپ</a>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; for i in 1 2 3; do git pull -q --rebase; git push -q && break; sleep 5; done"
     }
-   ]
+   ],
+   "needs": "unpack"
   },
   "apk": {
-   "if": "github.event_name == 'workflow_dispatch' && inputs.what == 'apk'",
+   "if": "${{ always() && ((github.event_name == 'push' && needs.unpack.result == 'success') || (github.event_name == 'workflow_dispatch' && inputs.what == 'apk')) }}",
    "runs-on": "ubuntu-latest",
    "steps": [
     {
-     "uses": "actions/checkout@v4"
+     "uses": "actions/checkout@v4",
+     "with": {
+      "ref": "main"
+     }
     },
     {
      "uses": "actions/setup-node@v4",
@@ -102,9 +109,10 @@
       "UPD_REPO": "salmanabbasinm-hash/clinic-updates",
       "VER": "2026-11-02a"
      },
-     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest ClinicApp.apk -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:30px auto;padding:0 16px;text-align:center\">\n<h2>سلمان ہربل کلینک - ایپ ڈاؤنلوڈ</h2>\n<p><a style=\"display:block;padding:16px;margin:12px 0;background:#2e7d32;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicApp.apk\">📱 Android (APK)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#1565c0;color:#fff;border-radius:10px;text-decoration:none\" href=\"$B/ClinicSync.exe\">💻 Windows (EXE)</a>\n<a style=\"display:block;padding:16px;margin:12px 0;background:#6a1b9a;color:#fff;border-radius:10px;text-decoration:none\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone (ویب ایپ - Add to Home Screen)</a></p>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; git push -q"
+     "run": "if [ -z \"$UPDATE_TOKEN\" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi\ngh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t \"Latest\" -n \"Clinic app\"\ngh release upload latest ClinicApp.apk -R $UPD_REPO --clobber\ngit clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd\nB=https://github.com/$UPD_REPO/releases/latest/download\necho \"{\\\"v\\\":\\\"$VER\\\",\\\"apk\\\":\\\"$B/ClinicApp.apk\\\",\\\"exe\\\":\\\"$B/ClinicSync.exe\\\",\\\"web\\\":\\\"https://salmanabbasinm-hash.github.io/clinic-app/\\\"}\" > version.json\ncat > index.html <<H\n<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Salman Herbal Clinic - Downloads</title>\n<body dir=rtl style=\"font-family:sans-serif;max-width:420px;margin:0 auto;padding:24px 16px;text-align:center;background:#f4f7f4\">\n<h2 style=\"color:#1b5e20\">سلمان ہربل کلینک</h2><p>اپنی مرضی کی ایپ ڈاؤنلوڈ کریں</p>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#2e7d32;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"$B/ClinicApp.apk\">📱 Android ایپ (APK)</a>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#1565c0;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"$B/ClinicSync.exe\">💻 Windows ایپ (EXE)</a>\n<a style=\"display:block;padding:18px;margin:14px 0;background:#6a1b9a;color:#fff;border-radius:14px;text-decoration:none;font-size:20px\" href=\"https://salmanabbasinm-hash.github.io/clinic-app/\">🍎 iPhone / ویب ایپ</a>\n<small>ورژن $VER</small>\nH\ngit config user.name bot; git config user.email bot@users.noreply.github.com\ngit add -A; git commit -qm \"version $VER\" || true; for i in 1 2 3; do git pull -q --rebase; git push -q && break; sleep 5; done"
     }
-   ]
+   ],
+   "needs": "unpack"
   }
  },
  "on": {
