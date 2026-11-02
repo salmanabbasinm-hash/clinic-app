@@ -583,6 +583,8 @@ def make_handler(app):
                 files = {"/": ("app.html", "text/html; charset=utf-8"), "/index.html": ("app.html", "text/html; charset=utf-8"),
                          "/sw.js": ("sw.js", "application/javascript"), "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
                          "/icon.svg": ("icon.svg", "image/svg+xml"),
+                         "/icon-192.png": ("icon-192.png", "image/png"), "/icon-512.png": ("icon-512.png", "image/png"),
+                         "/icon-maskable-512.png": ("icon-maskable-512.png", "image/png"), "/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),
                          "/jameel.woff": ("jameel.woff", "font/woff"),
                          "/pdf.min.js": ("pdf.min.js", "application/javascript"),
                          "/pdf.worker.min.js": ("pdf.worker.min.js", "application/javascript")}
