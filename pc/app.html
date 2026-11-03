@@ -702,7 +702,7 @@ function viewSet(){
    '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    '<div class="field"><label for="s-fs">تحریر کا سائز</label><select id="s-fs">'+[['0.9','چھوٹا'],['1','درمیانہ'],['1.12','بڑا'],['1.25','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fs||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div></div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پرنٹ میں پچھلا صفحہ (غذائیں) شامل کریں</span></label>'+
-   ''+clinicUI()+'</div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
+   ''+clinicUI()+'</div>'+'<h2>💾 ڈیٹا کا تحفظ</h2><div class="card"><div class="meta">'+(idb?'ڈیٹا اس فون کی مستقل میموری (IndexedDB) میں محفوظ ہے۔':'⚠ اس براؤزر میں مستقل ذخیرہ دستیاب نہیں، ڈیٹا عارضی ہے۔')+' ایپ ڈیلیٹ کرنے سے ڈیٹا مٹ جاتا ہے، اس لیے وقتاً فوقتاً بیک اپ لیں۔'+(S.cfg.lastBackup?'<br>آخری بیک اپ: '+new Date(S.cfg.lastBackup).toLocaleDateString('en-GB'):'<br>ابھی تک بیک اپ نہیں لیا')+'</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ بیک اپ محفوظ کریں</button><button type="button" class="btn alt grow" data-act="impdata">⬆ فائل سے ڈیٹا درآمد</button></div></div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
    '<h2>سنک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-auto"'+(c.autoSync===false?'':' checked')+'><span>تبدیلی محفوظ ہوتے ہی خودکار سنک</span></label></div>'+
    '<h2>نسخے میں دوا کا نشان</h2><div class="card"><div class="field"><label for="s-rxm">ہر منتخب دوا کی لائن سے پہلے</label><select id="s-rxm">'+[['num','1️⃣ 2️⃣ 3️⃣ نمبر (ایموجی)'],['red','🔴 سرخ گولا'],['hand','👈🏻 اشارہ'],['circ','① ② ③ دائروں میں نمبر'],['dot','● سادہ نقطہ'],['plain','1. 2. 3. سادہ نمبر'],['none','کوئی نشان نہیں']].map(function(o){return '<option value="'+o[0]+'"'+((c.rxMark||'hand')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="meta">ایموجی والے نشان Access کے پرانے پرنٹ میں خانہ بن کر آ سکتے ہیں؛ وہاں کے لیے "سادہ نقطہ" یا "سادہ نمبر" چنیں۔</div></div>'+
    '<h2>SMS سانچہ</h2><div class="card"><div class="field"><label for="s-tpl">{name} اور {date} خود بدل جائیں گے</label><textarea id="s-tpl">'+esc(c.tpl)+'</textarea></div><button class="btn sm alt" data-act="savetpl">سانچہ محفوظ کریں</button></div>'+
@@ -948,30 +948,38 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.10',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
+var APP_VER='3.0.10',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
   catch(e){if(manual)toast('ورژن کی جانچ نہیں ہو سکی، انٹرنیٹ دیکھیں')}}
 function verNew(a,b){var x=String(a).split('.'),y=String(b).split('.');if(/^\d+(\.\d+)*$/.test(String(b))===false)return true;for(var i=0;i<Math.max(x.length,y.length);i++){var p=+x[i]||0,q=+y[i]||0;if(p!==q)return p>q}return false}
-function showUpdate(v,force,notes){if(document.getElementById('updpop'))return;try{if(!force&&localStorage.getItem('upd-dismiss')===v)return}catch(e){}
+var UPDP=null;
+function updPoll(NA,onS){if(UPDP)clearInterval(UPDP);var errs=0;UPDP=setInterval(async function(){try{var s=await NA.updateStatus();errs=0;onS(s);if(s.state!=='run'&&s.state!=='paused'){clearInterval(UPDP);UPDP=null}}catch(e){if(++errs>5){clearInterval(UPDP);UPDP=null;onS({state:'err'})}}},800)}
+function showUpdate(v,force,notes,ready){if(document.getElementById('updpop'))return;try{if(!force&&!ready&&localStorage.getItem('upd-dismiss')===v)return}catch(e){}
   var NA=nativeApp(),web=/github\.io$/.test(location.hostname)&&!NA,d=document.createElement('div');d.id='updpop';d.className='updpop';
   var nt=String(notes||'').split(/\n|\|/).map(function(x){return x.trim()}).filter(Boolean);
   d.innerHTML='<div class="updbx"><div class="updh">🎉 نیا ورژن آ گیا ہے</div><div class="updv" dir="ltr">v '+v+'</div>'+(nt.length?'<div class="updn"><b>نیا کیا ہے:</b><ul>'+nt.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>':'')+'<div class="updp" id="updp" style="display:none"><div class="updpb"><i id="updpi"></i></div><div id="updpt" class="updpt"></div></div><div class="updbt"><button type="button" class="btn" data-u="go">اپ ڈیٹ کریں</button><button type="button" class="btn alt" data-u="x">بعد میں</button></div></div>';
-  var go=d.querySelector('[data-u=go]'),pt=function(m,pc){var p=d.querySelector('#updp');p.style.display='';d.querySelector('#updpt').textContent=m;if(pc!=null)d.querySelector('#updpi').style.width=pc+'%'};
-  async function native(){go.disabled=true;
-    try{var c=await NA.canInstall();if(!c.ok){pt('پہلے "اس ذریعے سے ایپس انسٹال کرنے کی اجازت" آن کریں، پھر واپس آ کر دوبارہ دبائیں');go.disabled=false;go.textContent='اجازت دیں';await NA.askInstall();return}
-      pt('ڈاؤنلوڈ ہو رہا ہے…',0);await NA.startUpdate({url:REL_BASE+'ClinicApp.apk'});
-      var t=setInterval(async function(){try{var s=await NA.updateStatus();
-        if(s.state==='run')pt('ڈاؤنلوڈ ہو رہا ہے… '+s.pct+'%',s.pct);
-        else if(s.state==='done'){clearInterval(t);pt('انسٹال شروع ہو رہا ہے…',100);await NA.installApk();go.disabled=false;go.textContent='دوبارہ انسٹال'}
-        else if(s.state==='err'){clearInterval(t);pt('ڈاؤنلوڈ نہیں ہو سکا، انٹرنیٹ دیکھ کر دوبارہ کوشش کریں',0);go.disabled=false}}catch(e){clearInterval(t);go.disabled=false}},700)}
+  var go=d.querySelector('[data-u=go]'),x=d.querySelector('[data-u=x]'),pt=function(m,pc){var p=d.querySelector('#updp');p.style.display='';d.querySelector('#updpt').textContent=m;if(pc!=null)d.querySelector('#updpi').style.width=pc+'%'};
+  function track(){go.disabled=true;x.textContent='پس منظر میں جاری رکھیں';x.setAttribute('data-u','bg');
+    updPoll(NA,async function(s){
+      if(s.state==='run')pt('ڈاؤنلوڈ ہو رہا ہے… '+s.pct+'%',s.pct);
+      else if(s.state==='paused')pt('رکا ہوا ہے ('+(s.why||'نیٹ کا انتظار')+') — نیٹ آتے ہی وہیں سے جاری ہوگا… '+s.pct+'%',s.pct);
+      else if(s.state==='done'){UPD.ready=v;if(!document.getElementById('updpop')||document.visibilityState!=='visible')return;UPD.ready=null;pt('انسٹال شروع ہو رہا ہے…',100);try{await NA.installApk()}catch(e){}go.disabled=false;go.textContent='دوبارہ انسٹال';x.textContent='بعد میں';x.setAttribute('data-u','x')}
+      else if(s.state==='err'){pt('ڈاؤنلوڈ نہیں ہو سکا، دوبارہ دبائیں',0);go.disabled=false;go.textContent='دوبارہ کوشش';x.textContent='بعد میں';x.setAttribute('data-u','x')}})}
+  async function native(){
+    try{var c=await NA.canInstall();if(!c.ok){pt('پہلے "اس ذریعے سے ایپس انسٹال کرنے کی اجازت" آن کریں، پھر واپس آ کر دوبارہ دبائیں');go.textContent='اجازت دیں';await NA.askInstall();return}
+      if(ready){var st=await NA.updateStatus();if(st.state==='done'){await NA.installApk();return}}
+      pt('ڈاؤنلوڈ شروع ہو رہا ہے…',0);await NA.startUpdate({url:REL_BASE+'ClinicApp.apk'});track()}
     catch(e){pt('اپ ڈیٹ نہیں ہو سکا: '+e,0);go.disabled=false}}
   d.addEventListener('click',function(e){var u=e.target.getAttribute&&e.target.getAttribute('data-u');
-    if(u==='x'){try{localStorage.setItem('upd-dismiss',v)}catch(x){}d.remove()}
-    else if(u==='go'){if(NA)native();else if(web){(async function(){try{var rg=await navigator.serviceWorker.getRegistrations();rg.forEach(function(g){g.unregister()});var ks=await caches.keys();ks.forEach(function(k){caches.delete(k)})}catch(x){}location.reload()})()}
+    if(u==='x'){try{localStorage.setItem('upd-dismiss',v)}catch(z){}d.remove()}
+    else if(u==='bg'){d.remove();toast('ڈاؤنلوڈ پس منظر میں جاری ہے، نوٹیفکیشن میں دیکھیں')}
+    else if(u==='go'){if(NA)native();else if(web){(async function(){try{var rg=await navigator.serviceWorker.getRegistrations();rg.forEach(function(g){g.unregister()});var ks=await caches.keys();ks.forEach(function(k){caches.delete(k)})}catch(z){}location.reload()})()}
       else{location.href=REL_BASE+'ClinicSync.exe'}}});
-  document.body.appendChild(d)}
+  document.body.appendChild(d);
+  if(NA){NA.updateStatus().then(function(s){if(s.state==='run'||s.state==='paused')track();else if(s.state==='done'&&ready){pt('ڈاؤنلوڈ مکمل ہو چکا ہے، انسٹال کریں',100);go.textContent='انسٹال کریں'}}).catch(function(){})}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&UPD.ready){var v=UPD.ready;UPD.ready=null;showUpdate(v,true,'',true)}});
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,1800000);window.addEventListener('focus',function(){checkUpdate()});
 var JBUF=null;
 async function fontInit(){try{var buf=null,cs=null;try{cs=await caches.open('jam1');var mm=await cs.match('jameel.woff');if(mm)buf=await mm.arrayBuffer()}catch(e){}
@@ -1016,8 +1024,8 @@ function makePdf(jpgs){
   var out=new Uint8Array(len),o=0;parts.forEach(function(u){out.set(u,o);o+=u.length});return out}
 async function buildPdf(){var f64=await fontB64(),css=rxsCss(),pages=Array.prototype.slice.call(document.querySelectorAll('#printArea .rxs'));
   var jp=await pagesJpeg(pages,css,f64);return {pdf:makePdf(jp),nm:'nuskha-'+(($('[data-pu]')&&$('[data-pu]').getAttribute('data-pu'))||'')+'.pdf'}}
-function pdfSaved(nm,uri){var N=nativeApp(),d=document.createElement('div');d.className='pdfok';
-  d.innerHTML='<div class="pdfbx"><div class="t">✅ PDF محفوظ ہو گئی</div><div class="m" dir="ltr">Downloads / '+esc(nm)+'</div><div class="bt">'+(uri?'<button type="button" class="btn" data-p="open">کھولیں</button>':'')+'<button type="button" class="btn alt" data-p="ok">ٹھیک ہے</button></div></div>';
+function pdfSaved(nm,uri,title){var N=nativeApp(),d=document.createElement('div');d.className='pdfok';
+  d.innerHTML='<div class="pdfbx"><div class="t">✅ '+esc(title||'PDF محفوظ ہو گئی')+'</div><div class="m" dir="ltr">Downloads / '+esc(nm)+'</div><div class="bt">'+(uri?'<button type="button" class="btn" data-p="open">کھولیں</button>':'')+'<button type="button" class="btn alt" data-p="ok">ٹھیک ہے</button></div></div>';
   d.addEventListener('click',function(e){var p=e.target.getAttribute&&e.target.getAttribute('data-p');if(p==='open'){try{N.openPdf({uri:uri})}catch(x){}}if(p||e.target===d)d.remove()});document.body.appendChild(d)}
 async function pvPdf(){
   await busyOn('PDF بن رہی ہے…');
@@ -1090,6 +1098,47 @@ async function api(path,opt){
   var s=S.cfg.server.replace(/\/+$/,'');opt=opt||{};opt.headers=Object.assign({'X-Token':S.cfg.token},opt.headers||{});
   var r=await fetch(s+path,opt);if(!r.ok)throw new Error(r.status===401?'ٹوکن غلط ہے':'سرور ایرر '+r.status);return r.json()
 }
+async function applySnap(snap){
+    // drop demo rows, then merge snapshot (server wins unless a local edit failed)
+    var demoP=S.patients.filter(function(p){return p._demo}).map(function(p){return p.uid});
+    if(demoP.length){S.visits=S.visits.filter(function(v){return demoP.indexOf(v.puid)<0});S.patients=S.patients.filter(function(p){return !p._demo});await delKeys('patients',demoP)}
+    var byPid={};S.patients.forEach(function(p){if(p.pid)byPid[p.pid]=p});
+    snap.patients.forEach(function(sp){var l=byPid[sp.pid];if(!l){l=Object.assign({uid:'p'+sp.pid},sp);l._dirty=false;S.patients.push(l);byPid[sp.pid]=l}else if(!l._dirty){PAT_KEYS.forEach(function(k){l[k]=sp[k]});l.base=sp.hash}});
+    var byV={};S.visits.forEach(function(v){if(v.pid&&v.vid)byV[v.pid+'/'+v.vid]=v});
+    snap.visits.forEach(function(sv){var l=byV[sv.pid+'/'+sv.vid],pt=byPid[sv.pid];if(!pt)return;
+      if(!l){l=Object.assign({uid:'v'+sv.pid+'-'+sv.vid,puid:pt.uid},sv);l._dirty=false;S.visits.push(l);byV[sv.pid+'/'+sv.vid]=l}else if(!l._dirty){VIS_KEYS.forEach(function(k){l[k]=sv[k]});l.base=sv.hash;l.puid=pt.uid}});
+    S.visits.forEach(function(v){if(!v.pid){var pt=patientOf(v);if(pt&&pt.pid)v.pid=pt.pid}});
+    var oldM=S.meds.map(function(x){return x.id}),oldD=S.diets.map(function(x){return x.id}),keepM=S.meds.filter(function(x){return x._dirty}),keepD=S.diets.filter(function(x){return x._dirty});
+    await delKeys('meds',oldM);await delKeys('diets',oldD);
+    S.meds=snap.meds.filter(function(x){return (S.cfg.medDel||[]).indexOf(x.id)<0}).concat(keepM);S.diets=snap.diets.concat(keepD);S.queue=snap.queue||S.queue||[];S.cfg.last=Date.now();
+    await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),putMany('sms',S.sms),putMany('meds',S.meds),putMany('diets',S.diets),saveCfg()]);
+}
+
+function pickFile(accept){return new Promise(function(res){var i=document.createElement('input');i.type='file';i.accept=accept||'.json,application/json';i.style.display='none';i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return res(null);var r=new FileReader();r.onload=function(){res(String(r.result))};r.onerror=function(){res(null)};r.readAsText(f)};document.body.appendChild(i);i.click()})}
+async function importData(){
+  var txt=await pickFile();if(!txt)return;var o;try{o=JSON.parse(txt)}catch(e){toast('یہ درست ڈیٹا فائل نہیں');return}
+  if(!o||(!o.patients&&!o.visits)){toast('فائل میں مریضوں کا ڈیٹا نہیں ملا');return}
+  await busyOn('ڈیٹا درآمد ہو رہا ہے…');
+  try{
+    if(o.kind==='clinic-backup'){
+      var cf=o.cfg||{};delete cf.server;delete cf.token;delete cf.last;
+      (o.patients||[]).forEach(function(p){S.patients=S.patients.filter(function(x){return x.uid!==p.uid}).concat([p])});
+      (o.visits||[]).forEach(function(v){S.visits=S.visits.filter(function(x){return x.uid!==v.uid}).concat([v])});
+      (o.sms||[]).forEach(function(m){S.sms=S.sms.filter(function(x){return x.uid!==m.uid}).concat([m])});
+      if(o.meds)S.meds=o.meds;if(o.diets)S.diets=o.diets;if(o.plans)S.plans=o.plans;
+      Object.assign(S.cfg,cf);
+      await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),putMany('sms',S.sms),putMany('meds',S.meds),putMany('diets',S.diets),saveCfg()]);
+    }else{await applySnap(o);await saveCfg()}
+    busyOff();toast('درآمد مکمل: '+S.patients.length+' مریض، '+S.visits.length+' وزٹس');render()
+  }catch(e){busyOff();toast('درآمد نہیں ہو سکا: '+(e&&e.message||e))}
+}
+async function backupData(){
+  var o={kind:'clinic-backup',ver:APP_VER,time:Date.now(),patients:S.patients.filter(function(p){return !p._demo}),visits:S.visits.filter(function(v){return !v._demo}),sms:S.sms,meds:S.meds,diets:S.diets,plans:S.plans,cfg:Object.assign({},S.cfg,{server:'',token:''})};
+  var txt=JSON.stringify(o),d=new Date(),nm='clinic-backup-'+iso(d)+'.json',N=nativeApp();
+  try{S.cfg.lastBackup=Date.now();await saveCfg()}catch(e){}
+  if(N){try{var b64=u8b64(new TextEncoder().encode(txt));var sv=await N.savePdf({data:b64,name:nm,mime:'application/json'});pdfSaved(nm,null,'بیک اپ محفوظ ہو گیا');return}catch(e){toast('بیک اپ محفوظ نہیں ہو سکا: '+(e&&e.message||e));return}}
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=nm;document.body.appendChild(a);a.click();a.remove();toast('بیک اپ فائل ڈاؤنلوڈ ہو گئی')
+}
 async function doSync(manual){
   if(busy)return;if(!S.cfg.server||!S.cfg.token){if(manual){toast('پہلے ترتیبات میں PC کا پتہ اور ٹوکن لکھیں');go('/set')}return}
   busy=true;$('#syncBtn').style.opacity=.6;
@@ -1124,19 +1173,7 @@ async function doSync(manual){
       if(kind==='plan'){S.plans=S.plans.filter(function(x){return x.id!==id});if(it.del)kvdel.push(it.k);else{it.v.ts=it.ts;S.plans.push(it.v);kvput.push({k:it.k,v:it.v})}}
       else if(kind==='vs'){S.cfg.vsel=S.cfg.vsel||{};S.cfg.vts=S.cfg.vts||{};if(it.del)delete S.cfg.vsel[id];else{S.cfg.vsel[id]=it.v;S.cfg.vts[id]=it.ts}}});
     if(kvdel.length)await delKeys('kv',kvdel);if(kvput.length)await putMany('kv',kvput);
-    // drop demo rows, then merge snapshot (server wins unless a local edit failed)
-    var demoP=S.patients.filter(function(p){return p._demo}).map(function(p){return p.uid});
-    if(demoP.length){S.visits=S.visits.filter(function(v){return demoP.indexOf(v.puid)<0});S.patients=S.patients.filter(function(p){return !p._demo});await delKeys('patients',demoP)}
-    var byPid={};S.patients.forEach(function(p){if(p.pid)byPid[p.pid]=p});
-    snap.patients.forEach(function(sp){var l=byPid[sp.pid];if(!l){l=Object.assign({uid:'p'+sp.pid},sp);l._dirty=false;S.patients.push(l);byPid[sp.pid]=l}else if(!l._dirty){PAT_KEYS.forEach(function(k){l[k]=sp[k]});l.base=sp.hash}});
-    var byV={};S.visits.forEach(function(v){if(v.pid&&v.vid)byV[v.pid+'/'+v.vid]=v});
-    snap.visits.forEach(function(sv){var l=byV[sv.pid+'/'+sv.vid],pt=byPid[sv.pid];if(!pt)return;
-      if(!l){l=Object.assign({uid:'v'+sv.pid+'-'+sv.vid,puid:pt.uid},sv);l._dirty=false;S.visits.push(l);byV[sv.pid+'/'+sv.vid]=l}else if(!l._dirty){VIS_KEYS.forEach(function(k){l[k]=sv[k]});l.base=sv.hash;l.puid=pt.uid}});
-    S.visits.forEach(function(v){if(!v.pid){var pt=patientOf(v);if(pt&&pt.pid)v.pid=pt.pid}});
-    var oldM=S.meds.map(function(x){return x.id}),oldD=S.diets.map(function(x){return x.id}),keepM=S.meds.filter(function(x){return x._dirty}),keepD=S.diets.filter(function(x){return x._dirty});
-    await delKeys('meds',oldM);await delKeys('diets',oldD);
-    S.meds=snap.meds.filter(function(x){return (S.cfg.medDel||[]).indexOf(x.id)<0}).concat(keepM);S.diets=snap.diets.concat(keepD);S.queue=snap.queue;S.cfg.last=Date.now();
-    await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),putMany('sms',S.sms),putMany('meds',S.meds),putMany('diets',S.diets),saveCfg()]);
+    await applySnap(snap);
     toast(errors?('سنک مکمل، '+errors+' اندراج میں مسئلہ'):conflicts?('سنک مکمل، '+conflicts+' اندراج PC کے ورژن سے بدلے گئے'):'سنک مکمل');
   }catch(e){
     var m=String(e.message||e);
@@ -1156,7 +1193,7 @@ document.addEventListener('click',function(e){
   if(a==='newvisitfor')go('/f/'+u+'/new','visitfocus');else if(a==='newp')go('/f/new','name');else if(a==='saveform')saveForm();else if(a==='vnav'){if(id){var pu1=$('[data-pu]').getAttribute('data-pu');saveForm({silent:true}).then(function(){go('/f/'+pu1+'/'+id,'visit')})}}else if(a==='newvisit'){var pu2=$('[data-pu]').getAttribute('data-pu');saveForm({silent:true}).then(function(){go('/f/'+pu2+'/new','visitfocus')})}else if(a==='editp')go('/pe/'+u);else if(a==='savep')savePatient(u);
   else if(a==='newv')go('/vn/'+u);else if(a==='savev')saveVisit();else if(a==='printv')printVisit();
   else if(a==='back')back();
-  else if(a==='checkupd'){checkUpdate(true)}else if(a==='sharedl'){shareDl()}else if(a==='imgdel'){var c4=CL();c4[t.dataset.k]='';if(t.dataset.k==='logo')c4.logoOff=true;S.cfg.clinic=c4;saveCfg();render()}else if(a==='adddeg'){var c6=CL(),k6=t.dataset.k;c6[k6]=c6[k6].concat(['']);S.cfg.clinic=c6;saveCfg();render();setTimeout(function(){var xs=document.querySelectorAll('.ckarr[data-ck="'+k6+'"]');if(xs.length)xs[xs.length-1].focus()},50)}else if(a==='pvclose')closePv();else if(a==='pvprint')pvPrint();else if(a==='pvpdf')pvPdf();else if(a==='plview')plView(id);else if(a==='pldel')plDel(id);else if(a==='pladd'){peCollect();var T0=PTY[PE.type];for(var q0=0;q0<T0.n;q0++)PE.cells.push({t:'',x:''});render()}else if(a==='plrm'){peCollect();PE.pages.splice(+id,1);render()}else if(a==='plsave')plSave();else if(a==='plcancel'){PE=null;back()}else if(a==='pickfile'){var fi=document.getElementById(id);if(fi)fi.click()}else if(a==='boxnew')go('/box/new');else if(a==='boxedit')go('/box/'+id);else if(a==='boxdel')boxDel(id);else if(a==='boxsave')boxSave();else if(a==='attopen')attOpen(id);else if(a==='attdel')attDel(id);else if(a==='attclose')attClose();else if(a==='pvshare')pvShare();else if(a==='pvcopy')pvCopy();
+  else if(a==='backup'){backupData()}else if(a==='impdata'){importData()}else if(a==='checkupd'){checkUpdate(true)}else if(a==='sharedl'){shareDl()}else if(a==='imgdel'){var c4=CL();c4[t.dataset.k]='';if(t.dataset.k==='logo')c4.logoOff=true;S.cfg.clinic=c4;saveCfg();render()}else if(a==='adddeg'){var c6=CL(),k6=t.dataset.k;c6[k6]=c6[k6].concat(['']);S.cfg.clinic=c6;saveCfg();render();setTimeout(function(){var xs=document.querySelectorAll('.ckarr[data-ck="'+k6+'"]');if(xs.length)xs[xs.length-1].focus()},50)}else if(a==='pvclose')closePv();else if(a==='pvprint')pvPrint();else if(a==='pvpdf')pvPdf();else if(a==='plview')plView(id);else if(a==='pldel')plDel(id);else if(a==='pladd'){peCollect();var T0=PTY[PE.type];for(var q0=0;q0<T0.n;q0++)PE.cells.push({t:'',x:''});render()}else if(a==='plrm'){peCollect();PE.pages.splice(+id,1);render()}else if(a==='plsave')plSave();else if(a==='plcancel'){PE=null;back()}else if(a==='pickfile'){var fi=document.getElementById(id);if(fi)fi.click()}else if(a==='boxnew')go('/box/new');else if(a==='boxedit')go('/box/'+id);else if(a==='boxdel')boxDel(id);else if(a==='boxsave')boxSave();else if(a==='attopen')attOpen(id);else if(a==='attdel')attDel(id);else if(a==='attclose')attClose();else if(a==='pvshare')pvShare();else if(a==='pvcopy')pvCopy();
   else if(a==='vfold'){var vs=$('#vsec');if(vs){var vf=vs.classList.toggle('folded');var vb=vs.querySelector('.foldbtn');vb.innerHTML=vf?ICPLUS:ICMINUS;vb.setAttribute('aria-expanded',String(!vf))}}else if(a==='pfold'){var ps=$('#psec');if(ps){var fd=ps.classList.toggle('folded');var fb=ps.querySelector('.foldbtn');fb.innerHTML=fd?ICPLUS:ICMINUS;fb.setAttribute('aria-expanded',String(!fd));if((S.cfg.layout||'fold')==='fold'){S.cfg.pfold=fd;saveCfg()}}}
   else if(a==='ptab'){var pf=$('.pcform');pf.setAttribute('data-page',id);document.querySelectorAll('.ptabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-id')===id)});window.scrollTo(0,0)}
   else if(a==='pdtoggle'){var pd=$('#pd');pd.hidden=!pd.hidden;t.setAttribute('aria-expanded',String(!pd.hidden));if(!pd.hidden&&!pd.querySelector('.pdrow'))pd.insertAdjacentHTML('afterbegin',pdRowHtml({d:'',m:'',t:''},0))}
@@ -1361,7 +1398,7 @@ function demo(){
 
 /* ---------- boot ---------- */
 async function boot(){
-  await openDB();
+  await openDB();try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   var res=await Promise.all([all('patients'),all('visits'),all('sms'),all('meds'),all('diets'),all('kv')]);
   S.patients=res[0];S.visits=res[1];S.sms=res[2];S.meds=res[3];S.diets=res[4];
   S.att=[];S.box=[];S.plans=[];res[5].forEach(function(x){if(x.k&&x.k.indexOf('plan:')===0&&x.v)S.plans.push(x.v);if(x.k&&x.k.indexOf('box:')===0&&x.v)S.box.push(x.v);if(x.k&&x.k.indexOf('att:')===0&&x.v)S.att.push(x.v);if(x.k==='cfg')S.cfg=Object.assign(S.cfg,x.v);if(x.k==='queue')S.queue=x.v||[]});

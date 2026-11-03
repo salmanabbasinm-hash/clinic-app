@@ -1,6 +1,8 @@
 package com.salman.clinic;
 
+import android.app.DownloadManager;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -135,9 +137,6 @@ public class AppNative extends Plugin {
         }
     }
 
-    private static volatile int dlPct = 0;
-    private static volatile String dlState = "idle";
-    private static volatile String dlErr = "";
 
     @PluginMethod
     public void canInstall(PluginCall call) {
@@ -159,77 +158,94 @@ public class AppNative extends Plugin {
         }
     }
 
+    private long savedId() {
+        return getContext().getSharedPreferences("upd", Context.MODE_PRIVATE).getLong("id", -1);
+    }
+
+    private void saveId(long id) {
+        getContext().getSharedPreferences("upd", Context.MODE_PRIVATE).edit().putLong("id", id).apply();
+    }
+
+    private Cursor queryId(long id) {
+        if (id < 0) return null;
+        DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        Cursor c = dm.query(new DownloadManager.Query().setFilterById(id));
+        if (c != null && c.moveToFirst()) return c;
+        if (c != null) c.close();
+        return null;
+    }
+
     @PluginMethod
-    public void startUpdate(final PluginCall call) {
-        final String url = call.getString("url");
-        if ("run".equals(dlState)) { call.resolve(); return; }
-        dlPct = 0; dlState = "run"; dlErr = "";
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-                    c.setInstanceFollowRedirects(true);
-                    c.setConnectTimeout(20000);
-                    c.setReadTimeout(30000);
-                    int code = c.getResponseCode();
-                    int hops = 0;
-                    while ((code == 301 || code == 302 || code == 303 || code == 307 || code == 308) && hops < 6) {
-                        String loc = c.getHeaderField("Location");
-                        c.disconnect();
-                        c = (HttpURLConnection) new URL(loc).openConnection();
-                        c.setConnectTimeout(20000);
-                        c.setReadTimeout(30000);
-                        code = c.getResponseCode();
-                        hops++;
-                    }
-                    if (code != 200) throw new Exception("HTTP " + code);
-                    long total = c.getContentLengthLong();
-                    File dir = new File(getContext().getCacheDir(), "share");
-                    dir.mkdirs();
-                    File f = new File(dir, "ClinicApp.apk");
-                    InputStream in = c.getInputStream();
-                    FileOutputStream o = new FileOutputStream(f);
-                    byte[] buf = new byte[65536];
-                    long got = 0;
-                    int n;
-                    while ((n = in.read(buf)) > 0) {
-                        o.write(buf, 0, n);
-                        got += n;
-                        if (total > 0) dlPct = (int) (got * 100 / total);
-                    }
-                    o.close();
-                    in.close();
-                    dlPct = 100;
-                    dlState = "done";
-                } catch (Exception e) {
-                    dlErr = String.valueOf(e);
-                    dlState = "err";
+    public void startUpdate(PluginCall call) {
+        try {
+            String url = call.getString("url");
+            DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+            long old = savedId();
+            Cursor c = queryId(old);
+            if (c != null) {
+                int st = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                c.close();
+                if (st == DownloadManager.STATUS_RUNNING || st == DownloadManager.STATUS_PENDING || st == DownloadManager.STATUS_PAUSED) {
+                    call.resolve();
+                    return;
                 }
+                dm.remove(old);
             }
-        }).start();
-        call.resolve();
+            DownloadManager.Request r = new DownloadManager.Request(Uri.parse(url));
+            r.setTitle("Clinic update");
+            r.setDescription("ClinicApp.apk");
+            r.setMimeType("application/vnd.android.package-archive");
+            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            r.setAllowedOverMetered(true);
+            r.setAllowedOverRoaming(true);
+            r.setDestinationInExternalFilesDir(getContext(), Environment.DIRECTORY_DOWNLOADS, "ClinicApp-update.apk");
+            File f = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "ClinicApp-update.apk");
+            if (f.exists()) f.delete();
+            saveId(dm.enqueue(r));
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("startUpdate: " + e);
+        }
     }
 
     @PluginMethod
     public void updateStatus(PluginCall call) {
         JSObject r = new JSObject();
-        r.put("state", dlState);
-        r.put("pct", dlPct);
-        r.put("err", dlErr);
+        r.put("state", "idle");
+        r.put("pct", 0);
+        try {
+            Cursor c = queryId(savedId());
+            if (c != null) {
+                int st = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                long got = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                long tot = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                int reason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
+                c.close();
+                int pct = tot > 0 ? (int) (got * 100 / tot) : 0;
+                r.put("pct", pct);
+                if (st == DownloadManager.STATUS_SUCCESSFUL) r.put("state", "done");
+                else if (st == DownloadManager.STATUS_FAILED) r.put("state", "err");
+                else if (st == DownloadManager.STATUS_PAUSED) {
+                    r.put("state", "paused");
+                    r.put("why", reason == DownloadManager.PAUSED_WAITING_FOR_NETWORK ? "نیٹ کا انتظار" : reason == DownloadManager.PAUSED_QUEUED_FOR_WIFI ? "وائی فائی کا انتظار" : "انتظار");
+                } else r.put("state", "run");
+            }
+        } catch (Exception e) {
+            r.put("state", "err");
+        }
         call.resolve(r);
     }
 
     @PluginMethod
     public void installApk(PluginCall call) {
         try {
-            File f = new File(new File(getContext().getCacheDir(), "share"), "ClinicApp.apk");
-            Uri u = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", f);
+            DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+            Uri u = dm.getUriForDownloadedFile(savedId());
+            if (u == null) throw new Exception("file missing");
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setDataAndType(u, "application/vnd.android.package-archive");
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
             getActivity().startActivity(i);
-            dlState = "idle";
             call.resolve();
         } catch (Exception e) {
             call.reject("installApk: " + e);
