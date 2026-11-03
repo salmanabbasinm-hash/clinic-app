@@ -13,6 +13,9 @@ mkdir -p android/app/src/main/java/com/salman/clinic
 cp ci/java/*.java android/app/src/main/java/com/salman/clinic/
 grep -q WRITE_EXTERNAL android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />\n    <application#' android/app/src/main/AndroidManifest.xml
 grep -q REQUEST_INSTALL_PACKAGES android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n    <application#' android/app/src/main/AndroidManifest.xml
+VN=$(python3 -c "import json;print(json.load(open('version.json'))['v'])")
+VC=$(python3 -c "import json;p=json.load(open('version.json'))['v'].split('.');print(int(p[0])*1000000+int(p[1])*10000+int(p[2]))")
+sed -i "s/versionCode [0-9]*/versionCode $VC/; s/versionName \"[^\"]*\"/versionName \"$VN\"/" android/app/build.gradle
 npx cap sync android
 cd android && chmod +x gradlew && ./gradlew assembleDebug
 cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ClinicApp.apk

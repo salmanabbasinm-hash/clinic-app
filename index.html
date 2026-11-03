@@ -944,7 +944,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.08',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
+var APP_VER='3.0.09',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1040,6 +1040,17 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 var BUSY=null;
 function busyOn(msg){busyOff();var d=document.createElement('div');d.id='busyw';d.innerHTML='<div class="busybar"><i></i></div><div class="busymsg">'+esc(msg)+'</div>';document.body.appendChild(d);BUSY=d;return new Promise(function(r){setTimeout(r,40)})}
 function busyOff(){if(BUSY){BUSY.remove();BUSY=null}}
+function openSel(sel){if(!sel||sel.disabled||document.getElementById('selsh'))return;
+  var d=document.createElement('div');d.id='selsh';d.className='selsh';var bx=document.createElement('div');bx.className='selbx';
+  Array.prototype.forEach.call(sel.options,function(o,i){var b=document.createElement('button');b.type='button';b.setAttribute('data-i',i);if(i===sel.selectedIndex)b.className='on';
+    b.innerHTML='<span>'+(esc(o.text)||'—')+'</span>'+(i===sel.selectedIndex?'<span>✓</span>':'');bx.appendChild(b)});
+  d.appendChild(bx);
+  d.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-i]');
+    if(b){sel.selectedIndex=+b.getAttribute('data-i');sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}
+    d.remove()});
+  document.body.appendChild(d);var on=bx.querySelector('.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'center'})}
+document.addEventListener('click',function(e){if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return;var t=e.target;if(!t.closest||t.closest('#selsh'))return;
+  var f=t.closest('.field');if(!f||t.closest('input,textarea,button'))return;var sel=f.querySelector('select');if(sel)openSel(sel)});
 var DL_PAGE='https://salmanabbasinm-hash.github.io/clinic-updates/';
 async function shareDl(){var tx='سلمان ہربل کلینک ایپ ڈاؤنلوڈ کریں:\n'+DL_PAGE,N=nativeApp();try{if(N){await N.share({text:tx,title:'ایپ لنک'})}else if(navigator.share){await navigator.share({text:tx})}else{await navigator.clipboard.writeText(DL_PAGE);toast('لنک کاپی ہو گیا')}}catch(e){}}
 function nativeApp(){try{var C=window.Capacitor;return C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.AppNative||null}catch(e){return null}}
