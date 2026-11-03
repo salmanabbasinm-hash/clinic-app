@@ -14,7 +14,7 @@ cat > index.html <<H
 <a style="display:block;padding:18px;margin:14px 0;background:#2e7d32;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="$B/ClinicApp.apk">📱 Android ایپ (APK)</a>
 <a style="display:block;padding:18px;margin:14px 0;background:#1565c0;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="$B/ClinicSync.exe">💻 Windows ایپ (EXE)</a>
 <a style="display:block;padding:18px;margin:14px 0;background:#6a1b9a;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="https://salmanabbasinm-hash.github.io/clinic-app/">🍎 iPhone / ویب ایپ</a>
-<small dir=ltr>$VER</small>
+<small dir=ltr>v $VER</small>
 H
 git config user.name bot; git config user.email bot@users.noreply.github.com
 git add -A; git commit -qm "version $VER" || true; for i in 1 2 3; do git pull -q --rebase; git push -q && break; sleep 5; done

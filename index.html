@@ -24,6 +24,27 @@
 @font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("jameel.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
 *{box-sizing:border-box}
 button,input,select,textarea{font-family:inherit}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--surface);color:var(--primary);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:10px;font:inherit;font-weight:700;font-size:18px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.setrow:active{background:var(--surface2)}
+.setmod{position:fixed;inset:0;z-index:450;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:14px;animation:smf .18s ease-out}
+.setbx{background:var(--bg);color:var(--ink);width:100%;max-width:520px;max-height:86vh;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;animation:smz .2s ease-out}
+.setbx .sh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--primary);color:var(--on-primary);font-weight:700;font-size:19px}
+.setbx .sh button{background:rgba(255,255,255,.18);color:inherit;border:0;border-radius:12px;width:40px;height:40px;font-size:22px;cursor:pointer}
+.setbx .sb{overflow:auto;padding:12px;-webkit-overflow-scrolling:touch}.setbx .sb .card{margin-top:0;box-shadow:none}
+@keyframes smf{from{opacity:0}to{opacity:1}}@keyframes smz{from{transform:scale(.94);opacity:.4}to{transform:none;opacity:1}}
+.busybar{position:fixed;top:0;left:0;right:0;height:5px;z-index:600;overflow:hidden;background:rgba(15,107,90,.18)}
+.busybar i{position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(90deg,#0f6b5a,#5fe0bd);border-radius:5px;animation:bbar 1s ease-in-out infinite}
+@keyframes bbar{from{transform:translateX(-100%)}to{transform:translateX(265%)}}
+.busymsg{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:600;background:#0e5c4b;color:#fff;border-radius:999px;padding:6px 18px;font-size:16px;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.busymsg:before{content:"";width:14px;height:14px;border:2.5px solid #fff;border-top-color:transparent;border-radius:50%;animation:bspin .7s linear infinite}
+@keyframes bspin{to{transform:rotate(360deg)}}
+@media (pointer:coarse){#backBtn{display:none!important}}
+
+@media (pointer:coarse){.field select{pointer-events:none}}
+.selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.selbx{background:#fff;color:#111;width:100%;max-width:560px;max-height:70vh;overflow:auto;border-radius:18px 18px 0 0;padding:6px 0 12px;font-family:var(--f-ur)}
+.selbx button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:6px 20px;font:inherit;font-size:20px;line-height:2.1;text-align:right;color:#111;cursor:pointer}
+.selbx button.on{background:#e3f1ed;color:#0e5c4b;font-weight:700}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.6;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px));margin:0}
 #app{max-width:720px;margin:0 auto;min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
@@ -69,7 +90,7 @@ h2{font-size:17px;margin:18px 0 8px;font-weight:700}
 .foldbtn .ic{width:24px;height:24px;stroke-width:3}
 .sechead .psum{display:none;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--muted);font-size:14px;font-family:var(--f-ur)}
 .sechead b{white-space:nowrap}
-.card.folded .psum{display:block}.card.folded .pbody{display:none}
+.card.folded .psum{display:block}.card.folded .pbody{display:none}.card.folded .vbody{display:none}
 .pmini{display:none;gap:8px;margin-top:2px}
 .pcform[data-lay=button] .card.folded .pmini{display:flex}.pmini .btn{flex:1}
 .pcform[data-lay=pages] .foldbtn{display:none}
@@ -251,6 +272,10 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
 .rxs .rxt span{font-size:22px;font-weight:700;color:#1b5e3a;line-height:1.8}
 .rxs .rxb,.rxs .dietb{flex:1;overflow:hidden;font-size:16.5px;line-height:2.15;padding:0 6px}
 .rxs .rl{border-bottom:1px dotted #ccc}
+.rxs .rg2{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
+.rxs .rl .cn{display:inline-flex;align-items:center;justify-content:center;width:1.3em;height:1.3em;border:1.4px solid currentColor;border-radius:50%;font-size:.78em;line-height:1;margin-left:.4em;vertical-align:middle;font-family:var(--f-ur);padding-top:.1em;box-sizing:border-box;font-weight:700}
+.rxs .rg2 .rl{min-width:0;overflow-wrap:anywhere}
+.rxs .bxh .bn{display:inline-flex;align-items:center;justify-content:center;width:1.35em;height:1.35em;border:1.5px solid currentColor;border-radius:50%;font-size:.8em;line-height:1;margin-left:.45em;vertical-align:middle;font-family:var(--f-ur);padding-top:.12em;box-sizing:border-box}
 .rxs .dl{padding-right:18px;position:relative;font-size:18px;line-height:2.2}.rxs .dl:before{content:"●";position:absolute;right:2px;color:#1b5e3a;font-size:10px}
 .rxs .dl.none{color:#777}.rxs .dl.none:before{content:""}
 .rxs .ftr{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1.5px solid #1b5e3a;border-radius:8px;margin-top:8px;overflow:hidden}
@@ -344,7 +369,7 @@ function isActive(v){var s=v.status||'';return !(s.indexOf('علاج مکمل')=
 var ICMINUS='<svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>',ICPLUS='<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
 var RXM={red:'🔴',num:'1️⃣',hand:'👈🏻',dot:'●',plain:'1.',none:''};
 var KEYC=['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
-function rxMark(n){var m=S.cfg.rxMark||'num';if(m==='num')return n<=10?KEYC[n]:n+'.';if(m==='plain')return n+'.';return RXM[m]||''}
+function rxMark(n){var m=S.cfg.rxMark||'hand';if(m==='num')return n<=10?KEYC[n]:n+'.';if(m==='plain')return n+'.';if(m==='circ')return n<=20?String.fromCharCode(0x245F+n):n+'.';return RXM[m]||''}
 function addRxLine(ta,name,usage){var v=ta.value;if(v&&!/\n$/.test(v))v+='\n';var n=v.split('\n').filter(function(l){return l.trim()}).length+1;
   var mk=rxMark(n);ta.value=v+(mk?mk+' ':'')+name+' : '+(usage||'')+'\n'}
 function pdRows(p){var d=(p.prevDoctor||'').split(' | '),m=(p.prevMethod||'').split(' | '),t=(p.prevDuration||'').split(' | '),n=Math.max(d.length,m.length,t.length),r=[];
@@ -486,7 +511,6 @@ function viewForm(u,vk){
    '<div class="ptabs" role="tablist"><button type="button" data-act="ptab" data-id="patient" class="'+(pg==='patient'?'on':'')+'">مریض کی معلومات</button><button type="button" data-act="ptab" data-id="visit" class="'+(pg==='visit'?'on':'')+'">وزٹس</button></div>'+
    '<div class="ftool"><button class="btn grow" data-act="saveform"><svg class="ic sm" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> محفوظ کریں</button><button class="btn alt" data-act="printv"><svg class="ic sm" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H4v-7h16v7h-3M7 14h10v6H7z"/></svg> پرنٹ</button>'+
    (cur&&p.phone&&nextDate(cur)?'<button class="btn alt" data-act="smsv"><svg class="ic sm" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg> SMS</button>':'')+'</div>'+
-   '<div class="clinic"><div class="en">'+esc(CL().en)+'</div><div class="ur">'+esc(CL().u1)+'</div><div class="ur">'+esc(CL().u2)+'</div></div>'+
    '<input class="search" id="ff" type="search" placeholder="تلاش: نام، والد کا نام، پتہ، فون یا مریض نمبر" autocomplete="off"><div class="list" id="ffres" style="margin:6px 0 12px"></div>'+
    '<div class="cols"><section class="card pc'+(folded?' folded':'')+'" id="psec"><div class="sechead"><button type="button" class="foldbtn" data-act="pfold" aria-expanded="'+(!folded)+'" aria-label="مریض کی معلومات لپیٹیں / کھولیں">'+(folded?ICPLUS:ICMINUS)+'</button><b>مریض کی معلومات</b><span class="psum">'+esc(p.name||'')+'</span><span class="chip">'+pidLabel(p)+(p._dirty?' ●':'')+'</span></div>'+
     '<div class="pmini"><button type="button" class="btn sm alt" data-act="pfold">معلومات کھولیں</button><button type="button" class="btn sm" data-act="newvisit"'+(u==='new'?' disabled':'')+'>+ وزٹ شامل کریں</button></div><div class="pbody"><div class="pcgrid">'+
@@ -495,10 +519,10 @@ function viewForm(u,vk){
     field('f-phone','فون',p.phone,'tel','inputmode="tel"')+area('f-address','پتہ',p.address,60)+
     '<div class="pdwrap"><button type="button" class="pdbtn" data-act="pdtoggle" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v5M9.5 5.5h5M6 21v-4a6 6 0 0 1 12 0v4"/><circle cx="12" cy="13" r="0"/></svg><span>گزشتہ معالج کی تفصیل</span><span class="chip" id="pdn"></span><svg class="ic pdarrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
      '<div class="pdframe" id="pd" hidden>'+pdRows(p).map(pdRowHtml).join('')+area('f-arrival','گزشتہ حالت',p.arrival,60)+area('f-oldReports','پرانے طبی رپورٹس',p.oldReports,60)+'<button type="button" class="btn sm alt" data-act="pdadd">+ معالج شامل کریں</button>'+'</div></div></div></div></section>'+
-   '<section class="card pc"><div class="vbar2"><span class="idb p big" title="مریض کی آئی ڈی">'+pidLabel(p)+'</span><button class="btn sm" data-act="newvisit"'+(u==='new'?' disabled':'')+'><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> نئی وزٹ</button><span class="idb v big" title="وزٹ آئی ڈی">'+(u==='new'?'SHCVID01':vidLabel(p,cur||{puid:p.uid}))+'</span></div>'+
+   '<section class="card pc" id="vsec"><div class="sechead"><button type="button" class="foldbtn" data-act="vfold" aria-expanded="true" aria-label="وزٹ لپیٹیں / کھولیں">'+ICMINUS+'</button><b>'+(cur?'وزٹ':'نئی وزٹ')+'</b><span class="psum">'+esc(cur?fmt(cur.date):'')+'</span></div><div class="vbody"><div class="vbar2"><span class="idb p big" title="مریض کی آئی ڈی">'+pidLabel(p)+'</span><button class="btn sm" style="direction:rtl" data-act="newvisit"'+(u==='new'?' disabled':'')+'><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> نئی وزٹ</button><span class="idb v big" title="وزٹ آئی ڈی">'+(u==='new'?'SHCVID01':vidLabel(p,cur||{puid:p.uid}))+'</span></div>'+
     '<div class="vbar"><button class="navbtn" data-act="vnav" data-id="'+older+'" '+(older?'':'disabled')+' aria-label="پچھلی وزٹ" title="پچھلی وزٹ"><svg class="tri" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></button>'+
     '<div class="vtitle"><b>'+(cur?'وزٹ '+(total-idx)+' / '+total:'نئی وزٹ')+'</b></div>'+
-    '<button class="navbtn" data-act="'+(newer||u==='new'?'vnav':'newvisit')+'" data-id="'+newer+'" '+(newer||u!=='new'?'':'disabled')+' aria-label="اگلی وزٹ" title="اگلی وزٹ"><svg class="tri" viewBox="0 0 24 24"><path d="M17 4v16L4 12z"/></svg></button></div>'+viewVisitEdit(vk,p.uid,true)+'</section></div>'+
+    '<button class="navbtn" data-act="'+(newer||u==='new'?'vnav':'newvisit')+'" data-id="'+newer+'" '+(newer||u!=='new'?'':'disabled')+' aria-label="اگلی وزٹ" title="اگلی وزٹ"><svg class="tri" viewBox="0 0 24 24"><path d="M17 4v16L4 12z"/></svg></button></div>'+viewVisitEdit(vk,p.uid,true)+'</div></section></div>'+
    '</div>'
 }
 function catList(){var c=[];S.diets.forEach(function(d){if(d.cat&&c.indexOf(d.cat)<0)c.push(d.cat)});if(c.indexOf(DEF_CAT)<0)c.unshift(DEF_CAT);return c}
@@ -559,7 +583,7 @@ function planPagesArr(pl){
   var T=PTY[pl.type]||PTY.g8,cells=(pl.cells||[]).filter(function(c){return c.t||c.x}),out=[];
   for(var i=0;i<cells.length;i+=T.n){var ch=cells.slice(i,i+T.n),mx=0;ch.forEach(function(c){mx=Math.max(mx,(c.x||'').length)});
     var cc=CL();
-    out.push(fitBx('<div class="rxs bx">'+qline(cc.dietHdrR,cc.dietHdr,cc.dietHdrL)+'<div class="rxt"><span>علاج بالغذاء</span></div><div class="bxg" style="grid-template-columns:repeat('+T.c+',1fr);grid-template-rows:repeat('+T.r+',1fr)">'+ch.map(function(c){return '<div class="bxc">'+(c.t?'<div class="bxh">'+esc(c.t)+'</div>':'')+'<div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div>'+qline(cc.dietFtrR,cc.dietFtr,cc.dietFtrL,'ft')+'</div>',T.n))}
+    out.push(fitBx('<div class="rxs bx">'+qline(cc.dietHdrR,cc.dietHdr,cc.dietHdrL)+'<div class="rxt"><span>علاج بالغذاء</span></div><div class="bxg" style="grid-template-columns:repeat('+T.c+',1fr);grid-template-rows:repeat('+T.r+',1fr)">'+ch.map(function(c,jj){return '<div class="bxc">'+(c.t?'<div class="bxh"><span class="bn">'+(i+jj+1)+'</span>'+esc(c.t)+'</div>':'')+'<div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div>'+qline(cc.dietFtrR,cc.dietFtr,cc.dietFtrL,'ft')+'</div>',T.n))}
   return out}
 function fitBx(html,n){var h=document.createElement('div');h.style.cssText='position:fixed;left:-9999px;top:0;visibility:hidden';h.innerHTML=html;document.body.appendChild(h);
   try{var hi=n===1?40:n===2?32:n===4?27:22;h.querySelectorAll('.bxb').forEach(function(b){if(!b.textContent.trim())return;var lo=9,top=hi;
@@ -620,7 +644,7 @@ async function boxSave(){var w=$('[data-bid]'),id=w.getAttribute('data-bid'),nm=
   await putMany('kv',[{k:'box:'+b.id,v:b}]);await saveCfg();toast('غذا محفوظ ہو گئی');route='/diet';try{history.replaceState({r:route},'')}catch(e){};render();autoSync()}
 async function boxDel(id){if(!confirm('یہ غذا حذف کریں؟'))return;S.box=S.box.filter(function(x){return x.id!==id});await delKeys('kv',['box:'+id]);xT('box:'+id,true);await saveCfg();render();autoSync()}
 function boxPageHtml(b){var mx=0;b.cells.forEach(function(c){mx=Math.max(mx,(c.x||'').length)});var fs=mx>520?11:mx>380?12.5:mx>260?14:16;
-  return '<div class="rxs bx"><div class="rxt"><span>علاج بالغذاء</span></div><div class="bxg" style="font-size:'+fs+'px">'+b.cells.filter(function(c){return c.t||c.x}).map(function(c){return '<div class="bxc"><div class="bxh">'+esc(c.t)+'</div><div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div></div>'}
+  return '<div class="rxs bx"><div class="rxt"><span>علاج بالغذاء</span></div><div class="bxg" style="font-size:'+fs+'px">'+b.cells.filter(function(c){return c.t||c.x}).map(function(c,jj){return '<div class="bxc"><div class="bxh"><span class="bn">'+(jj+1)+'</span>'+esc(c.t)+'</div><div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div></div>'}
 function attCard(){
   return '<div class="card attcard"><b>تصویر یا PDF شامل کریں</b><div class="meta">فائل صرف اسی ڈیوائس کے براؤزر میں محفوظ ہوگی؛ کسی سرور پر اپ لوڈ نہیں ہوگی۔ PDF کے صفحے تصویر بن کر محفوظ ہوتے ہیں۔</div>'+
    '<div class="row" style="margin-top:8px"><button type="button" class="btn alt grow" data-act="pickfile" data-id="att-file">📎 تصویر / PDF منتخب کریں</button><input type="file" id="att-file" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0" accept="image/*,application/pdf,.pdf"></div><div id="att-st" class="meta"></div>'+
@@ -654,7 +678,7 @@ function cfArr(k,lab,dir,al){var a=CL()[k];return a.map(function(v,i){return '<d
 function cfImg(k,lab,hint){var v=CL()[k];return '<div class="field" style="margin-top:12px"><label>'+lab+'</label><div class="row" style="align-items:center;gap:12px">'+(v?'<img src="'+v+'" style="height:64px;max-width:96px;object-fit:contain;border-radius:8px;background:#fff">':'<div style="width:64px;height:64px;border:1px dashed #889;border-radius:8px"></div>')+'<div class="grow"><div class="meta">'+hint+'</div><div class="fwrap btn alt" style="margin-top:4px;text-align:center">🖼 تصویر منتخب کریں<input type="file" id="s-img-'+k+'" class="fover" data-img="'+k+'" accept="image/*"></div>'+(v?' <button class="btn alt" data-act="imgdel" data-k="'+k+'">ہٹائیں</button>':'')+'</div></div></div>'}
 function cfChk(k,lab){return '<label class="swrow"><input type="checkbox" class="ckb" data-ck="'+k+'"'+(CL()[k]?' checked':'')+'><span>'+lab+'</span></label>'}
 function clinicUI(){return '<h3 style="margin:14px 0 4px">اردو پروفائل</h3>'+cfI('nameUr','کلینک کا نام')+cfI('docUr','معالج کا نام')+cfArr('degUr','ڈگری / قابلیت')+cfI('apprUr','منظوری کی سطر')+
- '<h3 style="margin:18px 0 4px">English Profile</h3>'+cfI('hdrQuoteR','نسخہ ہیڈر: دائیں جانب کا جملہ (شعر کا پہلا مصرعہ)')+cfI('hdrQuoteL','نسخہ ہیڈر: بائیں جانب کا جملہ (شعر کا دوسرا مصرعہ)')+cfI('hdrQuote','نسخہ ہیڈر: درمیان کا جملہ (صرف ایک جملہ ہو تو یہاں لکھیں)',0,1)+'<h3 style="margin:18px 0 4px">علاج بالغذاء صفحہ کا ہیڈر اور فوٹر</h3>'+cfI('dietHdrR','ہیڈر: دائیں')+cfI('dietHdr','ہیڈر: درمیان')+cfI('dietHdrL','ہیڈر: بائیں')+cfI('dietFtrR','فوٹر: دائیں')+cfI('dietFtr','فوٹر: درمیان')+cfI('dietFtrL','فوٹر: بائیں')+'<h3 style="margin:18px 0 4px">English Profile</h3>'+cfI('docEn','English clinician name','ltr')+cfArr('degEn','English line','ltr')+cfI('apprEn','English approval line','ltr')+cfI('reg','Registration #','ltr')+
+ '<h3 style="margin:18px 0 4px">مریض کی معلومات صفحہ کا ہیڈر اور فوٹر</h3>'+cfI('hdrQuoteR','نسخہ ہیڈر: دائیں جانب کا جملہ (شعر کا پہلا مصرعہ)')+cfI('hdrQuoteL','نسخہ ہیڈر: بائیں جانب کا جملہ (شعر کا دوسرا مصرعہ)')+cfI('hdrQuote','نسخہ ہیڈر: درمیان کا جملہ (صرف ایک جملہ ہو تو یہاں لکھیں)',0,1)+'<h3 style="margin:18px 0 4px">علاج بالغذاء صفحہ کا ہیڈر اور فوٹر</h3>'+cfI('dietHdrR','ہیڈر: دائیں')+cfI('dietHdr','ہیڈر: درمیان')+cfI('dietHdrL','ہیڈر: بائیں')+cfI('dietFtrR','فوٹر: دائیں')+cfI('dietFtr','فوٹر: درمیان')+cfI('dietFtrL','فوٹر: بائیں')+'<h3 style="margin:18px 0 4px">English Profile</h3>'+cfI('docEn','English clinician name','ltr')+cfArr('degEn','English line','ltr')+cfI('apprEn','English approval line','ltr')+cfI('reg','Registration #','ltr')+
  '<h3 style="margin:18px 0 4px">رابطہ (پرنٹ کے فوٹر میں)</h3>'+cfI('address','مکمل پتہ (صرف فوٹر میں چھپے گا)',0,1)+cfI('phone','کلینک فون','ltr')+cfI('email','ای میل','ltr')+cfI('hours','اوقاتِ کار')+cfArr('footA','فوٹر کا جملہ','','+ مزید جملہ شامل کریں')+
  cfChk('showPhone','فون نمبر پرنٹ پر دکھائیں')+cfChk('showEmail','ای میل پرنٹ پر دکھائیں')+cfChk('showHours','اوقاتِ کار پرنٹ پر دکھائیں')+cfChk('qr','QR کوڈ دکھائیں (PatientID|VisitID)')+
  cfImg('logo','کلینک کا لوگو','JPG, PNG یا WebP؛ ہیڈر کے درمیان چھپے گا')+cfImg('appIcon','ایپ کا آئیکن','ایپ کے ہیڈر اور براؤزر/انسٹال آئیکن میں آئے گا۔ فون کا ہوم اسکرین آئیکن APK بنتے وقت ہی بدلتا ہے')+cfImg('sign','ڈاکٹر کے دستخط','پرنٹ میں دستخط کی لائن پر شامل ہوگا')}
@@ -673,9 +697,9 @@ function viewSet(){
    '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    '<div class="field"><label for="s-fs">تحریر کا سائز</label><select id="s-fs">'+[['0.9','چھوٹا'],['1','درمیانہ'],['1.12','بڑا'],['1.25','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fs||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div></div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پرنٹ میں پچھلا صفحہ (غذائیں) شامل کریں</span></label>'+
-   ''+clinicUI()+'</div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">'+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px"><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a></div><button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
+   ''+clinicUI()+'</div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap"><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div><button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
    '<h2>سنک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-auto"'+(c.autoSync===false?'':' checked')+'><span>تبدیلی محفوظ ہوتے ہی خودکار سنک</span></label></div>'+
-   '<h2>نسخے میں دوا کا نشان</h2><div class="card"><div class="field"><label for="s-rxm">ہر منتخب دوا کی لائن سے پہلے</label><select id="s-rxm">'+[['num','1️⃣ 2️⃣ 3️⃣ نمبر (ایموجی)'],['red','🔴 سرخ گولا'],['hand','👈🏻 اشارہ'],['dot','● سادہ نقطہ'],['plain','1. 2. 3. سادہ نمبر'],['none','کوئی نشان نہیں']].map(function(o){return '<option value="'+o[0]+'"'+((c.rxMark||'num')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="meta">ایموجی والے نشان Access کے پرانے پرنٹ میں خانہ بن کر آ سکتے ہیں؛ وہاں کے لیے "سادہ نقطہ" یا "سادہ نمبر" چنیں۔</div></div>'+
+   '<h2>نسخے میں دوا کا نشان</h2><div class="card"><div class="field"><label for="s-rxm">ہر منتخب دوا کی لائن سے پہلے</label><select id="s-rxm">'+[['num','1️⃣ 2️⃣ 3️⃣ نمبر (ایموجی)'],['red','🔴 سرخ گولا'],['hand','👈🏻 اشارہ'],['circ','① ② ③ دائروں میں نمبر'],['dot','● سادہ نقطہ'],['plain','1. 2. 3. سادہ نمبر'],['none','کوئی نشان نہیں']].map(function(o){return '<option value="'+o[0]+'"'+((c.rxMark||'hand')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="meta">ایموجی والے نشان Access کے پرانے پرنٹ میں خانہ بن کر آ سکتے ہیں؛ وہاں کے لیے "سادہ نقطہ" یا "سادہ نمبر" چنیں۔</div></div>'+
    '<h2>SMS سانچہ</h2><div class="card"><div class="field"><label for="s-tpl">{name} اور {date} خود بدل جائیں گے</label><textarea id="s-tpl">'+esc(c.tpl)+'</textarea></div><button class="btn sm alt" data-act="savetpl">سانچہ محفوظ کریں</button></div>'+
    '<h2>ڈیٹا</h2><div class="card"><div class="meta">موبائل میں: '+S.patients.length+' مریض، '+S.visits.length+' وزٹس، '+S.sms.length+' SMS ریکارڈ۔ سنک باقی: '+pending()+'</div>'+
    '<div class="row" style="margin-top:10px">'+(S.patients.some(function(p){return p._demo})?'<button class="btn sm danger" data-act="rmdemo">نمونہ ڈیٹا ہٹائیں</button>':'')+'</div></div></div>'
@@ -704,6 +728,7 @@ function render(){
   else if(r[1]==='box')h=viewBox(r[2]);
   else if(r[1]==='dcat')h=viewDietCat(r[2]);
   $('#view').innerHTML=h;
+  if(route==='/set')settingsFold();
   if(route==='/')fillPatients();
   if(r[1]==='f'&&r[2]&&r[2]!=='new'&&S.cfg.lastP!==r[2]){S.cfg.lastP=r[2];saveCfg()}
   if(r[1]==='meds')fillMeds();
@@ -819,9 +844,15 @@ function qrSvg(text,px){
 
 var MONU=['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'];
 function dateUr(s){return s?(+s.slice(8,10))+' '+MONU[+s.slice(5,7)-1]+' '+s.slice(0,4):''}
-function rxHtml(t){return t.split('\n').filter(function(l){return l.trim()}).map(function(l){
+function rxHtml(t){var it=t.split('\n').filter(function(l){return l.trim()}).map(function(l){
+  var pre='',mk=l.match(/^\s*([\u2460-\u2473])\s*/);if(mk){pre='<span class="cn">'+(mk[1].charCodeAt(0)-0x245F)+'</span>';l=l.slice(mk[0].length)}
   var m=l.match(/^(.*?)(\s[-–—:]\s|:\s)(.*)$/);
-  return '<div class="rl">'+(m?'<b>'+esc(m[1])+'</b>'+esc(m[2])+esc(m[3]):esc(l))+'</div>'}).join('')}
+  return '<div class="rl">'+pre+(m?'<b>'+esc(m[1])+'</b>'+esc(m[2])+esc(m[3]):esc(l))+'</div>'});
+  return '<div class="rg2">'+it.join('')+'</div>'}
+function fitRxb(html){var h=document.createElement('div');h.style.cssText='position:fixed;left:-9999px;top:0;visibility:hidden';h.innerHTML=html;document.body.appendChild(h);
+  var el=h.querySelector('.rxb'),best=16.5;
+  try{if(el){var cells=el.querySelectorAll('.rl');best=9;for(var fs=16.5;fs>=9;fs-=0.5){el.style.fontSize=fs+'px';var ok=true;for(var k=0;k<cells.length;k++){if(cells[k].getBoundingClientRect().height>fs*2.15*1.4){ok=false;break}}if(ok){best=fs;break}}}}catch(e){}
+  h.remove();return html.replace('<div class="rxb">','<div class="rxb" style="font-size:'+best+'px">')}
 function ll(a){return a.filter(Boolean).map(function(l){return '<div>'+esc(l)+'</div>'}).join('')}
 function letterhead(c,pidL,vidL){
   var qr=c.qr?qrSvg(pidL+'|'+vidL,120):'';
@@ -855,6 +886,7 @@ function printVisit(){
    '<div class="rxt"><span>تجویز</span></div><div class="rxb">'+rxHtml($('#f-rx').value)+'</div>'+
    '<div class="ftr"><div class="fs"><span>مقررہ ایام</span><b>'+esc(days||'—')+'</b></div><div class="fs"><span>آئندہ معائنہ</span><b>'+esc(nd?dateUr(nd):'—')+'</b></div>'+prevFs+'</div>'+
    '<div class="sgn"><div>دستخط معالج<hr></div>'+(c.sign?'<img class="sig" src="'+c.sign+'" alt="">':'')+'</div>'+pfooter(c)+'</div>';
+  front=fitRxb(front);
   var plO=S.plans.find(function(x){return x.id===val('f-plan')}),back=(plO&&S.cfg.printDiet!==false)?planPagesHtml(plO):'';
   $('#printArea').innerHTML=front+back;
   var pv=$('#pv');pv.innerHTML='<div class="pvbar"><button class="iconbtn" data-act="pvclose" aria-label="بند کریں"><svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button><b>پرنٹ ویو — A4 لیٹر ہیڈ</b><span></span></div>'+
@@ -911,14 +943,15 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='2026-11-02c',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
+var APP_VER='3.0.07',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
-    if(j&&j.v&&j.v>APP_VER){showUpdate(j.v,manual)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے ('+APP_VER+')')}
+    if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
   catch(e){if(manual)toast('ورژن کی جانچ نہیں ہو سکی، انٹرنیٹ دیکھیں')}}
+function verNew(a,b){var x=String(a).split('.'),y=String(b).split('.');if(/^\d+(\.\d+)*$/.test(String(b))===false)return true;for(var i=0;i<Math.max(x.length,y.length);i++){var p=+x[i]||0,q=+y[i]||0;if(p!==q)return p>q}return false}
 function showUpdate(v,force){var old=document.getElementById('updbar');if(old)return;try{if(!force&&localStorage.getItem('upd-dismiss')===v)return}catch(e){}
   var web=/github\.io$/.test(location.hostname),d=document.createElement('div');d.id='updbar';d.className='updbar';
-  d.innerHTML='<b>نیا ورژن آ گیا ہے</b>'+(web?'<button type="button" data-u="reload">ابھی اپ ڈیٹ</button>':'<a href="'+REL_PAGE+'" target="_blank" rel="noopener">ڈاؤنلوڈ</a>')+'<button type="button" data-u="x" aria-label="بند">×</button>';
+  d.innerHTML='<b>نیا ورژن آ گیا ہے <span dir="ltr">v '+v+'</span></b>'+(web?'<button type="button" data-u="reload">ابھی اپ ڈیٹ</button>':'<a href="'+REL_PAGE+'" target="_blank" rel="noopener">ڈاؤنلوڈ</a>')+'<button type="button" data-u="x" aria-label="بند">×</button>';
   d.addEventListener('click',function(e){var u=e.target.getAttribute&&e.target.getAttribute('data-u');if(u==='x'){try{localStorage.setItem('upd-dismiss',v)}catch(x){}d.remove()}
     else if(u==='reload'){(async function(){try{var rg=await navigator.serviceWorker.getRegistrations();rg.forEach(function(g){g.unregister()});var ks=await caches.keys();ks.forEach(function(k){caches.delete(k)})}catch(x){}location.reload()})()}});
   document.body.appendChild(d)}
@@ -928,6 +961,7 @@ async function fontInit(){try{var buf=null,cs=null;try{cs=await caches.open('jam
   if(!buf){var r=await fetch('jameel.woff');if(!r.ok)throw new Error('font');var rc=r.clone();buf=await r.arrayBuffer();try{if(cs)cs.put('jameel.woff',rc)}catch(e){}}
   JBUF=buf;var ff=new FontFace('Jameel Noori Nastaleeq',buf);await ff.load();document.fonts.add(ff)}catch(e){setTimeout(fontInit,20000)}}
 fontInit();
+setTimeout(function(){try{fontB64()}catch(e){}},6000);
 
 async function fontB64(){if(FONT64)return FONT64;var ab=JBUF;if(!ab){var r=await fetch('jameel.woff');ab=await r.arrayBuffer()}var u=new Uint8Array(ab),b='',k=0x8000;for(var i=0;i<u.length;i+=k)b+=String.fromCharCode.apply(null,u.subarray(i,i+k));FONT64=btoa(b);return FONT64}
 function rxsCss(){var o='';Array.prototype.forEach.call(document.styleSheets,function(sh){try{Array.prototype.forEach.call(sh.cssRules,function(r){if(r.type===1&&r.selectorText&&r.selectorText.indexOf('.rxs')>=0)o+=r.cssText+'\n'})}catch(e){}});return o.replace(/var\(--f-ur\)/g,'"Jameel Noori Nastaleeq",serif')}
@@ -940,6 +974,14 @@ async function pageJpeg(node,css,f64){
   var cv=document.createElement('canvas');cv.width=1588;cv.height=2246;var g=cv.getContext('2d');
   for(var t=0;t<2;t++){var im=await imgLoad(url);await new Promise(function(r){setTimeout(r,t?0:350)});g.fillStyle='#fff';g.fillRect(0,0,1588,2246);g.drawImage(im,0,0,1588,2246)}
   var d=cv.toDataURL('image/jpeg',0.92);var b=atob(d.split(',')[1]),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
+async function pagesJpeg(nodes,css,f64){
+  var n=nodes.length,H=1123*n,x='';nodes.forEach(function(nd){var c=nd.cloneNode(true);c.style.zoom='1';c.style.width='794px';c.style.height='1123px';c.style.display='block';x+=new XMLSerializer().serializeToString(c)});
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="794" height="'+H+'"><foreignObject x="0" y="0" width="794" height="'+H+'"><div xmlns="http://www.w3.org/1999/xhtml" style="width:794px;height:'+H+'px;background:#fff"><style>@font-face{font-family:"Jameel Noori Nastaleeq";src:url(data:font/woff;base64,'+f64+') format("woff")}'+css+'</style>'+x+'</div></foreignObject></svg>';
+  var url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  var cv=document.createElement('canvas');cv.width=1588;cv.height=2246*n;var g=cv.getContext('2d');
+  for(var t=0;t<2;t++){var im=await imgLoad(url);await new Promise(function(r){setTimeout(r,t?0:350)});g.fillStyle='#fff';g.fillRect(0,0,1588,2246*n);g.drawImage(im,0,0,1588,2246*n)}
+  var out=[];for(var k=0;k<n;k++){var pc=document.createElement('canvas');pc.width=1588;pc.height=2246;pc.getContext('2d').drawImage(cv,0,2246*k,1588,2246,0,0,1588,2246);var d=pc.toDataURL('image/jpeg',0.92),b=atob(d.split(',')[1]),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);out.push(u)}
+  return out}
 function makePdf(jpgs){
   var enc=new TextEncoder(),parts=[],len=0,offs=[];
   function put(x){var u=typeof x==='string'?enc.encode(x):x;parts.push(u);len+=u.length}
@@ -955,18 +997,42 @@ function makePdf(jpgs){
   for(var k=1;k<tot;k++)put(String(offs[k]).padStart(10,'0')+' 00000 n \n');
   put('trailer\n<< /Size '+tot+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF');
   var out=new Uint8Array(len),o=0;parts.forEach(function(u){out.set(u,o);o+=u.length});return out}
+async function buildPdf(){var f64=await fontB64(),css=rxsCss(),pages=Array.prototype.slice.call(document.querySelectorAll('#printArea .rxs'));
+  var jp=await pagesJpeg(pages,css,f64);return {pdf:makePdf(jp),nm:'nuskha-'+(($('[data-pu]')&&$('[data-pu]').getAttribute('data-pu'))||'')+'.pdf'}}
 async function pvPdf(){
-  toast('PDF بن رہی ہے…');
-  try{var f64=await fontB64(),css=rxsCss(),pages=Array.prototype.slice.call(document.querySelectorAll('#printArea .rxs')),jp=[];
-    for(var i=0;i<pages.length;i++)jp.push(await pageJpeg(pages[i],css,f64));
-    var pdf=makePdf(jp),nm='nuskha-'+(($('[data-pu]')&&$('[data-pu]').getAttribute('data-pu'))||'')+'.pdf';
+  await busyOn('PDF بن رہی ہے…');
+  try{var o=await buildPdf(),pdf=o.pdf,nm=o.nm;busyOff();
+    var NA=nativeApp();if(NA){try{await NA.savePdf({data:u8b64(pdf),name:nm});toast('PDF ڈاؤنلوڈز فولڈر میں محفوظ ہو گئی');return}catch(e){toast('PDF محفوظ نہیں ہو سکی: '+(e&&e.message||e));return}}
     var dl=null;try{dl=window.claude&&await window.claude.use('downloads')}catch(e){}
     if(dl){try{await dl.save({filename:nm,data:pdf});toast('PDF محفوظ ہو گئی');return}catch(e){if(e&&e.code==='declined')return}}
     var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download=nm;document.body.appendChild(a);a.click();a.remove();toast('PDF محفوظ ہو گئی')
-  }catch(e){toast('اس ڈیوائس پر PDF نہیں بن سکی: '+(e&&e.message||e))}
+  }catch(e){busyOff();toast('اس ڈیوائس پر PDF نہیں بن سکی: '+(e&&e.message||e))}
 }
-function pvPrint(){try{window.print()}catch(e){toast('اس ماحول میں پرنٹ ونڈو بند ہے، براؤزر لنک یا شیئر استعمال کریں')}}
-async function pvShare(){var t=$('#printArea').innerText;try{if(navigator.share){await navigator.share({title:'نسخہ',text:t});return}}catch(e){if(e&&e.name==='AbortError')return}copyText(t)}
+
+var SETM=null;
+function settingsFold(){var w=document.querySelector('#view .wrap');if(!w)return;var store=document.createElement('div');store.id='setstore';store.hidden=true;
+  var kids=Array.prototype.slice.call(w.children),i=0,items=[];
+  kids.forEach(function(el){if(el.tagName==='H2'){items.push({t:el.textContent,h:el,c:null})}else if(items.length&&!items[items.length-1].c&&el.classList.contains('card')){items[items.length-1].c=el}else if(!items.length&&el.classList.contains('card')&&!el.classList.contains('rowlink')&&el.querySelector('b')&&/PC/.test(el.querySelector('b').textContent)){items.push({t:'PC سے رابطہ',h:null,c:el,first:true})}});
+  items.forEach(function(it){if(!it.c)return;var b=document.createElement('button');b.type='button';b.className='setrow';b.dataset.sk=it.t;b.innerHTML='<span>'+esc(it.t)+'</span><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>';
+    if(it.h){w.insertBefore(b,it.h);it.h.remove()}else w.insertBefore(b,it.c);it.c.dataset.sk=it.t;store.appendChild(it.c)});
+  w.appendChild(store);if(SETM){var k=SETM;SETM=null;openSetMod(k,true)}}
+function closeSetMod(){var m=document.getElementById('setmod');var st=document.getElementById('setstore');if(m){var c=m.querySelector('.sb>.card');if(c&&st)st.appendChild(c);m.remove()}SETM=null}
+function openSetMod(key,keep){var st=document.getElementById('setstore');if(!st)return;var card=Array.prototype.find.call(st.children,function(c){return c.dataset.sk===key});
+  if(!card)return;var old=document.getElementById('setmod');if(old)old.remove();
+  var m=document.createElement('div');m.className='setmod';m.id='setmod';m.innerHTML='<div class="setbx"><div class="sh"><span>'+esc(key)+'</span><button type="button" aria-label="بند">✕</button></div><div class="sb"></div></div>';
+  m.querySelector('.sb').appendChild(card);SETM=key;
+  m.addEventListener('click',function(e){if(e.target===m||e.target.closest('.sh button'))closeSetMod()});document.body.appendChild(m)}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.setrow');if(b){e.preventDefault();openSetMod(b.dataset.sk)}});
+
+var BUSY=null;
+function busyOn(msg){busyOff();var d=document.createElement('div');d.id='busyw';d.innerHTML='<div class="busybar"><i></i></div><div class="busymsg">'+esc(msg)+'</div>';document.body.appendChild(d);BUSY=d;return new Promise(function(r){setTimeout(r,40)})}
+function busyOff(){if(BUSY){BUSY.remove();BUSY=null}}
+function nativeApp(){try{var C=window.Capacitor;return C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.AppNative||null}catch(e){return null}}
+function u8b64(u){var b='',k=0x8000;for(var i=0;i<u.length;i+=k)b+=String.fromCharCode.apply(null,u.subarray(i,i+k));return btoa(b)}
+function pvPrint(){var NA=nativeApp();if(NA){NA.print().catch(function(e){toast('پرنٹ نہیں کھل سکا: '+(e&&e.message||e))});return}try{window.print()}catch(e){toast('اس ماحول میں پرنٹ ونڈو بند ہے، براؤزر لنک یا شیئر استعمال کریں')}}
+async function pvShare(){var t=$('#printArea').innerText,NA=nativeApp();
+  if(NA){await busyOn('شیئر کے لیے PDF تیار ہو رہی ہے…');try{var o=await buildPdf();busyOff();await NA.share({data:u8b64(o.pdf),name:o.nm,text:t,title:'نسخہ'});return}catch(e){busyOff();try{await NA.share({text:t,title:'نسخہ'});return}catch(e2){}}}
+  try{if(navigator.share){try{await busyOn('شیئر کے لیے PDF تیار ہو رہی ہے…');var o2=await buildPdf(),f=new File([o2.pdf],o2.nm,{type:'application/pdf'});busyOff();if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'نسخہ',text:t});return}}catch(e){busyOff();if(e&&e.name==='AbortError')return}await navigator.share({title:'نسخہ',text:t});return}}catch(e){busyOff();if(e&&e.name==='AbortError')return}copyText(t)}
 function pvCopy(){copyText($('#printArea').innerText)}
 function logSms(kind,p,v,text,qid){
   var rec={uid:uid(),smsKind:kind,pid:p&&p.pid||null,vid:v&&v.vid||null,name:p&&p.name||'',phone:(p&&p.phone)||qid&&qid.phone||'',text:text,ts:Date.now(),status:'Sent',qid:qid&&qid.id||null,synced:false};
@@ -1049,7 +1115,7 @@ document.addEventListener('click',function(e){
   else if(a==='newv')go('/vn/'+u);else if(a==='savev')saveVisit();else if(a==='printv')printVisit();
   else if(a==='back')back();
   else if(a==='checkupd'){checkUpdate(true)}else if(a==='imgdel'){var c4=CL();c4[t.dataset.k]='';if(t.dataset.k==='logo')c4.logoOff=true;S.cfg.clinic=c4;saveCfg();render()}else if(a==='adddeg'){var c6=CL(),k6=t.dataset.k;c6[k6]=c6[k6].concat(['']);S.cfg.clinic=c6;saveCfg();render();setTimeout(function(){var xs=document.querySelectorAll('.ckarr[data-ck="'+k6+'"]');if(xs.length)xs[xs.length-1].focus()},50)}else if(a==='pvclose')closePv();else if(a==='pvprint')pvPrint();else if(a==='pvpdf')pvPdf();else if(a==='plview')plView(id);else if(a==='pldel')plDel(id);else if(a==='pladd'){peCollect();var T0=PTY[PE.type];for(var q0=0;q0<T0.n;q0++)PE.cells.push({t:'',x:''});render()}else if(a==='plrm'){peCollect();PE.pages.splice(+id,1);render()}else if(a==='plsave')plSave();else if(a==='plcancel'){PE=null;back()}else if(a==='pickfile'){var fi=document.getElementById(id);if(fi)fi.click()}else if(a==='boxnew')go('/box/new');else if(a==='boxedit')go('/box/'+id);else if(a==='boxdel')boxDel(id);else if(a==='boxsave')boxSave();else if(a==='attopen')attOpen(id);else if(a==='attdel')attDel(id);else if(a==='attclose')attClose();else if(a==='pvshare')pvShare();else if(a==='pvcopy')pvCopy();
-  else if(a==='pfold'){var ps=$('#psec');if(ps){var fd=ps.classList.toggle('folded');var fb=ps.querySelector('.foldbtn');fb.innerHTML=fd?ICPLUS:ICMINUS;fb.setAttribute('aria-expanded',String(!fd));if((S.cfg.layout||'fold')==='fold'){S.cfg.pfold=fd;saveCfg()}}}
+  else if(a==='vfold'){var vs=$('#vsec');if(vs){var vf=vs.classList.toggle('folded');var vb=vs.querySelector('.foldbtn');vb.innerHTML=vf?ICPLUS:ICMINUS;vb.setAttribute('aria-expanded',String(!vf))}}else if(a==='pfold'){var ps=$('#psec');if(ps){var fd=ps.classList.toggle('folded');var fb=ps.querySelector('.foldbtn');fb.innerHTML=fd?ICPLUS:ICMINUS;fb.setAttribute('aria-expanded',String(!fd));if((S.cfg.layout||'fold')==='fold'){S.cfg.pfold=fd;saveCfg()}}}
   else if(a==='ptab'){var pf=$('.pcform');pf.setAttribute('data-page',id);document.querySelectorAll('.ptabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-id')===id)});window.scrollTo(0,0)}
   else if(a==='pdtoggle'){var pd=$('#pd');pd.hidden=!pd.hidden;t.setAttribute('aria-expanded',String(!pd.hidden));if(!pd.hidden&&!pd.querySelector('.pdrow'))pd.insertAdjacentHTML('afterbegin',pdRowHtml({d:'',m:'',t:''},0))}
   else if(a==='pdadd'){var n0=document.querySelectorAll('#pd .pdrow').length;t.insertAdjacentHTML('beforebegin',pdRowHtml({d:'',m:'',t:''},n0));var ni=document.querySelectorAll('#pd .pd-d');ni[ni.length-1].focus()}

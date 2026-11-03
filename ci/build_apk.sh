@@ -9,6 +9,9 @@ mkdir -p ~/.android && echo 'MIIKZgIBAzCCChAGCSqGSIb3DQEHAaCCCgEEggn9MIIJ+TCCBcA
 npx cap add android
 rm -rf android/app/src/main/res/mipmap-anydpi-v26
 cp -r ci/res/* android/app/src/main/res/
+mkdir -p android/app/src/main/java/com/salman/clinic
+cp ci/java/*.java android/app/src/main/java/com/salman/clinic/
+grep -q WRITE_EXTERNAL android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />\n    <application#' android/app/src/main/AndroidManifest.xml
 npx cap sync android
 cd android && chmod +x gradlew && ./gradlew assembleDebug
 cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ClinicApp.apk
