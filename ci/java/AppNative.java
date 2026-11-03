@@ -23,6 +23,9 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @CapacitorPlugin(name = "AppNative")
 public class AppNative extends Plugin {
@@ -106,6 +109,107 @@ public class AppNative extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("share: " + e);
+        }
+    }
+
+    private static volatile int dlPct = 0;
+    private static volatile String dlState = "idle";
+    private static volatile String dlErr = "";
+
+    @PluginMethod
+    public void canInstall(PluginCall call) {
+        boolean ok = true;
+        if (Build.VERSION.SDK_INT >= 26) ok = getContext().getPackageManager().canRequestPackageInstalls();
+        JSObject r = new JSObject();
+        r.put("ok", ok);
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void askInstall(PluginCall call) {
+        try {
+            Intent i = new Intent("android.settings.MANAGE_UNKNOWN_APP_SOURCES", Uri.parse("package:" + getContext().getPackageName()));
+            getActivity().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("askInstall: " + e);
+        }
+    }
+
+    @PluginMethod
+    public void startUpdate(final PluginCall call) {
+        final String url = call.getString("url");
+        if ("run".equals(dlState)) { call.resolve(); return; }
+        dlPct = 0; dlState = "run"; dlErr = "";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setInstanceFollowRedirects(true);
+                    c.setConnectTimeout(20000);
+                    c.setReadTimeout(30000);
+                    int code = c.getResponseCode();
+                    int hops = 0;
+                    while ((code == 301 || code == 302 || code == 303 || code == 307 || code == 308) && hops < 6) {
+                        String loc = c.getHeaderField("Location");
+                        c.disconnect();
+                        c = (HttpURLConnection) new URL(loc).openConnection();
+                        c.setConnectTimeout(20000);
+                        c.setReadTimeout(30000);
+                        code = c.getResponseCode();
+                        hops++;
+                    }
+                    if (code != 200) throw new Exception("HTTP " + code);
+                    long total = c.getContentLengthLong();
+                    File dir = new File(getContext().getCacheDir(), "share");
+                    dir.mkdirs();
+                    File f = new File(dir, "ClinicApp.apk");
+                    InputStream in = c.getInputStream();
+                    FileOutputStream o = new FileOutputStream(f);
+                    byte[] buf = new byte[65536];
+                    long got = 0;
+                    int n;
+                    while ((n = in.read(buf)) > 0) {
+                        o.write(buf, 0, n);
+                        got += n;
+                        if (total > 0) dlPct = (int) (got * 100 / total);
+                    }
+                    o.close();
+                    in.close();
+                    dlPct = 100;
+                    dlState = "done";
+                } catch (Exception e) {
+                    dlErr = String.valueOf(e);
+                    dlState = "err";
+                }
+            }
+        }).start();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void updateStatus(PluginCall call) {
+        JSObject r = new JSObject();
+        r.put("state", dlState);
+        r.put("pct", dlPct);
+        r.put("err", dlErr);
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void installApk(PluginCall call) {
+        try {
+            File f = new File(new File(getContext().getCacheDir(), "share"), "ClinicApp.apk");
+            Uri u = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", f);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(u, "application/vnd.android.package-archive");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(i);
+            dlState = "idle";
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("installApk: " + e);
         }
     }
 }

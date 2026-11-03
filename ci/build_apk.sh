@@ -12,6 +12,7 @@ cp -r ci/res/* android/app/src/main/res/
 mkdir -p android/app/src/main/java/com/salman/clinic
 cp ci/java/*.java android/app/src/main/java/com/salman/clinic/
 grep -q WRITE_EXTERNAL android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />\n    <application#' android/app/src/main/AndroidManifest.xml
+grep -q REQUEST_INSTALL_PACKAGES android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n    <application#' android/app/src/main/AndroidManifest.xml
 npx cap sync android
 cd android && chmod +x gradlew && ./gradlew assembleDebug
 cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ClinicApp.apk

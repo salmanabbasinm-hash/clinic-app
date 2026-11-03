@@ -6,7 +6,8 @@ gh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest 
 gh release upload latest "$1" -R $UPD_REPO --clobber
 git clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd
 B=https://github.com/$UPD_REPO/releases/latest/download
-echo "{\"v\":\"$VER\",\"apk\":\"$B/ClinicApp.apk\",\"exe\":\"$B/ClinicSync.exe\",\"web\":\"https://salmanabbasinm-hash.github.io/clinic-app/\"}" > version.json
+NOTES=$(python3 -c "import json;print(json.dumps(json.load(open('../version.json')).get('notes','')))" 2>/dev/null || echo '""')
+echo "{\"v\":\"$VER\",\"notes\":$NOTES,\"apk\":\"$B/ClinicApp.apk\",\"exe\":\"$B/ClinicSync.exe\",\"web\":\"https://salmanabbasinm-hash.github.io/clinic-app/\"}" > version.json
 cat > index.html <<H
 <!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Salman Herbal Clinic - Downloads</title>
 <body dir=rtl style="font-family:sans-serif;max-width:420px;margin:0 auto;padding:24px 16px;text-align:center;background:#f4f7f4">
