@@ -9,11 +9,14 @@
    "runs-on": "ubuntu-latest",
    "steps": [
     {
-     "uses": "actions/checkout@v4"
+     "uses": "actions/checkout@v4",
+     "with": {
+      "fetch-depth": 2
+     }
     },
     {
      "name": "Unzip into repository",
-     "run": "unzip -o clinic-app-repo.zip -x \".github/*\" -d .\nrm -f clinic-app-repo.zip\ngit config user.name \"github-actions\"\ngit config user.email \"actions@users.noreply.github.com\"\ngit add -A\ngit commit -m \"unpack clinic-app-repo.zip\" || echo \"nothing to commit\"\ngit push\n"
+     "run": "git config user.name \"github-actions\"\ngit config user.email \"actions@users.noreply.github.com\"\ngit diff --name-only --diff-filter=A HEAD^ HEAD -- '*.zip' > /tmp/newzips.txt || true\ncat /tmp/newzips.txt\nwhile IFS= read -r z; do\n  [ -f \"$z\" ] && unzip -o \"$z\" -x \".github/*\" -d .\ndone < /tmp/newzips.txt\nfind . -maxdepth 1 -name '*.zip' -delete\ngit add -A\ngit commit -m \"unpack zip\" || echo \"nothing to commit\"\ngit push\n"
     }
    ]
   },
@@ -127,7 +130,7 @@
  "on": {
   "push": {
    "paths": [
-    "clinic-app-repo.zip"
+    "*.zip"
    ]
   },
   "workflow_dispatch": {
