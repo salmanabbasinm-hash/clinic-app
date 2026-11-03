@@ -41,10 +41,14 @@ button,input,select,textarea{font-family:inherit}
 @media (pointer:coarse){#backBtn{display:none!important}}
 
 @media (pointer:coarse){.field select{pointer-events:none}}
-.selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
-.selbx{background:#fff;color:#111;width:100%;max-width:560px;max-height:70vh;overflow:auto;border-radius:18px 18px 0 0;padding:6px 0 12px;font-family:var(--f-ur)}
-.selbx button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:6px 20px;font:inherit;font-size:20px;line-height:2.1;text-align:right;color:#111;cursor:pointer}
+.selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.18)}
+.selbx{position:fixed;background:#fff;color:#111;overflow:auto;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);border:1px solid #cfd8d5;font-family:var(--f-ur);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.selbx button{display:block;width:100%;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:4px 12px;font:inherit;font-size:19px;line-height:2;text-align:center;color:#111;cursor:pointer}
+.selbx button:last-child{border-bottom:0}
 .selbx button.on{background:#e3f1ed;color:#0e5c4b;font-weight:700}
+.setbx .sb,.updbx,.pdfbx{overscroll-behavior:contain}
+body.mlock{overflow:hidden!important}
+.pdfok{position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px}.pdfbx{background:#fff;color:#111;border-radius:18px;padding:20px 18px;width:100%;max-width:330px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}.pdfbx .t{font-size:20px;font-weight:700;color:#0e5c4b}.pdfbx .m{margin:8px 0 14px;font-size:15px;color:#444}.pdfbx .bt{display:flex;gap:8px}.pdfbx .bt .btn{flex:1}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.6;
   padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px));margin:0}
 #app{max-width:720px;margin:0 auto;min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
@@ -273,7 +277,7 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
 .rxs .rxt span{font-size:22px;font-weight:700;color:#1b5e3a;line-height:1.8}
 .rxs .rxb,.rxs .dietb{flex:1;overflow:hidden;font-size:16.5px;line-height:2.15;padding:0 6px}
 .rxs .rl{border-bottom:1px dotted #ccc}
-.rxs .rg2{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}
+.rxs .rg2{display:grid;grid-template-columns:1fr 1fr;column-gap:0}.rxs .rg2 .rl{padding:0 10px;text-align:justify}.rxs .rg2 .rl:nth-child(odd){border-left:1px solid #e3e3e3}
 .rxs .rl .cn{display:inline-flex;align-items:center;justify-content:center;width:1.3em;height:1.3em;border:1.4px solid currentColor;border-radius:50%;font-size:.78em;line-height:1;margin-left:.4em;vertical-align:middle;font-family:var(--f-ur);padding-top:.1em;box-sizing:border-box;font-weight:700}
 .rxs .rg2 .rl{min-width:0;overflow-wrap:anywhere}
 .rxs .bxh .bn{display:inline-flex;align-items:center;justify-content:center;width:1.35em;height:1.35em;border:1.5px solid currentColor;border-radius:50%;font-size:.8em;line-height:1;margin-left:.45em;vertical-align:middle;font-family:var(--f-ur);padding-top:.12em;box-sizing:border-box}
@@ -424,7 +428,7 @@ function setHead(t,sub,back){$('#title').innerHTML=esc(t)+(sub?'<span class="sub
 function viewPatients(){
   setHead('سلمان ہربل کلینک',S.patients.length+' مریض',false);
   var q=($('#q')&&$('#q').value)||'';
-  return '<div class="wrap">'+(S.patients.some(function(p){return p._demo})?'<div class="banner">یہ نمونہ ڈیٹا ہے۔ PC سے پہلی بار سنک ہوتے ہی اصل ڈیٹا آ جائے گا۔</div>':'')+
+  return '<div class="wrap">'+(S.patients.some(function(p){return p._demo})?'<div class="banner">یہ نمونہ ڈیٹا ہے۔ PC سے پہلی بار سنک ہوتے ہی اصل ڈیٹا آ جائے گا۔ <button type="button" class="btn sm danger" data-act="rmdemo" style="margin-top:6px">نمونہ ڈیٹا ہٹائیں</button></div>':'')+
    '<input class="search" id="q" type="search" placeholder="تلاش: نام، والد کا نام، پتہ، فون یا مریض نمبر" value="'+esc(q)+'">'+
    '<div class="row" style="margin-top:12px"><button class="btn grow" data-act="newp">+ نیا مریض</button></div><div class="list" id="plist"></div></div>'
 }
@@ -944,7 +948,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.09',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
+var APP_VER='3.0.10',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1012,10 +1016,13 @@ function makePdf(jpgs){
   var out=new Uint8Array(len),o=0;parts.forEach(function(u){out.set(u,o);o+=u.length});return out}
 async function buildPdf(){var f64=await fontB64(),css=rxsCss(),pages=Array.prototype.slice.call(document.querySelectorAll('#printArea .rxs'));
   var jp=await pagesJpeg(pages,css,f64);return {pdf:makePdf(jp),nm:'nuskha-'+(($('[data-pu]')&&$('[data-pu]').getAttribute('data-pu'))||'')+'.pdf'}}
+function pdfSaved(nm,uri){var N=nativeApp(),d=document.createElement('div');d.className='pdfok';
+  d.innerHTML='<div class="pdfbx"><div class="t">✅ PDF محفوظ ہو گئی</div><div class="m" dir="ltr">Downloads / '+esc(nm)+'</div><div class="bt">'+(uri?'<button type="button" class="btn" data-p="open">کھولیں</button>':'')+'<button type="button" class="btn alt" data-p="ok">ٹھیک ہے</button></div></div>';
+  d.addEventListener('click',function(e){var p=e.target.getAttribute&&e.target.getAttribute('data-p');if(p==='open'){try{N.openPdf({uri:uri})}catch(x){}}if(p||e.target===d)d.remove()});document.body.appendChild(d)}
 async function pvPdf(){
   await busyOn('PDF بن رہی ہے…');
   try{var o=await buildPdf(),pdf=o.pdf,nm=o.nm;busyOff();
-    var NA=nativeApp();if(NA){try{await NA.savePdf({data:u8b64(pdf),name:nm});toast('PDF ڈاؤنلوڈز فولڈر میں محفوظ ہو گئی');return}catch(e){toast('PDF محفوظ نہیں ہو سکی: '+(e&&e.message||e));return}}
+    var NA=nativeApp();if(NA){try{var sv=await NA.savePdf({data:u8b64(pdf),name:nm});pdfSaved(nm,sv&&sv.uri);return}catch(e){toast('PDF محفوظ نہیں ہو سکی: '+(e&&e.message||e));return}}
     var dl=null;try{dl=window.claude&&await window.claude.use('downloads')}catch(e){}
     if(dl){try{await dl.save({filename:nm,data:pdf});toast('PDF محفوظ ہو گئی');return}catch(e){if(e&&e.code==='declined')return}}
     var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download=nm;document.body.appendChild(a);a.click();a.remove();toast('PDF محفوظ ہو گئی')
@@ -1043,14 +1050,23 @@ function busyOff(){if(BUSY){BUSY.remove();BUSY=null}}
 function openSel(sel){if(!sel||sel.disabled||document.getElementById('selsh'))return;
   var d=document.createElement('div');d.id='selsh';d.className='selsh';var bx=document.createElement('div');bx.className='selbx';
   Array.prototype.forEach.call(sel.options,function(o,i){var b=document.createElement('button');b.type='button';b.setAttribute('data-i',i);if(i===sel.selectedIndex)b.className='on';
-    b.innerHTML='<span>'+(esc(o.text)||'—')+'</span>'+(i===sel.selectedIndex?'<span>✓</span>':'');bx.appendChild(b)});
+    b.textContent=(o.text||'—')+(i===sel.selectedIndex?'  ✓':'');bx.appendChild(b)});
   d.appendChild(bx);
   d.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-i]');
     if(b){sel.selectedIndex=+b.getAttribute('data-i');sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}
     d.remove()});
-  document.body.appendChild(d);var on=bx.querySelector('.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'center'})}
+  document.body.appendChild(d);
+  var r=(sel.closest('.field')||sel).getBoundingClientRect(),sr=sel.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+  var w=Math.max(sr.width,Math.min(vw-16,sr.width)),l=Math.min(Math.max(8,sr.left),vw-w-8);bx.style.width=w+'px';bx.style.left=l+'px';
+  var below=vh-sr.bottom-10,above=sr.top-10,h=bx.scrollHeight;
+  if(h<=below||below>=above){bx.style.top=(sr.bottom+4)+'px';bx.style.maxHeight=Math.max(120,below)+'px'}
+  else{bx.style.bottom=(vh-sr.top+4)+'px';bx.style.maxHeight=Math.max(120,above)+'px'}
+  var on=bx.querySelector('.on');if(on)bx.scrollTop=Math.max(0,on.offsetTop-bx.clientHeight/2+on.offsetHeight/2)}
 document.addEventListener('click',function(e){if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return;var t=e.target;if(!t.closest||t.closest('#selsh'))return;
   var f=t.closest('.field');if(!f||t.closest('input,textarea,button'))return;var sel=f.querySelector('select');if(sel)openSel(sel)});
+(function(){var q='.selsh,.setmod,.updpop,.pdfok';
+  new MutationObserver(function(){document.body.classList.toggle('mlock',!!document.querySelector(q))}).observe(document.body,{childList:true});
+  document.addEventListener('touchmove',function(e){var t=e.target;if(!t.closest||!t.closest(q))return;var sc=t.closest('.selbx,.setbx .sb');if(!sc||sc.scrollHeight<=sc.clientHeight+1)e.preventDefault()},{passive:false})})();
 var DL_PAGE='https://salmanabbasinm-hash.github.io/clinic-updates/';
 async function shareDl(){var tx='سلمان ہربل کلینک ایپ ڈاؤنلوڈ کریں:\n'+DL_PAGE,N=nativeApp();try{if(N){await N.share({text:tx,title:'ایپ لنک'})}else if(navigator.share){await navigator.share({text:tx})}else{await navigator.clipboard.writeText(DL_PAGE);toast('لنک کاپی ہو گیا')}}catch(e){}}
 function nativeApp(){try{var C=window.Capacitor;return C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.AppNative||null}catch(e){return null}}

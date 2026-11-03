@@ -54,28 +54,51 @@ public class AppNative extends Plugin {
             String b64 = call.getString("data");
             String name = call.getString("name");
             if (name == null || name.length() == 0) name = "nuskha.pdf";
+            String mime = call.getString("mime");
+            if (mime == null || mime.length() == 0) mime = "application/pdf";
             byte[] data = Base64.decode(b64, Base64.DEFAULT);
+            String savedUri = null;
             if (Build.VERSION.SDK_INT >= 29) {
                 ContentValues v = new ContentValues();
                 v.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
-                v.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
+                v.put(MediaStore.MediaColumns.MIME_TYPE, mime);
                 v.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
                 Uri u = getContext().getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
                 OutputStream o = getContext().getContentResolver().openOutputStream(u);
                 o.write(data);
                 o.close();
+                savedUri = u.toString();
             } else {
                 File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                 dir.mkdirs();
-                FileOutputStream o = new FileOutputStream(new File(dir, name));
+                File pf = new File(dir, name);
+                FileOutputStream o = new FileOutputStream(pf);
                 o.write(data);
                 o.close();
+                try {
+                    savedUri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", pf).toString();
+                } catch (Exception ex) { savedUri = null; }
             }
             JSObject r = new JSObject();
             r.put("ok", true);
+            if (savedUri != null) r.put("uri", savedUri);
             call.resolve(r);
         } catch (Exception e) {
             call.reject("savePdf: " + e);
+        }
+    }
+
+    @PluginMethod
+    public void openPdf(PluginCall call) {
+        try {
+            Uri u = Uri.parse(call.getString("uri"));
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(u, "application/pdf");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("openPdf: " + e);
         }
     }
 
