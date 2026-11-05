@@ -3,7 +3,18 @@ VER=$(python3 -c "import json;print(json.load(open('version.json'))['v'])" 2>/de
 export VER
 if [ -z "$UPDATE_TOKEN" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi
 gh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t "Latest" -n "Clinic app"
-gh release upload latest "$1" -R $UPD_REPO --clobber
+NAME=$(basename "$1")
+WANT=$(wc -c < "$1" | tr -d ' ')
+OKUP=0
+for i in 1 2 3 4 5; do
+  gh release delete-asset latest "$NAME" -R $UPD_REPO -y >/dev/null 2>&1 || true
+  gh release upload latest "$1" -R $UPD_REPO --clobber || true
+  GOT=$(gh release view latest -R $UPD_REPO --json assets -q ".assets[] | select(.name==\"$NAME\") | .size" 2>/dev/null || echo 0)
+  echo "upload try $i: want=$WANT got=$GOT"
+  if [ "$GOT" = "$WANT" ]; then OKUP=1; break; fi
+  sleep 8
+done
+if [ "$OKUP" != "1" ]; then echo "ERROR: $NAME was not uploaded to $UPD_REPO"; exit 1; fi
 git clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd
 B=https://github.com/$UPD_REPO/releases/latest/download
 NOTES=$(python3 -c "import json;print(json.dumps(json.load(open('../version.json')).get('notes','')))" 2>/dev/null || echo '""')
