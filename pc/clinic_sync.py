@@ -250,11 +250,64 @@ class Backend:
                       [pid or 0, vid or 0, name, phone, text, when, status])
 
 
+ACCESS_DRIVER_URL = "https://download.microsoft.com/download/3/5/C/35C84C36-661A-44E6-9324-8786B8DBE231/accessdatabaseengine_X64.exe"
+
+
+def _has_access_driver():
+    import pyodbc
+    return any("Access Driver" in d for d in pyodbc.drivers())
+
+
+def _msgbox(text, title="Clinic Sync", flags=0x24):
+    """Windows Yes/No box (flags 0x24 = Yes/No + question). Returns True for Yes."""
+    try:
+        import ctypes
+        return ctypes.windll.user32.MessageBoxW(0, text, title, flags) == 6
+    except Exception:
+        return True
+
+
+def ensure_access_driver():
+    """Install the Microsoft Access ODBC driver automatically when this PC does not have it."""
+    if _has_access_driver():
+        return
+    if not _msgbox("This PC needs the free Microsoft Access database driver (about 25 MB).\n\n"
+                   "Download and install it now?\n(Internet is needed. Windows will ask for permission - press Yes.)"):
+        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). Installation was cancelled.")
+    import urllib.request, tempfile, subprocess
+    dst = os.path.join(tempfile.gettempdir(), "accessdatabaseengine_X64.exe")
+    print("Downloading the Access driver ...")
+    req = urllib.request.Request(ACCESS_DRIVER_URL, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=60) as r, open(dst, "wb") as f:
+        total = int(r.headers.get("Content-Length") or 0)
+        got = 0
+        last = -1
+        while True:
+            b = r.read(262144)
+            if not b:
+                break
+            f.write(b)
+            got += len(b)
+            if total:
+                pc = got * 100 // total
+                if pc // 10 != last:
+                    last = pc // 10
+                    print("  %d%%" % pc)
+    if os.path.getsize(dst) < 5 * 1024 * 1024:
+        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). The download looks incomplete.")
+    print("Installing the Access driver (press Yes if Windows asks) ...")
+    subprocess.run(["powershell", "-NoProfile", "-Command",
+                    "Start-Process -FilePath '%s' -ArgumentList '/quiet','/norestart' -Verb RunAs -Wait" % dst], check=False)
+    if not _has_access_driver():
+        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). It did not install. "
+                           "Install it manually: https://www.microsoft.com/download/details.aspx?id=54920 (choose the 64-bit file).")
+    print("Access driver installed.")
+
+
 class AccessBackend(Backend):
     def __init__(self, path):
         import pyodbc
-        if not any("Access Driver" in d for d in pyodbc.drivers()):
-            raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). Installed: %s" % pyodbc.drivers())
+        ensure_access_driver()
         self.conn = pyodbc.connect(r"Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=%s;" % path, autocommit=False)
 
     def tests_map(self):
