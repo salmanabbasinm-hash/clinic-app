@@ -253,6 +253,8 @@ class Backend:
 class AccessBackend(Backend):
     def __init__(self, path):
         import pyodbc
+        if not any("Access Driver" in d for d in pyodbc.drivers()):
+            raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). Installed: %s" % pyodbc.drivers())
         self.conn = pyodbc.connect(r"Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=%s;" % path, autocommit=False)
 
     def tests_map(self):
@@ -727,5 +729,42 @@ def main():
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(app)).serve_forever()
 
 
+def _fatal(title, text):
+    """Show the error where the user can read it (the console window closes instantly otherwise)."""
+    try:
+        with open(os.path.join(HERE, "ClinicSync-error.txt"), "w", encoding="utf-8") as f:
+            f.write(title + "\n\n" + text)
+    except Exception:
+        pass
+    print("\n" + "!" * 60 + "\n " + title + "\n\n" + text + "\n" + "!" * 60)
+    try:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(0, title + "\n\n" + text[-1500:], "Clinic Sync", 0x10)
+    except Exception:
+        pass
+    try:
+        input("\nPress Enter to close...")
+    except Exception:
+        pass
+
+
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit as e:
+        if e.code not in (0, None):
+            _fatal("Clinic Sync could not start", "Exit code: %s\nUsage: pick the clinic Access file (File1.mdb) when asked." % e.code)
+        raise
+    except KeyboardInterrupt:
+        pass
+    except BaseException:
+        import traceback
+        tb = traceback.format_exc()
+        hint = ""
+        low = tb.lower()
+        if "pyodbc" in low and ("im002" in low or "data source name not found" in low or "driver" in low):
+            hint = ("The Microsoft Access database driver is not installed on this PC.\n"
+                    "Install 'Microsoft Access Database Engine 2016 Redistributable' (64-bit) from Microsoft, then run again.\n\n")
+        elif "address already in use" in low or "10048" in low:
+            hint = "Another Clinic Sync window is already running. Close it and run again.\n\n"
+        _fatal("Clinic Sync stopped", hint + tb)
