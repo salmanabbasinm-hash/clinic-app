@@ -768,6 +768,18 @@ def open_app_window(url):
 
 
 def build_sqlite_from_mdb(mdb, dbpath):
+    try:
+        return _build_sqlite_from_mdb(mdb, dbpath)
+    except Exception as e:
+        try:
+            h = open(mdb, "rb").read(0x2000)
+            info = "format=%r ver=%d page2=%d size=%d" % (h[4:19], h[0x14], h[2 * 4096] if len(h) > 8192 else -1, os.path.getsize(mdb))
+        except Exception:
+            info = "unreadable"
+        raise RuntimeError("Built-in reader could not read this Access file (%s): %s\nSend a photo of this message." % (info, e))
+
+
+def _build_sqlite_from_mdb(mdb, dbpath):
     """Copy the Access file's data into a local SQLite file using the built-in reader (no Access driver needed)."""
     import struct
     from jet import DB
