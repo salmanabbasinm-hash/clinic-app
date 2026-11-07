@@ -267,18 +267,19 @@ def _msgbox(text, title="Clinic Sync", flags=0x24):
         return True
 
 
-def ensure_access_driver():
-    """Install the Microsoft Access ODBC driver automatically when this PC does not have it."""
-    if _has_access_driver():
-        return
-    if not _msgbox("This PC needs the free Microsoft Access database driver (about 25 MB).\n\n"
-                   "Download and install it now?\n(Internet is needed. Windows will ask for permission - press Yes.)"):
-        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). Installation was cancelled.")
-    import urllib.request, tempfile, subprocess
-    dst = os.path.join(tempfile.gettempdir(), "accessdatabaseengine_X64.exe")
-    print("Downloading the Access driver ...")
-    req = urllib.request.Request(ACCESS_DRIVER_URL, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=60) as r, open(dst, "wb") as f:
+VCREDIST_URL = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+
+
+def _download(url, name, min_mb=1):
+    import urllib.request, tempfile
+    for d in (os.path.join(RES, "drivers"), os.path.join(HERE, "drivers")):   # bundled inside the program: no internet needed
+        b = os.path.join(d, name)
+        if os.path.exists(b) and os.path.getsize(b) > min_mb * 1024 * 1024:
+            return b
+    dst = os.path.join(tempfile.gettempdir(), name)
+    print("Downloading %s ..." % name)
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=90) as r, open(dst, "wb") as f:
         total = int(r.headers.get("Content-Length") or 0)
         got = 0
         last = -1
@@ -293,11 +294,37 @@ def ensure_access_driver():
                 if pc // 10 != last:
                     last = pc // 10
                     print("  %d%%" % pc)
-    if os.path.getsize(dst) < 5 * 1024 * 1024:
-        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). The download looks incomplete.")
-    print("Installing the Access driver (press Yes if Windows asks) ...")
+    if os.path.getsize(dst) < min_mb * 1024 * 1024:
+        raise RuntimeError("The download of %s looks incomplete. Check the internet and run again." % name)
+    return dst
+
+
+def _run_admin(path, args):
+    import subprocess
+    arglist = ",".join("'%s'" % a for a in args)
     subprocess.run(["powershell", "-NoProfile", "-Command",
-                    "Start-Process -FilePath '%s' -ArgumentList '/quiet','/norestart' -Verb RunAs -Wait" % dst], check=False)
+                    "Start-Process -FilePath '%s' -ArgumentList %s -Verb RunAs -Wait" % (path, arglist)], check=False)
+
+
+def _has_vcruntime():
+    return os.path.exists(os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "System32", "vcruntime140.dll"))
+
+
+def ensure_access_driver():
+    """Install what this PC lacks (Visual C++ runtime, then the Microsoft Access ODBC driver) - automatically."""
+    if _has_access_driver():
+        return
+    if not _msgbox("This PC needs the Microsoft Access database driver (it is included in this program).\n\n"
+                   "Install it now?\n(Windows will ask for permission - press Yes.)"):
+        raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). Installation was cancelled.")
+    if not _has_vcruntime():
+        print("Installing the Microsoft Visual C++ runtime first (press Yes if Windows asks) ...")
+        _run_admin(_download(VCREDIST_URL, "vc_redist.x64.exe", 5), ["/install", "/quiet", "/norestart"])
+        if not _has_vcruntime():
+            raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). The Visual C++ runtime did not install. "
+                               "Install it manually: https://aka.ms/vs/17/release/vc_redist.x64.exe")
+    print("Installing the Access driver (press Yes if Windows asks) ...")
+    _run_admin(_download(ACCESS_DRIVER_URL, "accessdatabaseengine_X64.exe", 5), ["/quiet", "/norestart"])
     if not _has_access_driver():
         raise RuntimeError("pyodbc: Microsoft Access ODBC driver not found (driver). It did not install. "
                            "Install it manually: https://www.microsoft.com/download/details.aspx?id=54920 (choose the 64-bit file).")
@@ -307,7 +334,6 @@ def ensure_access_driver():
 class AccessBackend(Backend):
     def __init__(self, path):
         import pyodbc
-        ensure_access_driver()
         self.conn = pyodbc.connect(r"Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=%s;" % path, autocommit=False)
 
     def tests_map(self):
@@ -339,6 +365,15 @@ class SqliteBackend(Backend):
 
     def rows(self, sql, args=()):
         return super().rows(self.fix(sql), args)
+
+    def tests_map(self):
+        m = {}
+        try:
+            for r in self.rows("SELECT PatientID, VisitID, T FROM _tests"):
+                m.setdefault((r["PatientID"], r["VisitID"]), []).append(str(r["T"]))
+        except Exception:
+            return {}
+        return {k: ", ".join(v) for k, v in m.items()}
 
     def exec(self, sql, args=()):
         sql = sql.replace("[", '"').replace("]", '"')
@@ -732,6 +767,86 @@ def open_app_window(url):
         pass
 
 
+def build_sqlite_from_mdb(mdb, dbpath):
+    """Copy the Access file's data into a local SQLite file using the built-in reader (no Access driver needed)."""
+    import struct
+    from jet import DB
+    db = DB(mdb)
+    cat = {r["Name"]: r for r in db.catalog() if r["Type"] == 1}
+    tmp = dbpath + ".tmp"
+    if os.path.exists(tmp):
+        os.remove(tmp)
+    c = sqlite3.connect(tmp)
+
+    def load(n, cols):
+        _, rows = db.read_table(cat[n]["Id"] & 0xffffff)
+        c.execute('CREATE TABLE "%s" (%s)' % (n, ", ".join('"%s"' % x for x in cols)))
+        for r in rows:
+            v = [r.get(x) for x in cols]
+            v = [x if not isinstance(x, (bytes, tuple)) else None for x in v]
+            v = [x.strftime("%Y-%m-%d %H:%M:%S") if isinstance(x, (datetime.datetime, datetime.date)) else x for x in v]
+            c.execute('INSERT INTO "%s" VALUES (%s)' % (n, ",".join("?" * len(cols))), v)
+        return rows
+
+    load("patient history", ["PatientID", "PatientName", "Father/HusbandName", "Gender", "Age", "Adress", "Phone", "PreviousDoctor",
+                             "PreviousMethod", "PreviousDuration", "CurrentArrivalCondition", "OldMedicalReports", "PatientDiet"])
+    vrows = load("Daily Treatment", ["VisitID", "PatientID", "VisitDate", "CurrentPulse", "Symptoms", "Special Note", "GivenDays", "DaysCount",
+                                     "TreatmentStatus", "MedicineEfffects", "EndDate", "Fees", "FinalPriscription"])
+    load("tblMedicine", ["ID", "Medicines", "DefaultUsage"])
+    load("MasterDiets", ["MizajID", "Category", "MizajName", "DietDetail"])
+    c.execute("CREATE TABLE tblManualSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate,Status)")
+    c.execute("CREATE TABLE tblAutoSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate)")
+    c.execute("CREATE TABLE tblBulkSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate,Status)")
+    c.execute("CREATE TABLE _tests (PatientID, VisitID, T)")
+    try:   # multi-value field "RequiredTests": values live in a hidden flat table
+        tm = {}
+        for t in db.catalog():
+            if t["Type"] == 1 and t["Name"].startswith("f_") and "TempField" in t["Name"]:
+                cols, rows = db.read_table(t["Id"] & 0xffffff)
+                names = [x["name"] for x in cols]
+                if "Value" in names and any("Daily Treatment" in x for x in names):
+                    for r in rows:
+                        tm.setdefault(r["_TempField*0"], []).append(r["Value"])
+        for r in vrows:
+            k = r.get("RequiredTests")
+            if isinstance(k, bytes) and len(k) == 4:
+                for val in tm.get(struct.unpack("<I", k)[0], []):
+                    c.execute("INSERT INTO _tests VALUES (?,?,?)", (r["PatientID"], r["VisitID"], str(val)))
+    except Exception as e:
+        print("  (tests column not copied: %s)" % e)
+    c.commit()
+    c.close()
+    if os.path.exists(dbpath):
+        os.remove(dbpath)
+    os.replace(tmp, dbpath)
+
+
+def open_backend(mdb):
+    """Access (if the driver works) else the built-in mode - the user never has to install anything."""
+    reason = ""
+    try:
+        if not _has_access_driver():
+            try:
+                ensure_access_driver()
+            except Exception as e:
+                print("Driver install skipped: %s" % str(e)[:150])
+        if _has_access_driver():
+            return AccessBackend(mdb)
+        reason = "Microsoft Access driver is not installed on this PC."
+    except Exception as e:
+        reason = str(e)[:200]
+    dbp = os.path.join(HERE, "clinic_data.db")
+    first = not os.path.exists(dbp)
+    if first:
+        print("Copying the patients data from the Access file (one time) ...")
+        build_sqlite_from_mdb(mdb, dbp)
+    print("Built-in mode (no Access driver needed). Data file: " + dbp)
+    if first:
+        _msgbox("Your Access file was copied into the program. It works without any Microsoft driver.\n\n"
+                "Data file: %s\n(New records are saved there.)" % dbp, "Clinic Sync", 0x40)
+    return SqliteBackend(dbp)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mdb", nargs="?")
@@ -765,7 +880,7 @@ def main():
     if a.sqlite:
         be = SqliteBackend(a.sqlite)
     elif a.mdb:
-        be = AccessBackend(a.mdb)
+        be = open_backend(a.mdb)
     else:
         ap.error("give the .mdb path")
     app = App(be, State(os.path.join(HERE, "sync_state.db")), cfg["token"])
