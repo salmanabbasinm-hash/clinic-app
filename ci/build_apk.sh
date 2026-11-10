@@ -19,6 +19,7 @@ cp -r ci/res/* android/app/src/main/res/
 mkdir -p android/app/src/main/java/com/salman/clinic
 cp ci/java/*.java android/app/src/main/java/com/salman/clinic/
 grep -q WRITE_EXTERNAL android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />\n    <application#' android/app/src/main/AndroidManifest.xml
+grep -q android.permission.CAMERA android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <application#' android/app/src/main/AndroidManifest.xml
 grep -q REQUEST_INSTALL_PACKAGES android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n    <application#' android/app/src/main/AndroidManifest.xml
 VN=$(python3 -c "import json;print(json.load(open('version.json'))['v'])")
 VC=$(python3 -c "import json;p=json.load(open('version.json'))['v'].split('.');print(int(p[0])*1000000+int(p[1])*10000+int(p[2]))")
