@@ -611,6 +611,9 @@ class App:
         return {"ok": True}
 
 
+PORT = 8765
+
+
 def make_handler(app):
     class H(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
@@ -665,6 +668,10 @@ def make_handler(app):
             try:
                 if p == "/api/ping":
                     return self.send(200, {"ok": True, "name": "Clinic Sync", "auth": self.authed()})
+                if p == "/api/pairinfo":
+                    if self.client_address[0] not in ("127.0.0.1", "::1"):
+                        return self.send(403, {"error": "local only"})
+                    return self.send(200, {"url": "http://%s:%d/?t=%s" % (lan_ip(), PORT, app.token)})
                 if p == "/api/snapshot":
                     if not self.authed():
                         return self.send(401, {"error": "bad token"})
@@ -756,7 +763,7 @@ def open_app_window(url):
     for exe in cands:
         if os.path.exists(exe):
             try:
-                subprocess.Popen([exe, "--app=" + url, "--start-maximized"])
+                subprocess.Popen([exe, "--app=" + url, "--start-fullscreen"])
                 return
             except Exception:
                 pass
@@ -859,6 +866,33 @@ def open_backend(mdb):
     return SqliteBackend(dbp)
 
 
+def init_empty_db(dbpath):
+    c = sqlite3.connect(dbpath)
+    c.execute('CREATE TABLE "patient history" ("PatientID" INTEGER PRIMARY KEY, "PatientName","Father/HusbandName","Gender","Age","Adress","Phone","PreviousDoctor","PreviousMethod","PreviousDuration","CurrentArrivalCondition","OldMedicalReports","PatientDiet")')
+    c.execute('CREATE TABLE "Daily Treatment" ("VisitID" INTEGER,"PatientID","VisitDate","CurrentPulse","Symptoms","Special Note","GivenDays","DaysCount","TreatmentStatus","MedicineEfffects","EndDate","Fees","FinalPriscription","PaidAmount","Weight","BloodPressure")')
+    c.execute('CREATE TABLE tblMedicine ("ID" INTEGER PRIMARY KEY,"Medicines","DefaultUsage")')
+    c.execute('CREATE TABLE MasterDiets ("MizajID" INTEGER PRIMARY KEY,"Category","MizajName","DietDetail")')
+    c.execute("CREATE TABLE tblManualSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate,Status)")
+    c.execute("CREATE TABLE tblAutoSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate)")
+    c.execute("CREATE TABLE tblBulkSMSHistory (HistoryID INTEGER PRIMARY KEY AUTOINCREMENT,PatientID,VisitID,PatientName,Phone,MessageText,SentDate,Status)")
+    c.execute("CREATE TABLE _tests (PatientID, VisitID, T)")
+    c.commit()
+    c.close()
+
+
+def open_firewall(port, cfgp, cfg):
+    """One-time: let the phone reach this PC on the Wi-Fi (Windows asks permission once)."""
+    if os.name != "nt" or cfg.get("fw"):
+        return
+    try:
+        _run_admin("netsh", ["advfirewall", "firewall", "add", "rule", "name=Clinic Sync", "dir=in", "action=allow",
+                             "protocol=TCP", "localport=%d" % port, "profile=any"])
+        cfg["fw"] = 1
+        json.dump(cfg, open(cfgp, "w"))
+    except Exception:
+        pass
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mdb", nargs="?")
@@ -872,29 +906,26 @@ def main():
     if "token" not in cfg:
         cfg["token"] = secrets.token_urlsafe(9)
         json.dump(cfg, open(cfgp, "w"))
+    global PORT
+    PORT = a.port
     if FROZEN:
         a.app = True
+    try:    # already running? just open its window instead of failing on the busy port
+        import urllib.request
+        j = json.loads(urllib.request.urlopen("http://127.0.0.1:%d/api/ping" % a.port, timeout=2).read().decode())
+        if j.get("name") == "Clinic Sync":
+            open_app_window("http://127.0.0.1:%d/?t=%s" % (a.port, cfg["token"]))
+            return
+    except Exception:
+        pass
     if not a.sqlite and not a.mdb:
-        a.mdb = cfg.get("mdb")
-        if not a.mdb or not os.path.exists(a.mdb):
-            a.mdb = None
-            try:
-                import tkinter
-                from tkinter import filedialog
-                r = tkinter.Tk(); r.withdraw(); r.attributes("-topmost", True)
-                a.mdb = filedialog.askopenfilename(title="Select the clinic Access file (File1.mdb)", filetypes=[("Access database", "*.mdb *.accdb"), ("All files", "*.*")]) or None
-                r.destroy()
-            except Exception:
-                pass
-        if a.mdb:
-            cfg["mdb"] = a.mdb
-            json.dump(cfg, open(cfgp, "w"))
+        a.sqlite = os.path.join(HERE, "clinic_data.db")   # the program's own database - nothing to install or choose
     if a.sqlite:
+        if not os.path.exists(a.sqlite):
+            init_empty_db(a.sqlite)
         be = SqliteBackend(a.sqlite)
-    elif a.mdb:
-        be = open_backend(a.mdb)
     else:
-        ap.error("give the .mdb path")
+        be = open_backend(a.mdb)
     app = App(be, State(os.path.join(HERE, "sync_state.db")), cfg["token"])
     ip = lan_ip()
     print("=" * 60)
@@ -906,6 +937,7 @@ def main():
         start_tunnel(a.port, cfg["token"])
     if a.app:
         threading.Thread(target=open_app_window, args=("http://127.0.0.1:%d/?t=%s" % (a.port, cfg["token"]),), daemon=True).start()
+    open_firewall(a.port, cfgp, cfg)
     ThreadingHTTPServer(("0.0.0.0", a.port), make_handler(app)).serve_forever()
 
 

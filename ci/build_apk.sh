@@ -14,7 +14,7 @@ s=open(p).read()
 s=s.replace("android {","android {\n    signingConfigs {\n        debug {\n            storeFile file('ci-debug.keystore')\n            storePassword 'android'\n            keyAlias 'androiddebugkey'\n            keyPassword 'android'\n        }\n    }",1)
 open(p,'w').write(s)
 PY
-rm -rf android/app/src/main/res/mipmap-anydpi-v26
+rm -rf android/app/src/main/res/mipmap-anydpi-v26 android/app/src/main/res/drawable/splash.png android/app/src/main/res/drawable-port-* android/app/src/main/res/drawable-land-* android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
 cp -r ci/res/* android/app/src/main/res/
 mkdir -p android/app/src/main/java/com/salman/clinic
 cp ci/java/*.java android/app/src/main/java/com/salman/clinic/

@@ -330,7 +330,8 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
 var PAT_KEYS=['name','father','gender','age','address','phone','prevDoctor','prevMethod','prevDuration','arrival','oldReports','patDiet'];
 var BPS=['بلڈ پریشر ہائی رہتا ہے','بلڈ پریشر لو رہتا ہے','بلڈ پریشر نارمل رہتا ہے'];
 var VIS_KEYS=['date','pulse','symptoms','tests','note','days','status','effects','fees','paid','weight','bp','rx'];
-var PULSES=['عضلاتی مخاطی','عضلاتی قشری','قشری عضلاتی','قشری اعصابی','اعصابی قشری','اعصابی مخاطی','مخاطی اعصابی','مخاطی عضلاتی'];
+var PULSES8=['عضلاتی مخاطی','عضلاتی قشری','قشری عضلاتی','قشری اعصابی','اعصابی قشری','اعصابی مخاطی','مخاطی اعصابی','مخاطی عضلاتی'],PULSES6=['اعصابی عضلاتی','عضلاتی اعصابی','عضلاتی غدی','غدی عضلاتی','غدی اعصابی','اعصابی غدی'];
+function pulses(){return S.cfg.mizajSys==='m6'?PULSES6:PULSES8}
 var STATUSES=['جاری ہے','علاج مکمل','علاج روک دیا گیا ہے','دوسرے معالج کے پاس منتقل کیا گیا ہے'];
 var TESTS=['CBC','LFT','LIPID PROFILE','RFT','FBS','RBS','ESR','ELECTROLYTES','SPERM ANALYSIS','TFT','ABDOMINAL U/S','PELVIC U/S','CHEST CT SCAN','ABDOMINAL CT SCAN','PELVIC CT SCAN'];
 var DEF_CAT='علاج بالغذاء شاکری';
@@ -484,7 +485,7 @@ function viewVisitEdit(u,puid,embedded){
    '<div class="field"><label for="f-next">آئندہ معائنہ کی تاریخ</label><input id="f-next" type="text" readonly class="auto" tabindex="-1"></div><div id="leftnote" class="meta" style="margin:-6px 0 12px"></div>'+
    '<div class="examh">معائنہ</div>'+
    '<div class="grid2" style="grid-template-columns:1fr 2fr">'+field('f-weight','وزن (کلو)',v.weight,'number','inputmode="decimal"')+'<div class="field"><label for="f-bp">بلڈ پریشر</label><select id="f-bp"><option value="">انتخاب کریں...</option>'+BPS.map(function(x){return '<option'+(x===v.bp?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div></div>'+
-   '<div class="field"><label for="f-pulse">مزاج</label><select id="f-pulse"><option value=""></option>'+PULSES.map(function(x){return '<option'+(x===v.pulse?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+
+   '<div class="field"><label for="f-pulse">مزاج</label><select id="f-pulse"><option value=""></option>'+pulses().concat(v.pulse&&pulses().indexOf(v.pulse)<0?[v.pulse]:[]).map(function(x){return '<option'+(x===v.pulse?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+
    area('f-symptoms','علامات / مریض کی شکایات',v.symptoms,110)+
    '<div class="field"><label>مطلوبہ ٹسٹس</label><div class="tsel"><button type="button" class="tsum" id="tsum" data-act="ttoggle" aria-expanded="false"><span id="tsumtxt"></span><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
    '<div class="tpanel" id="tpanel" hidden><div class="tlist" id="tests">'+allTests().map(function(t){return testRow(t,tsel.indexOf(t)>=0)}).join('')+'</div>'+
@@ -531,7 +532,7 @@ function viewForm(u,vk){
    '</div>'
 }
 function catList(){var c=[];S.diets.forEach(function(d){if(d.cat&&c.indexOf(d.cat)<0)c.push(d.cat)});if(c.indexOf(DEF_CAT)<0)c.unshift(DEF_CAT);return c}
-function dietFor(pulse,cat){var d=S.diets.find(function(x){return x.cat===cat&&x.mizaj===(pulse||'').trim()+' غذائیں'});return d?(d.text||'').replace(/​/g,''):null}
+function dietFor(pulse,cat){var d=S.diets.find(function(x){return x.cat===cat&&x.mizaj===(pulse||'').trim()+' غذائیں'});if(!d&&pulse&&isFlat(cat))d=catRows(cat)[0];return d?(d.text||'').replace(/​/g,''):null}
 
 function dueList(){
   var t=today(),out=[];
@@ -567,7 +568,7 @@ function viewDiet(id){
   return '<div class="wrap"><div class="row" style="margin-bottom:12px"><button class="btn grow" data-act="dnew">+ نئی غذا شامل کریں</button></div>'+boxCard()+attCard()+'<div class="list">'+
    cats.map(function(c){var n=catRows(c).length;return '<a class="card tap rowlink" data-go="/dcat/'+encodeURIComponent(c)+'"><div><b class="ur">'+esc(c)+'</b><div class="meta">'+(isFlat(c)?'تمام مزاجوں کے لیے ایک غذا':n+' مزاجوں کی الگ غذائیں')+(S.cfg.dietCat===c?' — موجودہ انتخاب':'')+'</div></div><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>'}).join('')+'</div></div>'
 }
-var PTY={g8:{n:8,c:2,r:4,cap:260,l:'آٹھ خانے'},g4:{n:4,c:2,r:2,cap:520,l:'چار خانے'},g2:{n:2,c:1,r:2,cap:1100,l:'دو خانے'},g1:{n:1,c:1,r:1,cap:2400,l:'ایک خانہ'},pdf:{l:'PDF فائل'},img:{l:'امیج فائل'}};
+var PTY={g8:{n:8,c:2,r:4,cap:260,l:'آٹھ خانے'},g6:{n:6,c:2,r:3,cap:350,l:'چھ خانے'},g4:{n:4,c:2,r:2,cap:520,l:'چار خانے'},g2:{n:2,c:1,r:2,cap:1100,l:'دو خانے'},g1:{n:1,c:1,r:1,cap:2400,l:'ایک خانہ'},pdf:{l:'PDF فائل'},img:{l:'امیج فائل'}};
 var SEED_PLANS=[{"id": "seed-shakri", "name": "علاج بالغذاء شاکری", "type": "g8", "cells": [{"t": "عضلاتی مخاطی", "x": "مربہ بہی، مربہ سیب، خمیرہ مروارید، دواء المسک بارد جو اہر دار، شربت انجبار، قہوہ دار چینی و تیز پات، بھنڈی توری، دال چنا، دال مونگ، ککڑی، مولی، شلغم سفید، کدو، ٹنڈا، اروی، دال چنا دیسی گھی میں پکی ہوئی، مٹر پلاؤ، کچھی بھنی، بیر سبز، بھنے ہوئے آلو، سنگترے، شربت فولاد لیموں ڈال کر لیں۔"}, {"t": "عضلاتی قشری", "x": "چھوہاروں میں پستہ بھر کر گھی میں بریاں کر کے کھائیں، بھنے ہوئے چنے، ابلے ہوئے انڈوں کی زردیاں، بیسن کا حلوہ، دار چینی کا قہوہ، شربت دار چینی، فرائی انڈے، بڑا گوشت، بڑے گوشت کے کباب، کریلے، قیمہ، ٹماٹر کی چٹنی، بڑے سری پائے، ثابت مسور، چنے بھنے، بیسن میں تلی ہوئی مچھلی، بیسن کی روٹی میٹھی ڈال کر، سالن پر سرکہ ڈال کر کھائیں، سرخ مرچ، قہوہ دار چینی، انڈے اور چائے، چھوہارے، دار چینی کا قہوہ، بڑے گوشت کی یخنی، خوبانی خشک، مویز (منقی)، آرو، پستہ وغیرہ۔"}, {"t": "قشری عضلاتی", "x": "انڈوں کا آملیٹ، انڈوں کا حلوہ، نان حلیم، شہد سلائس، قہوہ اجوائن، قہوہ تیز پات، کلونجی پئیں، بکرے کا گوشت، دیسی مرغی کا گوشت، تیتر، بٹیر، تلیئر کا گوشت، کلیجی، پکوڑے، میتھی، تکے کباب شوربہ والی مچھلی، جھینگا، دیسی گھی، دال مسور، سرسوں کا ساگ، بتھوا، پالک، چوہنگاں، بینگن، کلچے وغیرہ، آم دیسی، خوبانی، کھجور تازہ، شیریں، اجوائین اور ادرک کا قہوہ، پودینے کا قہوہ شہد سے میٹھا کر کے پئیں، تیز پتی کی چائے، پشاوری قہوہ، لیمن گراس کا قہوہ، پان، سگریٹ۔"}, {"t": "قشری اعصابی", "x": "نمک ین دلیہ ، بادام کا حلوہ، ادرک کا حلوہ، ادرک کا مربہ، آم کا مربہ، کھجوریں، میٹھے آم، اونٹنی کا دودھ، سونف اور پودینے کا قہوہ، زیرہ سفید اور الائچی کا قہوہ، ادرک کا قہوہ شہد ڈال کر، شربت بزوری حار، شربت شہتوت، کلچہ، چولائی کا ساگ، چقندر، پیلے شلغم، دال مونگ، مونگرے، آم کا اچار، ادرک کا اچار، سوہانجنہ کا اچار، کھجور کی چٹنی، چھوٹا مغز بغیر شوربہ، مرچ سیاہ، شہد ملا پانی، دودھ سونف والا، آش جو کھائیں، انگور، شہتوت، خربوزہ میٹھا، جاپانی پھل شیریں (سورا املوک خوگ)، کاجو، پپیتہ، چلغوزے، بادام خشک، اخروٹ، ریوڑیاں۔"}, {"t": "اعصابی قشری", "x": "رس، کیک، بند، ڈبل روٹی، میٹھا دلیہ، گاجر کا مربہ، گاجر کا حلوہ، سوجی کا حلوہ، دودھ والی سویاں، برفی، گرم دودھ، دہی، ٹافیاں، میٹھی سونف، انجیر، دودھ جلیبی والا، مغزیات کا حریرہ، مکھن بادام والا، حریرہ بادام، خمیرہ بادام، حلوہ بادام، خمیرہ گاؤں زبان سادہ، قہوہ بنفشہ، شربت بنفشہ، شربت بزوری معتدل، قہوہ کدو، ٹینڈے، حلوہ کدو، گھیا توری، لوکی، شلغم سفید، عرق گاؤں زبان، بسکٹ دودھ، گنے کا رس تازہ، امرود، گرما، سردا، خربوزہ پھیکا، گلقند دودھ، سفید انار کا جوس، کیلے کا ملک شیک، زیرہ سفید اور مغز بادام کی سردائی، کسٹرڈ فرنی۔"}, {"t": "اعصابی مخاطی", "x": "بند، مکھن، دہی کی میٹھی لسی، ابلے چاول اور دودھ، کھیر، ساگودانہ، گجریلا، گاجر کی کھیر، قہوہ بہی دانہ، شربت صندل، شربت بزوری بارد، شربت گوند، فالودہ، دہی، الائچی والا دودھ، گھیا کدو، دال ماش کالی، مولی، پیٹھا، کھیرا، لکڑی (تر)، انڈوں کی سفیدی، کھچڑی، چٹنی دھنیا سبز، خرفہ کا ساگ، قہوہ گورکھ پان، اچار لسوڑا، گوند کتیرا دودھ میں بھگو کر، تخم بالنگو، سیون اپ والا دودھ، کچی لسی، انار سفید شیریں، کیلے، تربوز، لوکاٹھ، مالٹا، میٹھا، لیچی، مسمی، مغز کدو یا چار مغز کی سردائی، لعوق سپستاں۔"}, {"t": "مخاطی اعصابی", "x": "ساگودانہ، دہی کی لسی پیڑوں والی، پنیر، کھیر، ٹھنڈا دودھ، اروی، بھنڈی، ثابت ماش، آلو، کیلے کا سالن، سلاد کے پتے، پھلی دار سبزیاں، فالودہ، ناشپاتی، بگو گوشہ، سنگھاڑے، سیب، شکر قندی، ناریل تازہ، پختہ لوڑھیاں، انڈے کی سفیدی میٹھی، شربت سپستاں۔"}, {"t": "مخاطی عضلاتی", "x": "مربہ بہی، مربہ سیب، خمیرہ مروارید، دواء المسک بارد جواہر دار، شربت انجبار، قہوہ داڑھی بوہڑ، خسیاندہ ترپھلہ، چنے والا پلاؤ، مٹر پلاؤ، کچھی بھنی ہوئی، مکئی کے سٹے، بریانی، دہی بھلے، آلو گوبھی، مٹر لوبیا، شکر قندی، چائے، بیر سبز، بھنے ہوئے آلو، سنگترے، شربت فولاد لیموں ڈال کر لیں۔"}], "pages": [], "ts": 1}, {"id": "seed-faizi-qa", "name": "قشری اعصابی فیضی غذائیں (گرم تر)", "type": "g4", "cells": [{"t": "صبح", "x": "• انڈہ دیسی ایک عدد، مغز بادام ایک چمچ، ہلدی ایک ماشہ کا حلوہ دیسی گھی میں میٹھا بنا کر کھا لیں۔\n• یا انڈا دیسی، پیاز، ادرک ڈال کر نمکین بنا کر کھا لیں، شکر اور گھی کھا لیں۔\n• مکھن، نمک اور کالی مرچ ملا کر کھا لیں۔\n• سوجی کا حلوہ، مغز بادام ایک چمچ، آبِ ادرک دو چمچ، ہلدی ایک ماشہ ملا کر میٹھا بنا کر کھا لیں۔\n• سونف، زیرہ سفید یا سونف، اجوائن کا قہوہ شہد ملا کر پی لیں۔"}, {"t": "دوپہر", "x": "• کدو، ٹینڈے، گاجر، شلجم، مولی + گوشت، مکو، پالک، مونگرے، گھیا توری، ساگ سرسوں (بتھووں والا)، کریلے، حلوہ کدو، سیاہ چنے، دال مسور،مسور ثابت (اچار لہسوڑہ، مرچ)، گوشت۔\n• ان میں سے کوئی ایک سبزی ادرک، لہسن، پیاز، ہلدی، مرچ ڈال کر دیسی گھی میں پکا کر کھا لیں، بعد شہد کا شربت پی لیں۔"}, {"t": "شام", "x": "• کھجور، مغز بادام، دیسی گھی میں تل کر حسبِ منشاء کھا لیں یا ان کا ملک شیک پی لیں۔\n• تل شکر، گھی میں ملا کر کھا سکتے ہیں۔\n• مغز بادام کی دودھی میں گھی ڈال کر پی لیں۔"}, {"t": "پھل", "x": "• کھجور، چھوہارے، آم شیریں، منقیٰ، مغز بادام، شہتوت سفید، برفی، شربتِ آم۔\n• آم کا ملک شیک آبِ ادرک، سیاہ مرچ ملا کر پی لیں۔\n• مربہ ادرک۔"}], "pages": [], "ts": 1}, {"id": "seed-faizi-aq", "name": "اعصابی قشری فیضی غذائیں (تر گرم)", "type": "g4", "cells": [{"t": "صبح", "x": "• مکھن مصفی، مغز بادام، الائچی سبز، چینی یا شہد حسب ضرورت ملا کر کھا لیں یا مکھن میں نمک سیاہ مرچ ملا کر کھا لیں۔\n• سونف مغز بادام برابر وزن حلوہ بنا کر کھا لیں، دیسی گھی میں شکر بنا کر کھا لیں بعد میں سونف دودھ میں ڈال کر پی لیں۔\n• چاول، مغز بادام برابر وزن، فرنی، دیسی گھی ڈال کر کھا لیں۔\n• سونف، زیرہ سفید کا قہوہ شہد ملا کر پی لیں۔"}, {"t": "دوپہر", "x": "• کدو دیسی، ٹینڈے، گاجر، مولی، شلجم، مونگرے، حلوہ کدو، گھیا توری، ان میں سے کوئی ایک سبزی سیاہ مرچ، ہلدی، ادرک، پیاز، سفید زیرہ، حسب ضرورت دیسی گھی میں پکا کر کھا لیں، بعد میں شہد کا شربت حسب منشاء پی لیں۔"}, {"t": "شام", "x": "• دیسی گھی کی جلیبی، گرم دودھ میں کھا لیں۔\n• کچا سیب یا کیلا نمک کالی مرچ، ہلدی حسب منشاء ملا کر گھی میں تل کر کھا لیں۔\n• گجریلا یا گلقند، مغز بادام، الائچی سبز، دودھ میں گھوٹ کر پی لیں۔\n• مربہ سیب، مربہ گاجر دیسی گھی میں تل کر کھا لیں۔\n• مغزِ بادام کی دودھی دیسی گھی ڈال کر پی لیں۔"}, {"t": "پھل", "x": "• کیلا، سیب، گنے کا رس، خربوزہ، تربوز، سردہ، گرما، گاجر کا رس، منقی، آم شیریں، برفی، شربتِ بزوری، مربہ بہی، مربہ ادرک۔\n• کیلے اور سیب کا ملک شیک آبِ ادرک، سیاہ مرچ ڈال کر پی لیں۔\n\nگجریلا (نسخہ کی تیاری):\n• گاجر 10 کلو، چینی ایک کلو، دیسی گھی 750 گرام، سونف 150 گرام، ہلدی 25 گرام، سبز الائچی 25 گرام، مغزِ بادام 150 گرام۔"}], "pages": [], "ts": 1}, {"id": "seed-trigly", "name": "غذائی چارٹ برائے ٹرائی گلیسرائیڈ", "type": "g1", "cells": [{"t": "غذائی چارٹ برائے ٹرائی گلیسرائیڈ", "x": "دال مونگ، مونگرے، پیلے شلغم، انجیر اور کدو اور سبز دھنیا کی چٹنی معمولی نمک ڈال کر روٹی اس سے کھائیں، ساگ، مولی اور پالک ملا کر پکائیں، چقندر کا سالن، نمکین دلیہ، جو کے ستو، جو کا دلیہ، آم کا اچار، آم کا مربہ، پپیتا، کھجور تازہ، خربوزہ، شہتوت، کشمش، انگور، آم شیریں، چیکو، سرخ بیر، گلقند، عرق سونف، عرق زیرہ، قہوہ ادرک شہد والا، قہوہ سونف + پودینہ، قہوہ زیرہ سفید، زیرے کی چائے، اونٹنی کا دودھ، شہد خالص کا پانی نیم گرم۔ گڑ، جلیبی بالائی اترے ہوئے دودھ میں ڈال کر پیئیں، انار سفید، روزانہ صبح پانچ انجیر دھو کر خالی پیٹ کھائیں، پانچ انجیر اور گیارہ کالی مرچ کی چٹنی خصوصاً مفید ہے، اگر اس میں زیرہ سفید شامل کر لیا جائے تو لذت بھی بڑھ جاتی ہے اور فائدہ بھی۔\nتمام سبزیاں روغنِ زیتون میں پکا کر کھائیں۔\nچٹنی مفید: ادرک، کالی مرچ، لہسن، سبز پودینہ، ہلدی، نمک ملا کر پیس لیں اور کھانا اسی سے کھائیں۔\nخصوصی پرہیز: سگریٹ، چائے، کافی، انڈے، پکوڑے، موسمِ گرما میں ٹھنڈا پانی، تمام ٹھنڈے مشروبات (شربتیں)، چاول، بھنڈی، دال ماش، کیلا، ہر قسم کا گھی، دودھ بالائی والا، دہی، مکھن، بیکری کی چیزیں، بازاری کھانے، تیز مرچ مصالحے تمام سبزیاں ابلی ہوئی کھائیں۔\nشوگر کے مریض: اس پیپر کی تمام میٹھی غذاؤں سے پرہیز کریں مثلاً: آم کا اچار، آم کا مربہ، پپیتا، کھجور تازہ، خربوزہ، شہتوت، کشمش، انگور، آم ہر قسم، چیکو، سرخ بیر، گلقند، شہد کا پانی نیم گرم۔\nادرک، لونگ ایک گلاس پانی میں ڈال کر ابال لیں صبح تین سے چار دانے لہسن کھا کر اوپر مذکورہ جوشاندہ پی لیں"}], "pages": [], "ts": 1}];
 async function planSeed(){if(S.cfg.seedv1)return;var put=[];S.cfg.xq=S.cfg.xq||{};
   SEED_PLANS.forEach(function(p){if(S.plans.some(function(x){return x.id===p.id}))return;var c=JSON.parse(JSON.stringify(p));S.plans.push(c);put.push({k:'plan:'+c.id,v:c});S.cfg.xq['plan:'+c.id]={ts:1,del:false}});
@@ -591,7 +592,7 @@ function planPagesArr(pl){
     out.push(fitBx('<div class="rxs bx">'+qline(cc.dietHdrR,cc.dietHdr,cc.dietHdrL)+'<div class="rxt"><span>علاج بالغذاء</span></div><div class="bxg" style="grid-template-columns:repeat('+T.c+',1fr);grid-template-rows:repeat('+T.r+',1fr)">'+ch.map(function(c,jj){return '<div class="bxc">'+(c.t?'<div class="bxh"><span class="bn">'+(i+jj+1)+'</span>'+esc(c.t)+'</div>':'')+'<div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div>'+qline(cc.dietFtrR,cc.dietFtr,cc.dietFtrL,'ft')+'</div>',T.n))}
   return out}
 function fitBx(html,n){var h=document.createElement('div');h.style.cssText='position:fixed;left:-9999px;top:0;visibility:hidden';h.innerHTML=html;document.body.appendChild(h);
-  try{var hi=n===1?40:n===2?32:n===4?27:22;h.querySelectorAll('.bxb').forEach(function(b){if(!b.textContent.trim())return;var lo=9,top=hi;
+  try{var hi=n===1?40:n===2?32:n===4?27:n===6?24:22;h.querySelectorAll('.bxb').forEach(function(b){if(!b.textContent.trim())return;var lo=9,top=hi;
     for(var i=0;i<8;i++){var m=(lo+top)/2;b.style.fontSize=m+'px';if(b.scrollHeight>b.clientHeight+1)top=m;else lo=m}b.style.fontSize=lo.toFixed(1)+'px'});
     return h.firstChild.outerHTML}catch(e){return html}finally{document.body.removeChild(h)}}
 function viewPlans(){
@@ -601,7 +602,7 @@ function viewPlans(){
      return '<div class="card"><div class="attrow" style="border:0;padding:0"><div class="grow"><b class="ur">'+esc(b.name)+'</b><div class="meta">'+T.l+' · '+n+'</div></div><button class="btn sm alt" data-act="plview" data-id="'+b.id+'">دیکھیں</button><button class="btn sm alt" data-go="/pled/'+b.id+'">ترمیم</button><button class="btn sm alt" data-act="pldel" data-id="'+b.id+'">حذف</button></div></div>'}).join('')+'</div>':'<div class="empty">ابھی کوئی غذا شامل نہیں۔ اوپر "نئی غذا شامل کریں" دبائیں۔</div>')+'</div>'}
 function viewPlanType(){
   setHead('نئی غذا','قسم منتخب کریں',true);
-  return '<div class="wrap"><div class="list">'+[['g8','آٹھ خانے','ایک صفحے پر آٹھ خانے'],['g4','چار خانے','ایک صفحے پر چار خانے'],['g2','دو خانے','صفحے پر ایک اوپر، ایک نیچے'],['g1','ایک خانہ','پورا صفحہ ایک خانہ'],['pdf','PDF فائل','PDF کے صفحے غذا بنیں گے'],['img','امیج فائل','تصویر غذا بنے گی']].map(function(t){return '<a class="card tap rowlink" data-go="/pled/new:'+t[0]+'"><div><b class="ur">'+t[1]+'</b><div class="meta">'+t[2]+'</div></div><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>'}).join('')+'</div></div>'}
+  return '<div class="wrap"><div class="list">'+[['g8','آٹھ خانے','ایک صفحے پر آٹھ خانے'],['g6','چھ خانے','ایک صفحے پر چھ خانے'],['g4','چار خانے','ایک صفحے پر چار خانے'],['g2','دو خانے','صفحے پر ایک اوپر، ایک نیچے'],['g1','ایک خانہ','پورا صفحہ ایک خانہ'],['pdf','PDF فائل','PDF کے صفحے غذا بنیں گے'],['img','امیج فائل','تصویر غذا بنے گی']].map(function(t){return '<a class="card tap rowlink" data-go="/pled/new:'+t[0]+'"><div><b class="ur">'+t[1]+'</b><div class="meta">'+t[2]+'</div></div><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>'}).join('')+'</div></div>'}
 var PE=null;
 function peCollect(){if(!PE)return;if($('#pl-name'))PE.name=$('#pl-name').value;var ts=document.querySelectorAll('.bx-t'),xs=document.querySelectorAll('.bx-x');for(var i=0;i<ts.length&&i<PE.cells.length;i++){PE.cells[i]={t:ts[i].value,x:xs[i].value}}}
 function viewPlanEdit(id){
@@ -690,13 +691,14 @@ function clinicUI(){return '<h3 style="margin:14px 0 4px">اردو پروفائ�
 function viewSet(){
   setHead('ترتیبات','PC سے رابطہ',false);
   var c=S.cfg;
-  return '<div class="wrap"><div class="card"><div class="row" style="justify-content:space-between"><b>PC سے رابطہ</b><span class="chip '+(c.last?'good':'warn')+'">'+(c.last?'آخری سنک '+new Date(c.last).toLocaleString('en-GB'):'ابھی سنک نہیں ہوا')+'</span></div>'+
+  return '<div class="wrap"><div id="pairBox"></div><div class="card"><div class="row" style="justify-content:space-between"><b>PC سے رابطہ</b><span class="chip '+(c.last?'good':'warn')+'">'+(c.last?'آخری سنک '+new Date(c.last).toLocaleString('en-GB'):'ابھی سنک نہیں ہوا')+'</span></div>'+
    '<p class="meta">PC پر clinic_sync پروگرام چلانے سے ایک لنک آتا ہے، وہ لنک موبائل کے براؤزر میں کھولیں تو پتہ اور ٹوکن خود بھر جاتے ہیں۔ باہر کے نیٹ ورک کے لیے PC کا https لنک (ٹنل) استعمال کریں۔</p>'+
-   '<div class="field"><label for="s-server">PC کا پتہ</label><input id="s-server" class="mono" dir="ltr" placeholder="http://192.168.1.10:8765" value="'+esc(c.server)+'"></div>'+
+   '<div class="field"><label for="s-server">PC کا پتہ</label><input id="s-server" class="mono" dir="ltr" placeholder="PC کا لنک یہاں پیسٹ کریں (http://192.168.1.10:8765/?t=…)" value="'+esc(c.server)+'"></div>'+
    '<div class="field"><label for="s-token">ٹوکن</label><input id="s-token" class="mono" dir="ltr" value="'+esc(c.token)+'"></div>'+
    '<div class="row"><button class="btn grow" data-act="savecfg">محفوظ اور سنک</button></div></div>'+
    '<a class="card tap rowlink" data-go="/meds" style="margin-top:12px"><div><b>دوائیں (فارما کوپیا)</b><div class="meta">'+S.meds.length+' دوائیں — نئی شامل کریں، ترمیم یا حذف</div></div><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>'+
    '<h2>فارم کی ترتیب</h2><div class="card"><div class="field"><label for="s-layout">مریض اور وزٹس کی ترتیب</label><select id="s-layout">'+[['fold','ایک صفحہ — مریض کی معلومات ➖ / ➕ سے لپیٹیں'],['pages','دو صفحات — "مریض" اور "وزٹس" الگ ٹیب'],['button','بٹن والا — معلومات بند، "+ وزٹ شامل کریں" بٹن']].map(function(o){return '<option value="'+o[0]+'"'+((c.layout||'fold')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
+   '<div class="field"><label for="s-mz">مزاج کی قسم</label><select id="s-mz">'+[['','انتخاب کریں…'],['m8','مفرد اعضاء اربعہ'],['m6','مفرد اعضاء ثلاثہ']].map(function(o){return '<option value="'+o[0]+'"'+((c.mizajSys||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select><div class="meta">مفرد اعضاء اربعہ (آٹھ مزاج) یا ثلاثہ (چھ مزاج)۔ نہ چنیں تو آٹھ مزاج رہتے ہیں۔</div></div>'+
    '<div class="field"><label for="s-start">ایپ کھلنے پر</label><select id="s-start"><option value="last"'+(c.startOn!=='list'?' selected':'')+'>آخری مریض اور اس کی آخری وزٹ</option><option value="list"'+(c.startOn==='list'?' selected':'')+'>مریضوں کی فہرست</option></select></div>'+
    '<div class="field"><label for="s-defdays">نئی وزٹ میں مقررہ ایام پہلے سے (خالی = کچھ نہیں)</label><input id="s-defdays" type="number" inputmode="numeric" value="'+esc(c.defDays||'')+'"></div></div>'+
    '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
@@ -733,7 +735,7 @@ function render(){
   else if(r[1]==='box')h=viewBox(r[2]);
   else if(r[1]==='dcat')h=viewDietCat(r[2]);
   $('#view').innerHTML=h;
-  if(route==='/set')settingsFold();
+  if(route==='/set'){settingsFold();pairFill()}
   if(route==='/')fillPatients();
   if(r[1]==='f'&&r[2]&&r[2]!=='new'&&S.cfg.lastP!==r[2]){S.cfg.lastP=r[2];saveCfg()}
   if(r[1]==='meds')fillMeds();
@@ -803,8 +805,8 @@ async function saveForm(o){o=o||{};
 function back(){if(history.length>1){try{history.back();return}catch(e){}}go('/')}
 function qrSvg(text,px){
   var bytes=Array.from(new TextEncoder().encode(text));
-  var SP=[null,{n:21,d:16,e:10,cap:14},{n:25,d:28,e:16,cap:26,ap:18},{n:29,d:44,e:26,cap:42,ap:22}];
-  var v=1;while(v<3&&bytes.length>SP[v].cap)v++;if(bytes.length>SP[v].cap)return '';
+  var SP=[null,{n:21,d:16,e:10,cap:14},{n:25,d:28,e:16,cap:26,ap:18},{n:29,d:44,e:26,cap:42,ap:22},{n:33,d:64,e:18,cap:62,ap:26,b:2}];
+  var v=1;while(v<4&&bytes.length>SP[v].cap)v++;if(bytes.length>SP[v].cap)return '';
   var sp=SP[v],n=sp.n,bits=[];
   function put(val,len){for(var i=len-1;i>=0;i--)bits.push((val>>>i)&1)}
   put(4,4);put(bytes.length,8);bytes.forEach(function(b){put(b,8)});
@@ -814,9 +816,10 @@ function qrSvg(text,px){
   var EXP=[],LOG=[],x=1;for(i=0;i<255;i++){EXP[i]=x;LOG[x]=i;x<<=1;if(x&256)x^=0x11D}
   function mul(a,b){return a&&b?EXP[(LOG[a]+LOG[b])%255]:0}
   var g=[1];for(i=0;i<sp.e;i++){var ng=new Array(g.length+1).fill(0);for(j=0;j<g.length;j++){ng[j]^=g[j];ng[j+1]^=mul(g[j],EXP[i])}g=ng}
-  var rem=new Array(sp.e).fill(0);
-  data.forEach(function(d){var f=d^rem.shift();rem.push(0);for(var q=0;q<sp.e;q++)rem[q]^=mul(g[q+1],f)});
-  var cw=data.concat(rem);
+  var nb=sp.b||1,per=data.length/nb,blks=[],ecs=[];
+  for(var bi=0;bi<nb;bi++){var bd=data.slice(bi*per,(bi+1)*per),rem=new Array(sp.e).fill(0);
+    bd.forEach(function(d){var f=d^rem.shift();rem.push(0);for(var q=0;q<sp.e;q++)rem[q]^=mul(g[q+1],f)});blks.push(bd);ecs.push(rem)}
+  var cw=[];for(i=0;i<per;i++)blks.forEach(function(bd){cw.push(bd[i])});for(i=0;i<sp.e;i++)ecs.forEach(function(r){cw.push(r[i])});
   var M=[],F=[];for(i=0;i<n;i++){M.push(new Array(n).fill(0));F.push(new Array(n).fill(false))}
   function set(xx,yy,val){if(xx>=0&&yy>=0&&xx<n&&yy<n){M[yy][xx]=val?1:0;F[yy][xx]=true}}
   for(i=0;i<n;i++){set(6,i,i%2===0);set(i,6,i%2===0)}
@@ -948,7 +951,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.12',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.18',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1101,7 +1104,22 @@ async function sendQ(id){var m=S.queue.find(function(x){return String(x.id)===St
 /* ---------- sync ---------- */
 async function api(path,opt){
   var s=S.cfg.server.replace(/\/+$/,'');opt=opt||{};opt.headers=Object.assign({'X-Token':S.cfg.token},opt.headers||{});
-  var r=await fetch(s+path,opt);if(!r.ok)throw new Error(r.status===401?'ٹوکن غلط ہے':'سرور ایرر '+r.status);return r.json()
+  var r;try{r=await fetch(s+path,opt)}catch(e){var f=await findPC();if(!f)throw e;opt.headers['X-Token']=S.cfg.token;r=await fetch(f+path,opt)}
+  if(!r.ok)throw new Error(r.status===401?'ٹوکن غلط ہے':'سرور ایرر '+r.status);return r.json()
+}
+/* PC کا IP بدل جائے تو اسی نیٹ ورک میں PC خود تلاش کرتا ہے */
+async function findPC(){
+  var m=/^(https?:\/\/)(\d+\.\d+\.\d+)\.(\d+)(?::(\d+))?/.exec(S.cfg.server||'');if(!m||!S.cfg.token)return null;
+  toast('PC تلاش کی جا رہی ہے…');var pref=m[1]+m[2]+'.',port=m[4]?':'+m[4]:'',found=null,i=1;
+  async function probe(n){var u=pref+n+port;try{var c=new AbortController(),t=setTimeout(function(){c.abort()},1500);var r=await fetch(u+'/api/ping',{headers:{'X-Token':S.cfg.token},signal:c.signal});clearTimeout(t);var j=await r.json();if(j&&j.name==='Clinic Sync'&&j.auth&&!found)found=u}catch(e){}}
+  while(i<=254&&!found){var batch=[];for(var k=0;k<40&&i<=254;k++,i++)batch.push(probe(i));await Promise.all(batch)}
+  if(found){S.cfg.server=found;await saveCfg();toast('PC مل گئی')}return found
+}
+function parsePair(t){t=(t||'').trim();var m=/^(https?:\/\/[^\/?#\s]+)[^?#\s]*\?[^#\s]*\bt=([\w-]+)/.exec(t);return m?{server:m[1],token:m[2]}:null}
+async function pairFill(){
+  var el=$('#pairBox');if(!el)return;
+  try{var j=await (await fetch('/api/pairinfo')).json();if(!j||!j.url)return;
+    el.innerHTML='<div class="card" style="text-align:center"><b>📱 فون کو جوڑیں</b><p class="meta">فون اور PC ایک ہی وائی فائی پر ہوں۔ فون کے کیمرے سے یہ کوڈ اسکین کریں، یا فون کی ایپ میں نیچے والا لنک پیسٹ کریں۔</p><div style="background:#fff;display:inline-block;padding:10px;border-radius:12px;width:230px;max-width:100%">'+qrSvg(j.url,210)+'</div><div class="mono" dir="ltr" style="word-break:break-all;margin-top:10px;font-size:14px">'+esc(j.url)+'</div><div class="row" style="margin-top:8px"><button class="btn grow" data-act="copypair" data-v="'+esc(j.url)+'">لنک کاپی کریں</button></div></div>'}catch(e){}
 }
 async function applySnap(snap){
     // drop demo rows, then merge snapshot (server wins unless a local edit failed)
@@ -1216,7 +1234,8 @@ document.addEventListener('click',function(e){
   else if(a==='smsv'){if(w2u()&&w2u()!=='new')sendReminder(w2u())}
   else if(a==='sendq')sendQ(id);
   else if(a==='copyq'){var m=S.queue.find(function(x){return String(x.id)===id});if(m)copyText(m.text)}
-  else if(a==='savecfg'){S.cfg.server=val('s-server');S.cfg.token=val('s-token');saveCfg().then(function(){doSync(true)})}
+  else if(a==='copypair'){copyText(t.getAttribute('data-v'))}
+  else if(a==='savecfg'){var pp=parsePair(val('s-server'))||parsePair(val('s-token'));S.cfg.server=pp?pp.server:val('s-server');S.cfg.token=pp?pp.token:val('s-token');saveCfg().then(function(){doSync(true)})}
   else if(a==='savetpl'){S.cfg.tpl=$('#s-tpl').value||DEF_TPL;saveCfg().then(function(){toast('سانچہ محفوظ ہو گیا')})}
   else if(a==='rmdemo'){var ids=S.patients.filter(function(p){return p._demo}).map(function(p){return p.uid}),vs=S.visits.filter(function(v){return ids.indexOf(v.puid)>=0}).map(function(v){return v.uid});
     S.patients=S.patients.filter(function(p){return !p._demo});S.visits=S.visits.filter(function(v){return ids.indexOf(v.puid)<0});Promise.all([delKeys('patients',ids),delKeys('visits',vs)]).then(render)}
@@ -1281,10 +1300,10 @@ async function dietSave(id){var name=val('d-name');if(!name){toast('غذا کا 
   var txt=$('#d-text').value.replace(/\s+$/,''),ch=[];
   if(!txt.trim()){toast('غذا کی تفصیل لکھیں');return}
   if(id==='new'){if(S.diets.some(function(x){return x.cat===name})){toast('اس نام کی غذا پہلے سے موجود ہے، دوسرا نام لکھیں');return}
-    PULSES.forEach(function(m){ch.push(newRow(name,m,txt))})}
+    pulses().forEach(function(m){ch.push(newRow(name,m,txt))})}
   else if(id.indexOf('c:')===0){var old=decodeURIComponent(id.slice(2));
     if(name!==old&&S.diets.some(function(x){return x.cat===name})){toast('اس نام کی غذا پہلے سے موجود ہے');return}
-    PULSES.forEach(function(m){var d=dietKeyOf(old,m);if(d){d.cat=name;d.text=txt;d._dirty=true;ch.push(d)}else ch.push(newRow(name,m,txt))})
+    pulses().forEach(function(m){var d=dietKeyOf(old,m);if(d){d.cat=name;d.text=txt;d._dirty=true;ch.push(d)}else ch.push(newRow(name,m,txt))})
     catRows(old).forEach(function(d){if(ch.indexOf(d)<0){d.cat=name;d.text=txt;d._dirty=true;ch.push(d)}})}
   else{var d0=S.diets.find(function(x){return String(x.id)===id});if(!d0)return;
     if(name!==d0.cat&&S.diets.some(function(x){return x.cat===name})){toast('اس نام کی غذا پہلے سے موجود ہے');return}
@@ -1295,7 +1314,7 @@ async function dietRename(enc){var old=decodeURIComponent(enc),name=val('d-name'
   var rows=catRows(old);rows.forEach(function(d){d.cat=name;d._dirty=true});if(S.cfg.dietCat===old)S.cfg.dietCat=name;
   await putMany('diets',rows);await saveCfg();toast('نام محفوظ ہو گیا');route='/diet';try{history.replaceState({r:route},'')}catch(e){};render();autoSync()}
 function splitDiet(text){
-  var names=PULSES.slice(),pos=[];
+  var names=PULSES8.concat(PULSES6),pos=[];
   names.forEach(function(n){var re=new RegExp('(^|\\n)[ \\t•\\-–]*'+n.replace(/ /g,'\\s+')+'(\\s*غذائیں)?\\s*[:：\\-–]?[ \\t]*(?=\\n|$)','g'),m;
     while((m=re.exec(text))){pos.push({n:n,s:m.index,e:m.index+m[0].length})}});
   pos.sort(function(a,b){return a.s-b.s});
@@ -1372,6 +1391,7 @@ document.addEventListener('change',function(e){
   if(e.target.id==='s-fs'){S.cfg.fs=e.target.value;saveCfg();applyPrefs()}
   if(e.target.id==='s-theme'){S.cfg.theme=e.target.value;saveCfg();applyPrefs()}
   if(e.target.id==='s-defdays'){S.cfg.defDays=e.target.value.trim();saveCfg();toast('محفوظ ہو گیا')}
+  if(e.target.id==='s-mz'){S.cfg.mizajSys=e.target.value;saveCfg();toast('محفوظ ہو گیا')}
   if(e.target.id==='s-start'){S.cfg.startOn=e.target.value;saveCfg();toast('محفوظ ہو گیا')}
   if(e.target.id==='s-auto'){S.cfg.autoSync=e.target.checked;saveCfg();toast(e.target.checked?'خودکار سنک آن':'خودکار سنک بند')}
   if(e.target.id==='s-psym'){S.cfg.printSym=e.target.checked;saveCfg();toast('محفوظ ہو گیا')}
