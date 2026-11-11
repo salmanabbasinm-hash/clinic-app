@@ -48,15 +48,16 @@ button,input,select,textarea{font-family:inherit}
 .wctl .wb button{height:34px;min-width:50px;border:0;background:rgba(14,92,75,.95);color:#fff;font-size:16px;cursor:pointer}
 .wctl .wb button:hover{background:#0b4a3d}.wctl .wb button.x{background:#b42318;border-radius:0 0 0 8px}
 .wzone{position:fixed;top:0;left:0;right:0;height:5px;z-index:699}
+.srch nav.tabs{display:none!important}.srch #app{padding-bottom:12px}
 .dtrow{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 .pdhead{cursor:pointer;display:flex;align-items:center;gap:8px}.pdhead b{flex:1}.pdarr{transition:transform .2s}.pdrow.open .pdarr{transform:rotate(180deg)}
 .pdrow:not(.open) .pdbody{display:none}.pdl{display:block;font-size:14px;color:var(--muted);margin:2px 0}
 .pdrow textarea{width:100%;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;margin-bottom:6px;font-family:var(--f-ur);font-size:16px}
 #medres{position:absolute;left:0;right:0;z-index:60;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);margin-top:2px!important}
-#medres:empty{display:none}#medres.up{bottom:calc(100% - 0px);margin-bottom:2px}
+#medres:empty{display:none}#medres{top:100%}#medres.up{top:auto;bottom:100%;margin-bottom:2px}
 #medres .mi{display:block;padding:2px 12px;line-height:1.55;font-size:17px;border-bottom:1px solid #e3e8e6;cursor:pointer;color:var(--ink);text-decoration:none}
 #medres .mi:hover{background:var(--surface2)}#medres .addmed{margin:4px}
-.field:has(#f-med){position:relative}
+.medbox{position:relative}
 .selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.18)}
 .selbx{position:fixed;background:#fff;color:#111;overflow:auto;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);border:1px solid #cfd8d5;font-family:var(--f-ur);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .selbx button{display:block;width:100%;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:4px 12px;font:inherit;font-size:19px;line-height:2;text-align:center;color:#111;cursor:pointer}
@@ -130,7 +131,9 @@ h2{font-size:17px;margin:18px 0 8px;font-weight:700}
 .pdhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:var(--primary)}
 .pdrow input{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 12px;margin-bottom:6px;font-family:var(--f-ur);font-size:16px}
 .swrow{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}.swrow input{width:22px;height:22px;accent-color:var(--primary)}
-.ftool{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);z-index:15;display:flex;gap:8px;padding:8px 0;margin:-4px 0 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.ftool{display:flex;gap:8px;padding:8px 0;margin:10px 0 8px;background:var(--bg);border-top:1px solid var(--line)}
+.pcform{display:flex;flex-direction:column}.pcform>.ftool{order:99}.pcform>.cols{order:50}
+#vsec .vbody{display:flex;flex-direction:column}#vsec .vbody>.moneybox{order:79}#vsec .vbody>.fnext{order:80}#vsec .vbody>#leftnote{order:81}
 .ftool .btn{height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-size:15px;white-space:nowrap}.ftool .grow{flex:1}
 .ic.lg{width:30px;height:30px}.navbtn{min-width:72px;height:52px;justify-content:center;padding:0;background:var(--primary)!important;color:var(--on-primary)!important;border:2px solid var(--primary)!important;border-radius:14px}
 .navbtn .tri{width:28px;height:28px;fill:currentColor;stroke:none}
@@ -430,7 +433,7 @@ function pdCollect(){var rows=Array.prototype.map.call(document.querySelectorAll
 var PDF={prevDoctor:'d',prevMethod:'m',prevDuration:'t',arrival:'a',oldReports:'r'};
 function patVal(k){if(!$('#pd')||!PDF[k])return val('f-'+k);
   var rows=pdCollect();if(!rows.length)return '';var f=PDF[k];var parts=rows.map(function(x){return x[f]});return parts.some(function(z){return z})?parts.join(' | '):''}
-function placeMed(box){if(!box)return;box.classList.remove('up');box.style.maxHeight='';var f=box.closest('.field');if(!f||!box.firstChild)return;var inp=f.querySelector('input'),r=inp.getBoundingClientRect(),h=box.scrollHeight,below=window.innerHeight-r.bottom-8,above=r.top-8;
+function placeMed(box){if(!box)return;box.classList.remove('up');box.style.maxHeight='';var f=box.closest('.medbox');if(!f||!box.firstChild)return;var inp=f.querySelector('input'),r=inp.getBoundingClientRect(),h=box.scrollHeight,below=window.innerHeight-r.bottom-8,above=r.top-8;
   if(h>below&&above>below){box.classList.add('up');box.style.maxHeight=Math.max(100,above)+'px'}else box.style.maxHeight=Math.max(100,below)+'px'}
 function nowHM(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
 function pdCount(){var n=pdCollect().length,c=$('#pdn');if(c)c.textContent=n?String(n):''}
@@ -442,9 +445,19 @@ function pidLabel(p){return 'SHCPID'+(p&&p.pid?p.pid:provPid(p))}
 function visitNo(p,v){var mx=0,pend=[];S.visits.forEach(function(x){if(x.puid!==p.uid)return;if(x.vid){if(x.vid>mx)mx=x.vid}else pend.push(x)});
   if(v&&v.vid)return v.vid;var i=pend.indexOf(v);return mx+(i>=0?i+1:pend.length+1)}
 function vidLabel(p,v){return 'SHCVID'+pad2(visitNo(p,v))}
-function matchP(p,q){q=(q||'').trim().toLowerCase();if(!q)return true;
-  var hay=[p.name,p.father,p.address,p.phone,p.pid==null?'':'#'+p.pid+' '+p.pid+' shcpid'+p.pid].join(' | ').toLowerCase();
-  return q.split(/\s+/).every(function(t){return hay.indexOf(t.replace(/^#/,''))>=0})}
+function nrm(x){return String(x==null?'':x).toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/[ھه]/g,'ہ').replace(/ۃ/g,'ہ').replace(/[آأإ]/g,'ا').replace(/\s+/g,' ').trim()}
+function rankP(p,q){q=nrm(q);if(!q)return 0;
+  var nm=nrm(p.name),fa=nrm(p.father),nw=nm.split(' '),fw=fa.split(' '),ad=nrm(p.address),ph=String(p.phone||'').replace(/\s+/g,''),pid=p.pid==null?'':String(p.pid);
+  var hay=[nm,fa,ad,ph,pid?'#'+pid+' '+pid+' shcpid'+pid:''].join(' | '),tot=0,toks=q.split(' ');
+  for(var i=0;i<toks.length;i++){var t=toks[i].replace(/^#/,''),r=-1;if(!t)continue;
+    if(nm.indexOf(t)===0)r=0;
+    else if(nw.some(function(w){return w.indexOf(t)===0}))r=1;
+    else if(fw.some(function(w){return w.indexOf(t)===0}))r=2;
+    else if(/^\d+$/.test(t)&&(ph.indexOf(t)>=0||pid===t||('shcpid'+pid).indexOf(t)===0))r=1;
+    else if(t.length>=3&&hay.indexOf(t)>=0)r=3;
+    if(r<0)return -1;tot+=r}
+  return tot}
+function matchP(p,q){return rankP(p,q)>=0}
 function num(x){var n=parseFloat(String(x==null?'':x).replace(/,/g,''));return isNaN(n)?0:n}
 function money(n){return (Math.round(n*100)/100).toLocaleString('en-US')}
 function allTests(){var a=TESTS.slice();(S.cfg.tests||[]).forEach(function(t){if(a.indexOf(t)<0)a.push(t)});
@@ -542,7 +555,8 @@ function fillPatients(){
   var q=(($('#q')||{}).value||'').trim().toLowerCase();
   var rows=S.patients.map(function(p){return {p:p,lv:lastVisit(p)}}).filter(function(r){
     return matchP(r.p,q)});
-  rows.sort(function(a,b){return ((b.lv&&b.lv.date)||'').localeCompare((a.lv&&a.lv.date)||'')});
+  rows.forEach(function(r){r.k=q?rankP(r.p,q):0});
+  rows.sort(function(a,b){return (a.k-b.k)||((b.lv&&b.lv.date)||'').localeCompare((a.lv&&a.lv.date)||'')});
   var h=rows.slice(0,80).map(function(r){var p=r.p,lv=r.lv;
     return '<a class="card" data-go="/f/'+p.uid+'"><div class="prow"><div class="avatar">'+initial(p.name)+'</div><div class="pmain"><div class="pname">'+esc(p.name||'(بغیر نام)')+(p._dirty?' <span class="dot" title="سنک باقی"></span>':'')+'</div>'+
      '<div class="meta"><span>'+(p.pid?'#'+p.pid:'نیا')+'</span>'+(p.age?'<span>'+p.age+' سال</span>':'')+(p.phone?'<span class="mono">'+esc(p.phone)+'</span>':'')+(p.father?'<span class="ur">ولد/زوج: '+esc(p.father)+'</span>':'')+'</div></div>'+
@@ -595,7 +609,7 @@ function viewVisitEdit(u,puid,embedded){
    '<div class="field"><label>مطلوبہ ٹسٹس</label><div class="tsel"><button type="button" class="tsum" id="tsum" data-act="ttoggle" aria-expanded="false"><span id="tsumtxt"></span><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
    '<div class="tpanel" id="tpanel" hidden><div class="tlist" id="tests">'+allTests().map(function(t){return testRow(t,tsel.indexOf(t)>=0)}).join('')+'</div>'+
    '<div class="tadd"><input id="t-new" type="text" placeholder="نیا ٹسٹ لکھیں" autocomplete="off"><button type="button" class="btn sm" data-act="addtest">+ شامل</button><button type="button" class="btn sm alt" data-act="ttoggle">بند</button></div></div></div></div>'+
-   '<div class="field"><label for="f-med">فارما کوپیا سے دوا منتخب کریں</label><input id="f-med" type="search" placeholder="دوا کا نام"><div class="list" id="medres" style="margin-top:6px"></div></div>'+
+   '<div class="field"><label for="f-med">فارما کوپیا سے دوا منتخب کریں</label><div class="medbox"><input id="f-med" type="search" placeholder="دوا کا نام" autocomplete="off"><div class="list" id="medres"></div></div></div>'+
    area('f-rx','نسخہ / منتخب دوا',v.rx,200)+
    '<div class="field"><label for="f-plan">علاج بالغذاء (پرنٹ کے پچھلے صفحے پر)</label><select id="f-plan"><option value="">— کوئی نہیں —</option>'+S.plans.map(function(b){return '<option value="'+b.id+'"'+((vselGet(v).b===b.id)?' selected':'')+'>'+esc(b.name)+'</option>'}).join('')+'</select>'+(S.plans.length?'':'<div class="meta">پہلے "غذائیں" ٹیب میں غذا شامل کریں</div>')+'</div>'+
    '<div class="moneybox"><div class="grid2">'+field('f-fees','رقم',v.fees,'number','inputmode="decimal"')+field('f-paid','ادا شدہ رقم',v.paid,'number','inputmode="decimal"')+'</div>'+
@@ -1056,7 +1070,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.23',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.24',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1166,7 +1180,7 @@ function busyOff(){if(BUSY){BUSY.remove();BUSY=null}}
 function openSel(sel){if(!sel||sel.disabled||document.getElementById('selsh'))return;
   var d=document.createElement('div');d.id='selsh';d.className='selsh';var bx=document.createElement('div');bx.className='selbx';
   Array.prototype.forEach.call(sel.options,function(o,i){var b=document.createElement('button');b.type='button';b.setAttribute('data-i',i);if(i===sel.selectedIndex)b.className='on';
-    b.textContent=(o.text||'—')+(i===sel.selectedIndex?'  ✓':'');bx.appendChild(b)});
+    b.textContent=(o.text||'—')+(i===sel.selectedIndex?'  ✓':'');if(/^[A-Za-z0-9+\-\s]+$/.test(o.text||''))b.dir='ltr';bx.appendChild(b)});
   d.appendChild(bx);
   d.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-i]');
     if(b){sel.selectedIndex=+b.getAttribute('data-i');sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}
@@ -1195,6 +1209,10 @@ document.addEventListener('click',function(e){var pn=document.getElementById('tp
   w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var a=b.getAttribute('data-w');if(!a)return;w.classList.remove('show');
     if(a==='exit'&&!confirm('پروگرام بند کریں؟'))return;
     fetch('/api/win?a='+a).catch(function(){})})})();
+(function(){function on(e){var t=e.target;if(t&&t.matches&&t.matches('input[type=search],#f-med'))document.body.classList.add('srch')}
+  function off(e){var t=e.target;if(t&&t.matches&&t.matches('input[type=search],#f-med'))setTimeout(function(){var a=document.activeElement;if(!(a&&a.matches&&a.matches('input[type=search],#f-med')))document.body.classList.remove('srch')},250)}
+  document.addEventListener('focusin',on);document.addEventListener('focusout',off)})();
+document.addEventListener('click',function(e){var b=document.getElementById('medres');if(!b||!b.firstChild)return;var t=e.target;if(t.closest&&(t.closest('#medres')||t.id==='f-med'))return;b.innerHTML=''},true);
 function growTa(t){if(!t||!t.offsetParent)return;var mh=parseInt(t.getAttribute('data-mh')||'0',10);if(!mh){mh=t.clientHeight;t.setAttribute('data-mh',mh)}t.style.height='auto';var h=Math.max(mh,t.scrollHeight+4);t.style.height=h+'px'}
 function growAll(){Array.prototype.forEach.call(document.querySelectorAll('.field textarea'),function(t){if(t.offsetParent&&(t.scrollHeight>t.clientHeight+2||t.getAttribute('data-gv')!==String(t.value.length))){t.setAttribute('data-gv',String(t.value.length));growTa(t)}})}
 document.addEventListener('input',function(e){if(e.target&&e.target.tagName==='TEXTAREA')growTa(e.target)});
@@ -1250,6 +1268,12 @@ async function applySnap(snap){
     S.visits.forEach(function(v){if(!v.pid){var pt=patientOf(v);if(pt&&pt.pid)v.pid=pt.pid}});
     var oldM=S.meds.map(function(x){return x.id}),oldD=S.diets.map(function(x){return x.id}),keepM=S.meds.filter(function(x){return x._dirty}),keepD=S.diets.filter(function(x){return x._dirty});
     await delKeys('meds',oldM);await delKeys('diets',oldD);
+    var sMed=snap.meds||[],sDiet=snap.diets||[],mid={},mnm={},did={},dk={};
+    sMed.forEach(function(x){mid[String(x.id)]=1;mnm[(x.name||'').trim().toLowerCase()]=1});sDiet.forEach(function(x){did[String(x.id)]=1;dk[(x.cat||'')+'|'+(x.mizaj||'')]=1});
+    var rM=!sMed.length,rD=!sDiet.length,oldMl=S.meds.slice(),oldDl=S.diets.slice(),lostM=[],lostD=[];
+    oldMl.forEach(function(m){if(m._dirty||mid[String(m.id)]||mnm[(m.name||'').trim().toLowerCase()])return;if(rM||typeof m.id!=='number'){m.id='r'+uid();m._dirty=true;lostM.push(m)}});
+    oldDl.forEach(function(d){if(d._dirty||did[String(d.id)]||dk[(d.cat||'')+'|'+(d.mizaj||'')])return;if(rD||typeof d.id!=='number'){d.id='r'+uid();d._dirty=true;lostD.push(d)}});
+    keepM=keepM.concat(lostM.filter(function(m){return keepM.indexOf(m)<0}));keepD=keepD.concat(lostD.filter(function(d){return keepD.indexOf(d)<0}));
     S.meds=snap.meds.filter(function(x){return (S.cfg.medDel||[]).indexOf(x.id)<0}).concat(keepM);S.diets=snap.diets.concat(keepD);S.queue=snap.queue||S.queue||[];S.cfg.last=Date.now();
     await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),putMany('sms',S.sms),putMany('meds',S.meds),putMany('diets',S.diets),saveCfg()]);
 }
@@ -1257,7 +1281,7 @@ async function applySnap(snap){
 function pickFile(accept){return new Promise(function(res){var i=document.createElement('input');i.type='file';i.accept=accept||'.json,application/json';i.style.display='none';i.onchange=function(){var f=i.files&&i.files[0];i.remove();if(!f)return res(null);var r=new FileReader();r.onload=function(){res(String(r.result))};r.onerror=function(){res(null)};r.readAsText(f)};document.body.appendChild(i);i.click()})}
 async function importData(){
   var txt=await pickFile();if(!txt)return;var o;try{o=JSON.parse(txt)}catch(e){toast('یہ درست ڈیٹا فائل نہیں');return}
-  if(!o||(!o.patients&&!o.visits)){toast('فائل میں مریضوں کا ڈیٹا نہیں ملا');return}
+  if(!o||(!o.patients&&!o.visits&&!o.meds&&!o.diets)){toast('فائل میں ڈیٹا نہیں ملا');return}
   await busyOn('ڈیٹا درآمد ہو رہا ہے…');
   try{
     if(o.kind==='clinic-backup'){
@@ -1265,7 +1289,9 @@ async function importData(){
       (o.patients||[]).forEach(function(p){S.patients=S.patients.filter(function(x){return x.uid!==p.uid}).concat([p])});
       (o.visits||[]).forEach(function(v){S.visits=S.visits.filter(function(x){return x.uid!==v.uid}).concat([v])});
       (o.sms||[]).forEach(function(m){S.sms=S.sms.filter(function(x){return x.uid!==m.uid}).concat([m])});
-      if(o.meds)S.meds=o.meds;if(o.diets)S.diets=o.diets;if(o.plans)S.plans=o.plans;
+      (o.meds||[]).forEach(function(m){var k=(m.name||'').trim().toLowerCase();if(!k||S.meds.some(function(x){return (x.name||'').trim().toLowerCase()===k}))return;S.meds.push({id:'r'+uid(),name:m.name,usage:m.usage||null,_dirty:true})});
+      (o.diets||[]).forEach(function(d){if(S.diets.some(function(x){return x.cat===d.cat&&x.mizaj===d.mizaj}))return;S.diets.push({id:'r'+uid(),cat:d.cat,mizaj:d.mizaj,text:d.text||'',_dirty:true})});
+      if(o.plans)S.plans=o.plans;
       Object.assign(S.cfg,cf);
       await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),putMany('sms',S.sms),putMany('meds',S.meds),putMany('diets',S.diets),saveCfg()]);
     }else{await applySnap(o);await saveCfg()}
@@ -1392,7 +1418,7 @@ var medCtx='rx';
 function medDialog(id,name,ctx){medCtx=ctx||'rx';var m=id?S.meds.find(function(x){return String(x.id)===String(id)}):null;
   modal('<h3>'+(m?'دوا میں ترمیم':'بطور نئی دوا شامل کریں')+'</h3><div class="field"><label for="m-name">دوا کا نام</label><input id="m-name" value="'+esc(m?m.name:name)+'"></div>'+
    '<div class="field"><label for="m-use">طریقہ استعمال درج کریں</label><textarea id="m-use" style="min-height:90px" placeholder="مثلاً: صبح شام کھانے کے بعد ایک ایک چمچ">'+esc(m?m.usage:'')+'</textarea></div>'+
-   '<div class="row"><button class="btn grow" data-act="medsave" data-id="'+(m?esc(m.id):'')+'">محفوظ کریں</button>'+(m?'<button class="btn danger" data-act="meddel" data-id="'+esc(m.id)+'">حذف</button>':'')+'<button class="btn alt" data-act="modalclose">منسوخ</button></div>')}
+   '<div class="row"><button class="btn grow" data-act="medsave" data-id="'+(m?esc(m.id):'')+'">محفوظ کریں</button>'+(m?'<button class="btn danger" data-act="meddel" data-id="'+esc(m.id)+'">حذف</button>':'')+'<button class="btn alt" data-act="modalclose">منسوخ</button></div>');if(!m&&name)setTimeout(function(){var u=document.getElementById('m-use');if(u)u.focus()},120)}
 async function medSave(id){var name=val('m-name'),use=val('m-use');if(!name){toast('دوا کا نام لکھیں');return}
   var m=id?S.meds.find(function(x){return String(x.id)===String(id)}):null;
   if(m){m.name=name;m.usage=use||null;m._dirty=true}else{m={id:'n'+uid(),name:name,usage:use||null,_dirty:true};S.meds.push(m)}
@@ -1512,7 +1538,7 @@ async function dietApplyImport(){if(!impSecs)return;var cat=val('d-name');if(!ca
 function w2u(){var w=$('[data-vu]');return w&&w.getAttribute('data-vu')}
 document.addEventListener('input',function(e){
   if(e.target.id==='q')fillPatients();
-  if(e.target.id==='ff'){var qq=e.target.value.trim().toLowerCase(),bx=$('#ffres');var m2=qq?S.patients.filter(function(x){return matchP(x,qq)}).slice(0,8):[];bx.innerHTML=m2.map(function(x){return '<a class="card tap" data-go="/f/'+x.uid+'"><b class="ur">'+esc(x.name)+(x.father?' <span class="meta">ولد/زوج '+esc(x.father)+'</span>':'')+'</b><div class="meta"><span>#'+(x.pid||'نیا')+'</span><span class="mono">'+esc(x.phone||'')+'</span>'+(x.address?'<span class="ur">'+esc(String(x.address).slice(0,40))+'</span>':'')+'</div></a>'}).join('')||'<div class="meta">کوئی مریض نہیں ملا</div>'}
+  if(e.target.id==='ff'){var qq=e.target.value.trim().toLowerCase(),bx=$('#ffres');var m2=qq?S.patients.filter(function(x){return matchP(x,qq)}).sort(function(a,b){return rankP(a,qq)-rankP(b,qq)}).slice(0,8):[];bx.innerHTML=m2.map(function(x){return '<a class="card tap" data-go="/f/'+x.uid+'"><b class="ur">'+esc(x.name)+(x.father?' <span class="meta">ولد/زوج '+esc(x.father)+'</span>':'')+'</b><div class="meta"><span>#'+(x.pid||'نیا')+'</span><span class="mono">'+esc(x.phone||'')+'</span>'+(x.address?'<span class="ur">'+esc(String(x.address).slice(0,40))+'</span>':'')+'</div></a>'}).join('')||'<div class="meta">کوئی مریض نہیں ملا</div>'}
   if(/^f-(date|days|fees|paid)$/.test(e.target.id))updNext();
   if(e.target.closest&&e.target.closest('#pd'))pdCount();
   if(e.target.id==='f-med'){var q=e.target.value.trim().toLowerCase(),box=$('#medres');
