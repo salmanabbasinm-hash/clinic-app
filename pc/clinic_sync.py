@@ -671,7 +671,17 @@ def make_handler(app):
                 if p == "/api/pairinfo":
                     if self.client_address[0] not in ("127.0.0.1", "::1"):
                         return self.send(403, {"error": "local only"})
-                    return self.send(200, {"url": "http://%s:%d/?t=%s" % (lan_ip(), PORT, app.token)})
+                    return self.send(200, {"url": "http://%s:%d/?t=%s" % (lan_ip(), PORT, app.token),
+                                           "alts": ["http://%s:%d/?t=%s" % (i, PORT, app.token) for i in lan_ips()]})
+                if p == "/api/win":
+                    if self.client_address[0] not in ("127.0.0.1", "::1"):
+                        return self.send(403, {"error": "local only"})
+                    q = parse_qs(urlparse(self.path).query)
+                    act = (q.get("a") or [""])[0]
+                    ok = win_action(act)
+                    if ok and act == "exit":
+                        threading.Timer(0.7, os._exit, [0]).start()
+                    return self.send(200, {"ok": ok})
                 if p == "/api/snapshot":
                     if not self.authed():
                         return self.send(401, {"error": "bad token"})
@@ -715,15 +725,57 @@ def make_handler(app):
     return H
 
 
-def lan_ip():
+def lan_ips():
+    """All usable LAN addresses of this PC, real Wi-Fi/Ethernet first (VPN / virtual adapters last)."""
+    found = []
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
+        found.append(s.getsockname()[0])
         s.close()
-        return ip
     except Exception:
-        return "127.0.0.1"
+        pass
+    try:
+        for r in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            found.append(r[4][0])
+    except Exception:
+        pass
+    def rank(ip):
+        if ip.startswith("192.168."): return 0
+        if ip.startswith("10."): return 1
+        if ip.startswith("172.") and 16 <= int(ip.split(".")[1]) <= 31: return 2
+        return 3
+    out = []
+    for ip in found:
+        if ip.startswith("127.") or ip.startswith("169.254.") or ip in out:
+            continue
+        out.append(ip)
+    out.sort(key=rank)
+    return out
+
+
+def lan_ip():
+    l = lan_ips()
+    return l[0] if l else "127.0.0.1"
+
+
+def win_action(a):
+    """Window buttons for the chrome-less program window (Windows only, called from this PC only)."""
+    if os.name != "nt":
+        return False
+    import ctypes
+    u = ctypes.windll.user32
+    h = u.GetForegroundWindow()
+    if a == "min":
+        u.ShowWindow(h, 6)
+    elif a == "full":
+        u.keybd_event(0x7A, 0, 0, 0)
+        u.keybd_event(0x7A, 0, 2, 0)
+    elif a == "exit":
+        u.PostMessageW(h, 0x0010, 0, 0)
+    else:
+        return False
+    return True
 
 
 def start_tunnel(port, token):
@@ -880,17 +932,27 @@ def init_empty_db(dbpath):
     c.close()
 
 
-def open_firewall(port, cfgp, cfg):
-    """One-time: let the phone reach this PC on the Wi-Fi (Windows asks permission once)."""
-    if os.name != "nt" or cfg.get("fw"):
-        return
+def _fw_has_rule():
     try:
-        _run_admin("netsh", ["advfirewall", "firewall", "add", "rule", "name=Clinic Sync", "dir=in", "action=allow",
-                             "protocol=TCP", "localport=%d" % port, "profile=any"])
-        cfg["fw"] = 1
-        json.dump(cfg, open(cfgp, "w"))
+        r = subprocess.run(["netsh", "advfirewall", "firewall", "show", "rule", "name=Clinic Sync"],
+                           capture_output=True, text=True, creationflags=0x08000000)
+        return r.returncode == 0 and "Clinic Sync" in (r.stdout or "")
     except Exception:
-        pass
+        return True
+
+
+def open_firewall(port, cfgp, cfg):
+    """Let the phone reach this PC on the Wi-Fi. Checked on every start (Windows asks permission only if the rule is missing)."""
+    if os.name != "nt" or _fw_has_rule():
+        return
+    for _ in range(2):
+        try:
+            _run_admin("netsh", ["advfirewall", "firewall", "add", "rule", "name=Clinic Sync", "dir=in", "action=allow",
+                                 "protocol=TCP", "localport=%d" % port, "profile=any"])
+        except Exception:
+            pass
+        if _fw_has_rule():
+            return
 
 
 def main():

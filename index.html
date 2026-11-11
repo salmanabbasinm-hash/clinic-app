@@ -40,7 +40,13 @@ button,input,select,textarea{font-family:inherit}
 @keyframes bspin{to{transform:rotate(360deg)}}
 @media (pointer:coarse){#backBtn{display:none!important}}
 
-@media (pointer:coarse){.field select{pointer-events:none}}
+.field select{pointer-events:none}
+.wctl{position:fixed;top:0;left:0;z-index:700;display:flex;direction:ltr;font-family:sans-serif}
+.wctl .wk{width:34px;height:26px;border:0;border-radius:0 0 8px 0;background:rgba(14,92,75,.55);color:#fff;font-size:16px;cursor:pointer;opacity:.45}
+.wctl:hover .wk,.wctl.open .wk{opacity:1}
+.wctl .wb{display:none}.wctl.open .wb{display:flex}
+.wctl .wb button{height:26px;min-width:44px;border:0;background:#0e5c4b;color:#fff;font-size:15px;cursor:pointer;border-left:1px solid rgba(255,255,255,.25)}
+.wctl .wb button.x{background:#b42318;border-radius:0 0 8px 0}
 .selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.18)}
 .selbx{position:fixed;background:#fff;color:#111;overflow:auto;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);border:1px solid #cfd8d5;font-family:var(--f-ur);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .selbx button{display:block;width:100%;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:4px 12px;font:inherit;font-size:19px;line-height:2;text-align:center;color:#111;cursor:pointer}
@@ -1019,7 +1025,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.21',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.22',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1141,11 +1147,21 @@ function openSel(sel){if(!sel||sel.disabled||document.getElementById('selsh'))re
   if(h<=below||below>=above){bx.style.top=(sr.bottom+4)+'px';bx.style.maxHeight=Math.max(120,below)+'px'}
   else{bx.style.bottom=(vh-sr.top+4)+'px';bx.style.maxHeight=Math.max(120,above)+'px'}
   var on=bx.querySelector('.on');if(on)bx.scrollTop=Math.max(0,on.offsetTop-bx.clientHeight/2+on.offsetHeight/2)}
-document.addEventListener('click',function(e){if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return;var t=e.target;if(!t.closest||t.closest('#selsh'))return;
+document.addEventListener('click',function(e){var t=e.target;if(!t.closest||t.closest('#selsh'))return;
   var f=t.closest('.field');if(!f||t.closest('input,textarea,button'))return;var sel=f.querySelector('select');if(sel)openSel(sel)});
 (function(){var q='.selsh,.setmod,.updpop,.pdfok';
   new MutationObserver(function(){document.body.classList.toggle('mlock',!!document.querySelector(q))}).observe(document.body,{childList:true});
   document.addEventListener('touchmove',function(e){var t=e.target;if(!t.closest||!t.closest(q))return;var sc=t.closest('.selbx,.setbx .sb');if(!sc||sc.scrollHeight<=sc.clientHeight+1)e.preventDefault()},{passive:false})})();
+document.addEventListener('click',function(e){var pn=document.getElementById('tpanel');if(!pn||pn.hidden)return;var t=e.target;if(t.closest&&(t.closest('.tsel')||t.closest('#selsh')))return;pn.hidden=true;var ts=document.getElementById('tsum');if(ts)ts.setAttribute('aria-expanded','false')},true);
+(function(){if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;var w=document.createElement('div');w.className='wctl';
+  w.innerHTML='<button class="wk" type="button" title="Window">&#8943;</button><div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="full" title="Fullscreen / Window">&#9974;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
+  document.body.appendChild(w);
+  w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;e.stopPropagation();
+    if(b.classList.contains('wk')){w.classList.toggle('open');return}
+    var a=b.getAttribute('data-w');if(!a)return;w.classList.remove('open');
+    if(a==='exit'&&!confirm('پروگرام بند کریں؟'))return;
+    fetch('/api/win?a='+a).catch(function(){})});
+  document.addEventListener('click',function(e){if(!w.contains(e.target))w.classList.remove('open')})})();
 function growTa(t){if(!t||!t.offsetParent)return;var mh=parseInt(t.getAttribute('data-mh')||'0',10);if(!mh){mh=t.clientHeight;t.setAttribute('data-mh',mh)}t.style.height='auto';var h=Math.max(mh,t.scrollHeight+4);t.style.height=h+'px'}
 function growAll(){Array.prototype.forEach.call(document.querySelectorAll('.field textarea'),function(t){if(t.offsetParent&&(t.scrollHeight>t.clientHeight+2||t.getAttribute('data-gv')!==String(t.value.length))){t.setAttribute('data-gv',String(t.value.length));growTa(t)}})}
 document.addEventListener('input',function(e){if(e.target&&e.target.tagName==='TEXTAREA')growTa(e.target)});
@@ -1170,9 +1186,9 @@ async function sendReminder(vu){var v=S.visits.find(function(x){return x.uid===v
 async function sendQ(id){var m=S.queue.find(function(x){return String(x.id)===String(id)});if(!m)return;var p=S.patients.find(function(x){return x.pid===m.pid});await logSms(m.kind||'manual',p||{pid:m.pid,name:m.name,phone:m.phone},{vid:m.vid},m.text,m);S.queue=S.queue.filter(function(x){return x!==m});await saveCfg();openSms(m.phone,m.text);render();autoSync()}
 
 /* ---------- sync ---------- */
-async function api(path,opt){
+async function api(path,opt,nofind){
   var s=S.cfg.server.replace(/\/+$/,'');opt=opt||{};opt.headers=Object.assign({'X-Token':S.cfg.token},opt.headers||{});
-  var r;try{r=await fetch(s+path,opt)}catch(e){var f=await findPC();if(!f)throw e;opt.headers['X-Token']=S.cfg.token;r=await fetch(f+path,opt)}
+  var r;try{r=await fetch(s+path,opt)}catch(e){if(nofind)throw e;var f=await findPC();if(!f)throw e;opt.headers['X-Token']=S.cfg.token;r=await fetch(f+path,opt)}
   if(!r.ok)throw new Error(r.status===401?'ٹوکن غلط ہے':'سرور ایرر '+r.status);return r.json()
 }
 /* PC کا IP بدل جائے تو اسی نیٹ ورک میں PC خود تلاش کرتا ہے */
@@ -1187,7 +1203,7 @@ function parsePair(t){t=(t||'').trim();var m=/^(https?:\/\/[^\/?#\s]+)[^?#\s]*\?
 async function pairFill(){
   var el=$('#pairBox');if(!el)return;
   try{var j=await (await fetch('/api/pairinfo')).json();if(!j||!j.url)return;
-    el.innerHTML='<div class="card" style="text-align:center"><b>📱 فون کو جوڑیں</b><p class="meta">فون اور PC ایک ہی وائی فائی پر ہوں۔ فون کے کیمرے سے یہ کوڈ اسکین کریں، یا فون کی ایپ میں نیچے والا لنک پیسٹ کریں۔</p><div style="background:#fff;display:inline-block;padding:10px;border-radius:12px;width:230px;max-width:100%">'+qrSvg(j.url,210)+'</div><div class="mono" dir="ltr" style="word-break:break-all;margin-top:10px;font-size:14px">'+esc(j.url)+'</div><div class="row" style="margin-top:8px"><button class="btn grow" data-act="copypair" data-v="'+esc(j.url)+'">لنک کاپی کریں</button></div></div>'}catch(e){}
+    el.innerHTML='<div class="card" style="text-align:center"><b>📱 فون کو جوڑیں</b><p class="meta">فون اور PC ایک ہی وائی فائی پر ہوں۔ فون کے کیمرے سے یہ کوڈ اسکین کریں، یا فون کی ایپ میں نیچے والا لنک پیسٹ کریں۔</p><div style="background:#fff;display:inline-block;padding:10px;border-radius:12px;width:230px;max-width:100%">'+qrSvg(j.url,210)+'</div><div class="mono" dir="ltr" style="word-break:break-all;margin-top:10px;font-size:14px">'+esc(j.url)+'</div><div class="row" style="margin-top:8px"><button class="btn grow" data-act="copypair" data-v="'+esc(j.url)+'">لنک کاپی کریں</button></div>'+((j.alts&&j.alts.length>1)?'<p class="meta" style="margin-top:8px">اگر فون جڑ نہ سکے تو PC کے دوسرے پتے:</p>'+j.alts.slice(1).map(function(u){return '<div class="mono" dir="ltr" style="word-break:break-all;font-size:13px">'+esc(u)+'</div>'}).join(''):'')+'</div>'}catch(e){}
 }
 async function applySnap(snap){
     // drop demo rows, then merge snapshot (server wins unless a local edit failed)
@@ -1230,7 +1246,7 @@ async function backupData(){
   if(N){try{var b64=u8b64(new TextEncoder().encode(txt));var sv=await N.savePdf({data:b64,name:nm,mime:'application/json'});pdfSaved(nm,null,'بیک اپ محفوظ ہو گیا');return}catch(e){toast('بیک اپ محفوظ نہیں ہو سکا: '+(e&&e.message||e));return}}
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=nm;document.body.appendChild(a);a.click();a.remove();toast('بیک اپ فائل ڈاؤنلوڈ ہو گئی')
 }
-async function doSync(manual){
+async function doSync(manual,quiet){
   if(busy)return;if(!S.cfg.server||!S.cfg.token){if(manual){toast('پہلے ترتیبات میں PC کا پتہ اور ٹوکن لکھیں');go('/set')}return}
   busy=true;$('#syncBtn').style.opacity=.6;
   try{
@@ -1249,7 +1265,8 @@ async function doSync(manual){
     Object.keys(xq).forEach(function(k){var q=xq[k],kind=k.split(':')[0],id=k.slice(kind.length+1),val=null;if(!q.del){val=kind==='plan'?S.plans.find(function(x){return x.id===id}):(S.cfg.vsel||{})[id];if(!val)return}
       known[k]=q.ts;sent[k]=q.ts;xitems.push({k:k,ts:q.ts,del:!!q.del,v:val})});
     body.extras={items:xitems,known:known};
-    var snap=await api('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var snap=await api('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},!!quiet);
+    var nb4=S.patients.length+S.visits.length+S.meds.length+S.diets.length;
     var conflicts=0,errors=0,byU={};
     (snap.results||[]).forEach(function(r){byU[r.kind+':'+r.uid]=r});
     S.patients.forEach(function(p){var r=byU['patient:'+p.uid];if(!r)return;if(r.status==='ok'){p.pid=r.pid||p.pid;p._dirty=false}else if(r.status==='conflict'){conflicts++;p._dirty=false;p.base='__x'}else errors++});
@@ -1265,10 +1282,11 @@ async function doSync(manual){
       else if(kind==='vs'){S.cfg.vsel=S.cfg.vsel||{};S.cfg.vts=S.cfg.vts||{};if(it.del)delete S.cfg.vsel[id];else{S.cfg.vsel[id]=it.v;S.cfg.vts[id]=it.ts}}});
     if(kvdel.length)await delKeys('kv',kvdel);if(kvput.length)await putMany('kv',kvput);
     await applySnap(snap);
-    toast(errors?('سنک مکمل، '+errors+' اندراج میں مسئلہ'):conflicts?('سنک مکمل، '+conflicts+' اندراج PC کے ورژن سے بدلے گئے'):'سنک مکمل');
+    var nb5=S.patients.length+S.visits.length+S.meds.length+S.diets.length;
+    if(quiet&&!errors&&!conflicts){if(nb5!==nb4){toast('نیا ڈیٹا موصول ہوا')}}else toast(errors?('سنک مکمل، '+errors+' اندراج میں مسئلہ'):conflicts?('سنک مکمل، '+conflicts+' اندراج PC کے ورژن سے بدلے گئے'):'سنک مکمل');
   }catch(e){
     var m=String(e.message||e);
-    toast(/Failed to fetch|NetworkError|Load failed/.test(m)?'PC سے رابطہ نہیں ہو سکا (وائی فائی/لنک دیکھیں)':m)
+    if(!quiet)toast(/Failed to fetch|NetworkError|Load failed/.test(m)?'PC سے رابطہ نہیں ہو سکا — PC پروگرام چل رہا ہو، دونوں ایک ہی وائی فائی پر ہوں، اور ایپ (APK) استعمال کریں':m)
   }
   busy=false;$('#syncBtn').style.opacity=1;
   if(/^\/(f|v|vn|dedit|pe|pled)\//.test(route)||(route==='/meds'&&!$('#modal').hidden)||!$('#modal').hidden){var pn=pending();$('#syncN').textContent=pn?'('+pn+')':''}else render()
@@ -1482,6 +1500,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id=
 $('#backBtn').addEventListener('click',back);
 $('#syncBtn').addEventListener('click',function(){doSync(true)});
 window.addEventListener('online',autoSync);
+function bgSync(){if(S.cfg.autoSync===false||document.hidden||busy||!S.cfg.server||!S.cfg.token||navigator.onLine===false)return;var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&a.id!=='s-server'&&a.id!=='s-token')return;doSync(false,true)}
+setInterval(bgSync,20000);document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(bgSync,800)});
 setInterval(function(){if(!document.hidden&&pending()>0)autoSync()},60000);
 
 /* ---------- demo data (only when nothing is stored and no PC is linked) ---------- */
