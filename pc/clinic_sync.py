@@ -15,7 +15,15 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 FROZEN = getattr(sys, "frozen", False)
-HERE = os.path.dirname(sys.executable) if FROZEN else os.path.dirname(os.path.abspath(__file__))   # config / state / cloudflared live here
+_EXE_DIR = os.path.dirname(sys.executable) if FROZEN else os.path.dirname(os.path.abspath(__file__))
+if FROZEN and os.name == "nt" and os.environ.get("LOCALAPPDATA"):
+    HERE = os.path.join(os.environ["LOCALAPPDATA"], "SalmanHerbalClinic")      # data lives here (survives updates / uninstall)
+    try:
+        os.makedirs(HERE, exist_ok=True)
+    except Exception:
+        HERE = _EXE_DIR
+else:
+    HERE = _EXE_DIR
 RES = getattr(sys, "_MEIPASS", HERE) if FROZEN else HERE                                           # bundled app.html, fonts ...
 FAILS = {}   # ip -> [count, first_time, blocked_until]
 LOCK = threading.RLock()
@@ -303,7 +311,8 @@ def _run_admin(path, args):
     import subprocess
     arglist = ",".join("'%s'" % a for a in args)
     subprocess.run(["powershell", "-NoProfile", "-Command",
-                    "Start-Process -FilePath '%s' -ArgumentList %s -Verb RunAs -Wait" % (path, arglist)], check=False)
+                    "Start-Process -FilePath '%s' -ArgumentList %s -Verb RunAs -WindowStyle Hidden -Wait" % (path, arglist)], check=False,
+                   creationflags=0x08000000 if os.name == "nt" else 0)
 
 
 def _has_vcruntime():
@@ -359,6 +368,20 @@ class SqliteBackend(Backend):
     def __init__(self, path):
         self.conn = sqlite3.connect(path, check_same_thread=False)
         self.conn.text_factory = str
+        self._extend()
+
+    def _extend(self):
+        """Extra fields of the program's own database (blood group, visit time)."""
+        global PAT_MAP, VIS_MAP, PAT_KEYS, VIS_KEYS
+        for tbl, k, col, mp in (("patient history", "blood", "BloodGroup", PAT_MAP), ("Daily Treatment", "vtime", "VisitTime", VIS_MAP)):
+            have = [r[1] for r in self.conn.execute('PRAGMA table_info("%s")' % tbl)]
+            if col not in have:
+                self.conn.execute('ALTER TABLE "%s" ADD COLUMN "%s"' % (tbl, col))
+            if (k, col) not in mp:
+                mp.append((k, col))
+        self.conn.commit()
+        PAT_KEYS = [k for k, _ in PAT_MAP]
+        VIS_KEYS = [k for k, _ in VIS_MAP] + ["tests"]
 
     def fix(self, sql):
         return sql.replace("[", '"').replace("]", '"')
@@ -815,7 +838,10 @@ def open_app_window(url):
     for exe in cands:
         if os.path.exists(exe):
             try:
-                subprocess.Popen([exe, "--app=" + url, "--start-fullscreen"])
+                prof = os.path.join(HERE, "window")
+                subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run",
+                                  "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
+                                  "--disable-translate", "--lang=ur"])
                 return
             except Exception:
                 pass

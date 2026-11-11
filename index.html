@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"></head><body style="margin:0">
 <title>کلینک موبائل</title>
+<meta name="google" content="notranslate"><meta http-equiv="Content-Language" content="ur">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0f6b5a">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap">
@@ -41,12 +42,21 @@ button,input,select,textarea{font-family:inherit}
 @media (pointer:coarse){#backBtn{display:none!important}}
 
 .field select{pointer-events:none}
-.wctl{position:fixed;top:0;left:0;z-index:700;display:flex;direction:ltr;font-family:sans-serif}
-.wctl .wk{width:34px;height:26px;border:0;border-radius:0 0 8px 0;background:rgba(14,92,75,.55);color:#fff;font-size:16px;cursor:pointer;opacity:.45}
-.wctl:hover .wk,.wctl.open .wk{opacity:1}
-.wctl .wb{display:none}.wctl.open .wb{display:flex}
-.wctl .wb button{height:26px;min-width:44px;border:0;background:#0e5c4b;color:#fff;font-size:15px;cursor:pointer;border-left:1px solid rgba(255,255,255,.25)}
-.wctl .wb button.x{background:#b42318;border-radius:0 0 8px 0}
+.wctl{position:fixed;top:0;right:0;z-index:700;display:flex;direction:ltr;font-family:sans-serif;transform:translateY(-110%);transition:transform .18s}
+.wctl.show{transform:none}
+.wctl .wb{display:flex}
+.wctl .wb button{height:34px;min-width:50px;border:0;background:rgba(14,92,75,.95);color:#fff;font-size:16px;cursor:pointer}
+.wctl .wb button:hover{background:#0b4a3d}.wctl .wb button.x{background:#b42318;border-radius:0 0 0 8px}
+.wzone{position:fixed;top:0;left:0;right:0;height:5px;z-index:699}
+.dtrow{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.pdhead{cursor:pointer;display:flex;align-items:center;gap:8px}.pdhead b{flex:1}.pdarr{transition:transform .2s}.pdrow.open .pdarr{transform:rotate(180deg)}
+.pdrow:not(.open) .pdbody{display:none}.pdl{display:block;font-size:14px;color:var(--muted);margin:2px 0}
+.pdrow textarea{width:100%;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 10px;margin-bottom:6px;font-family:var(--f-ur);font-size:16px}
+#medres{position:absolute;left:0;right:0;z-index:60;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);margin-top:2px!important}
+#medres:empty{display:none}#medres.up{bottom:calc(100% - 0px);margin-bottom:2px}
+#medres .mi{display:block;padding:2px 12px;line-height:1.55;font-size:17px;border-bottom:1px solid #e3e8e6;cursor:pointer;color:var(--ink);text-decoration:none}
+#medres .mi:hover{background:var(--surface2)}#medres .addmed{margin:4px}
+.field:has(#f-med){position:relative}
 .selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.18)}
 .selbx{position:fixed;background:#fff;color:#111;overflow:auto;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);border:1px solid #cfd8d5;font-family:var(--f-ur);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .selbx button{display:block;width:100%;background:none;border:0;border-bottom:1px solid #e3e8e6;padding:4px 12px;font:inherit;font-size:19px;line-height:2;text-align:center;color:#111;cursor:pointer}
@@ -309,7 +319,23 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
  #view{margin-right:200px}
  #view>.wrap{max-width:1500px;margin:0 auto}
  #plist{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
- .pcform .cols{grid-template-columns:1fr 1.25fr}
+ .pcform{display:flex;flex-direction:column}
+ .pcform>.ftool{order:99;margin-top:14px}
+ .pcform>.cols{order:50}
+ .pcform .cols{grid-template-columns:1fr!important}
+ .pcform #vsec .dtrow{grid-column:1/-1;justify-self:center;width:100%;max-width:480px;order:-10;grid-template-columns:2fr 1fr}
+ .pcform #vsec .dtrow .field{text-align:center}
+ .pcform #vsec .vbody>.examh{order:-8}
+ .pcform #vsec .vbody>.fpulse{order:-7}
+ .pcform #vsec .vbody>.fexam{order:-6}
+ .pcform #vsec .vbody>.fnext{order:80;grid-column:2;margin-top:6px}
+ .pcform #vsec .vbody>#leftnote{order:81}
+ .pcform #vsec .vbody>.moneybox{order:79}
+ .pcform #psec .pcgrid{grid-template-columns:repeat(6,1fr);gap:0 14px}
+ .pcform #psec .pcgrid>.field:has(textarea),.pcform #psec .pcgrid>.pdwrap{grid-column:1/-1}
+ .pcform #vsec .vbody{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;align-items:start}
+ .pcform #vsec .vbody>*{min-width:0}
+ .pcform #vsec .vbody>.vbar2,.pcform #vsec .vbody>.vbar,.pcform #vsec .vbody>.examh,.pcform #vsec .vbody>.moneybox,.pcform #vsec .vbody>.row,.pcform #vsec .vbody>#leftnote{grid-column:1/-1}
  .pcform .ptabs{display:none!important}
  #view .pcform .cols>section{display:block!important}
 }
@@ -326,7 +352,7 @@ body.m-old #toast{font-size:22px}
 @media print{body.m-old #app{zoom:1!important}}
 </style>
 
-<div id="app" dir="rtl" lang="ur">
+<div id="app" dir="rtl" lang="ur" translate="no">
   <header class="top">
     <button class="iconbtn" id="backBtn" aria-label="واپس" hidden><svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     <img id="appLogo" src="icon-192.png" alt="" style="width:38px;height:38px;border-radius:50%;flex:none;object-fit:cover;background:#fff"><h1 id="title">مریض<span class="sub" id="subtitle"></span></h1>
@@ -344,9 +370,9 @@ body.m-old #toast{font-size:22px}
 (function(){
 'use strict';
 /* ---------- constants ---------- */
-var PAT_KEYS=['name','father','gender','age','address','phone','prevDoctor','prevMethod','prevDuration','arrival','oldReports','patDiet'];
+var PAT_KEYS=['name','father','gender','age','address','phone','prevDoctor','prevMethod','prevDuration','arrival','oldReports','patDiet','blood'];
 var BPS=['بلڈ پریشر ہائی رہتا ہے','بلڈ پریشر لو رہتا ہے','بلڈ پریشر نارمل رہتا ہے'];
-var VIS_KEYS=['date','pulse','symptoms','tests','note','days','status','effects','fees','paid','weight','bp','rx'];
+var VIS_KEYS=['date','pulse','symptoms','tests','note','days','status','effects','fees','paid','weight','bp','rx','vtime'];
 var PULSES8=['عضلاتی مخاطی','عضلاتی قشری','قشری عضلاتی','قشری اعصابی','اعصابی قشری','اعصابی مخاطی','مخاطی اعصابی','مخاطی عضلاتی'],PULSES6=['اعصابی عضلاتی','عضلاتی اعصابی','عضلاتی غدی','غدی عضلاتی','غدی اعصابی','اعصابی غدی'];
 function pulses(){return S.cfg.mizajSys==='m6'?PULSES6:PULSES8}
 var STATUSES=['جاری ہے','علاج مکمل','علاج روک دیا گیا ہے','دوسرے معالج کے پاس منتقل کیا گیا ہے'];
@@ -395,13 +421,18 @@ var KEYC=['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣',
 function rxMark(n){var m=S.cfg.rxMark||'hand';if(m==='num')return n<=10?KEYC[n]:n+'.';if(m==='plain')return n+'.';if(m==='circ')return n<=20?String.fromCharCode(0x245F+n):n+'.';return RXM[m]||''}
 function addRxLine(ta,name,usage){var v=ta.value;if(v&&!/\n$/.test(v))v+='\n';var n=v.split('\n').filter(function(l){return l.trim()}).length+1;
   var mk=rxMark(n);ta.value=v+(mk?mk+' ':'')+name+' : '+(usage||'')+'\n'}
-function pdRows(p){var d=(p.prevDoctor||'').split(' | '),m=(p.prevMethod||'').split(' | '),t=(p.prevDuration||'').split(' | '),n=Math.max(d.length,m.length,t.length),r=[];
-  for(var i=0;i<n;i++){var x={d:(d[i]||'').trim(),m:(m[i]||'').trim(),t:(t[i]||'').trim()};if(x.d||x.m||x.t)r.push(x)}return r}
-function pdRowHtml(x,i){return '<div class="pdrow"><div class="pdhead"><b>معالج <span class="pdn">'+(i+1)+'</span></b><button type="button" class="tdel" data-act="pddel" aria-label="ہٹائیں">×</button></div>'+
-  '<input class="pd-d" placeholder="معالج کا نام" value="'+esc(x.d)+'"><input class="pd-m" placeholder="طریقہ علاج" value="'+esc(x.m)+'"><input class="pd-t" placeholder="دورانیہ" value="'+esc(x.t)+'"></div>'}
-function pdCollect(){var rows=Array.prototype.map.call(document.querySelectorAll('#pd .pdrow'),function(r){return {d:r.querySelector('.pd-d').value.trim(),m:r.querySelector('.pd-m').value.trim(),t:r.querySelector('.pd-t').value.trim()}}).filter(function(x){return x.d||x.m||x.t});return rows}
-function patVal(k){if(!$('#pd')||(k!=='prevDoctor'&&k!=='prevMethod'&&k!=='prevDuration'))return val('f-'+k);
-  var rows=pdCollect();if(!rows.length)return '';var f=k==='prevDoctor'?'d':k==='prevMethod'?'m':'t';return rows.map(function(x){return x[f]}).join(' | ')}
+function pdRows(p){var d=(p.prevDoctor||'').split(' | '),m=(p.prevMethod||'').split(' | '),t=(p.prevDuration||'').split(' | '),a=(p.arrival||'').split(' | '),rp=(p.oldReports||'').split(' | '),n=Math.max(d.length,m.length,t.length,a.length,rp.length),r=[];
+  for(var i=0;i<n;i++){var x={d:(d[i]||'').trim(),m:(m[i]||'').trim(),t:(t[i]||'').trim(),a:(a[i]||'').trim(),r:(rp[i]||'').trim()};if(x.d||x.m||x.t||x.a||x.r)r.push(x)}return r}
+function pdRowHtml(x,i,open){x=x||{};return '<div class="pdrow'+(open?' open':'')+'"><div class="pdhead" data-act="pdopen"><b>معالج <span class="pdn">'+(i+1)+'</span>: <span class="pdnm">'+esc(x.d||'')+'</span></b><span class="pdarr">▾</span><button type="button" class="tdel" data-act="pddel" aria-label="ہٹائیں">×</button></div>'+
+  '<div class="pdbody"><input class="pd-d" placeholder="معالج کا نام" value="'+esc(x.d||'')+'"><input class="pd-m" placeholder="طریقہ علاج" value="'+esc(x.m||'')+'"><input class="pd-t" placeholder="دورانیہ" value="'+esc(x.t||'')+'">'+
+  '<label class="pdl">گزشتہ حالت</label><textarea class="pd-a" rows="2">'+esc(x.a||'')+'</textarea><label class="pdl">گزشتہ رپورٹس</label><textarea class="pd-r" rows="2">'+esc(x.r||'')+'</textarea></div></div>'}
+function pdCollect(){var rows=Array.prototype.map.call(document.querySelectorAll('#pd .pdrow'),function(r){function g(c){var e=r.querySelector(c);return e?e.value.trim():''}return {d:g('.pd-d'),m:g('.pd-m'),t:g('.pd-t'),a:g('.pd-a'),r:g('.pd-r')}}).filter(function(x){return x.d||x.m||x.t||x.a||x.r});return rows}
+var PDF={prevDoctor:'d',prevMethod:'m',prevDuration:'t',arrival:'a',oldReports:'r'};
+function patVal(k){if(!$('#pd')||!PDF[k])return val('f-'+k);
+  var rows=pdCollect();if(!rows.length)return '';var f=PDF[k];var parts=rows.map(function(x){return x[f]});return parts.some(function(z){return z})?parts.join(' | '):''}
+function placeMed(box){if(!box)return;box.classList.remove('up');box.style.maxHeight='';var f=box.closest('.field');if(!f||!box.firstChild)return;var inp=f.querySelector('input'),r=inp.getBoundingClientRect(),h=box.scrollHeight,below=window.innerHeight-r.bottom-8,above=r.top-8;
+  if(h>below&&above>below){box.classList.add('up');box.style.maxHeight=Math.max(100,above)+'px'}else box.style.maxHeight=Math.max(100,below)+'px'}
+function nowHM(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
 function pdCount(){var n=pdCollect().length,c=$('#pdn');if(c)c.textContent=n?String(n):''}
 function lastVisit(p){return visitsOf(p)[0]}
 function pad2(n){return String(n).padStart(2,'0')}
@@ -522,7 +553,7 @@ function fillPatients(){
 function viewPatient(u){
   var p=S.patients.find(function(x){return x.uid===u});if(!p){return '<div class="empty">مریض نہیں ملا</div>'}
   setHead(p.name||'مریض',p.pid?'مریض نمبر '+p.pid:'ابھی PC پر نہیں گیا',true);
-  var kv=[['والد/شوہر',p.father],['جنس',p.gender],['عمر',p.age],['فون',p.phone],['پتہ',p.address],['گزشتہ معالج',p.prevDoctor],['پہلا طریقہ علاج',p.prevMethod],['دورانیہ',p.prevDuration],['پہلے وزٹ پر حالت',p.arrival],['پرانی رپورٹس',p.oldReports]].filter(function(x){return x[1]});
+  var kv=[['والد/شوہر',p.father],['جنس',p.gender],['عمر',p.age],['فون',p.phone],['بلڈ گروپ',p.blood],['پتہ',p.address],['گزشتہ معالج',p.prevDoctor],['پہلا طریقہ علاج',p.prevMethod],['دورانیہ',p.prevDuration],['پہلے وزٹ پر حالت',p.arrival],['پرانی رپورٹس',p.oldReports]].filter(function(x){return x[1]});
   var vs=visitsOf(p);
   return '<div class="wrap"><div class="card"><dl class="kv">'+kv.map(function(x){return '<dt>'+x[0]+'</dt><dd>'+esc(x[1])+'</dd>'}).join('')+'</dl>'+
    '<div class="row" style="margin-top:10px"><button class="btn sm alt" data-act="editp" data-u="'+p.uid+'">ترمیم</button>'+
@@ -553,18 +584,18 @@ function viewVisitEdit(u,puid,embedded){
   var tsel=(v.tests||'').split(/\s*,\s*/).filter(Boolean);
   var cats=catList();
   var inner=
-   '<div class="field"><label for="f-date">آج کی تاریخ (وزٹ)</label><input id="f-date" type="text" readonly inputmode="none" dir="ltr" data-cal="1" value="'+esc(v.date)+'"></div>'+
-   '<div class="grid2"><div class="field"><label for="f-days">مقررہ ایام (دوا کے دن)</label><input id="f-days" type="number" inputmode="numeric" value="'+esc(v.days)+'" placeholder="مثلاً 10"></div>'+
+   '<div class="dtrow"><div class="field"><label for="f-date">موجودہ وزٹ کی تاریخ</label><input id="f-date" type="text" readonly inputmode="none" dir="ltr" data-cal="1" value="'+esc(v.date)+'"></div><div class="field"><label for="f-time">وقت</label><input id="f-time" type="time" dir="ltr" value="'+esc(v.vtime||(u==='new'?nowHM():''))+'"></div></div>'+
+   '<div class="grid2 fdays"><div class="field"><label for="f-days">مقررہ ایام (دوا کے دن)</label><input id="f-days" type="number" inputmode="numeric" value="'+esc(v.days)+'" placeholder="مثلاً 10"></div>'+
    '<div class="field"><label for="f-left">بقیہ ایام</label><input id="f-left" type="text" dir="ltr" readonly class="auto" tabindex="-1"></div></div>'+
-   '<div class="field"><label for="f-next">آئندہ معائنہ کی تاریخ</label><input id="f-next" type="text" readonly class="auto" tabindex="-1"></div><div id="leftnote" class="meta" style="margin:-6px 0 12px"></div>'+
+   '<div class="field fnext"><label for="f-next">آئندہ معائنہ کی تاریخ</label><input id="f-next" type="text" readonly class="auto" tabindex="-1"></div><div id="leftnote" class="meta" style="margin:-6px 0 12px"></div>'+
    '<div class="examh">معائنہ</div>'+
-   '<div class="grid2" style="grid-template-columns:1fr 2fr">'+field('f-weight','وزن (کلو)',v.weight,'number','inputmode="decimal"')+'<div class="field"><label for="f-bp">بلڈ پریشر</label><select id="f-bp"><option value="">انتخاب کریں...</option>'+BPS.map(function(x){return '<option'+(x===v.bp?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div></div>'+
-   '<div class="field"><label for="f-pulse">مزاج</label><select id="f-pulse"><option value=""></option>'+pulses().concat(v.pulse&&pulses().indexOf(v.pulse)<0?[v.pulse]:[]).map(function(x){return '<option'+(x===v.pulse?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+
+   '<div class="grid2 fexam" style="grid-template-columns:1fr 2fr">'+field('f-weight','وزن (کلو)',v.weight,'number','inputmode="decimal"')+'<div class="field"><label for="f-bp">بلڈ پریشر</label><select id="f-bp"><option value="">انتخاب کریں...</option>'+BPS.map(function(x){return '<option'+(x===v.bp?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div></div>'+
+   '<div class="field fpulse"><label for="f-pulse">مزاج</label><select id="f-pulse"><option value=""></option>'+pulses().concat(v.pulse&&pulses().indexOf(v.pulse)<0?[v.pulse]:[]).map(function(x){return '<option'+(x===v.pulse?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+
    area('f-symptoms','علامات / مریض کی شکایات',v.symptoms,110)+
    '<div class="field"><label>مطلوبہ ٹسٹس</label><div class="tsel"><button type="button" class="tsum" id="tsum" data-act="ttoggle" aria-expanded="false"><span id="tsumtxt"></span><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
    '<div class="tpanel" id="tpanel" hidden><div class="tlist" id="tests">'+allTests().map(function(t){return testRow(t,tsel.indexOf(t)>=0)}).join('')+'</div>'+
    '<div class="tadd"><input id="t-new" type="text" placeholder="نیا ٹسٹ لکھیں" autocomplete="off"><button type="button" class="btn sm" data-act="addtest">+ شامل</button><button type="button" class="btn sm alt" data-act="ttoggle">بند</button></div></div></div></div>'+
-   '<div class="field"><label for="f-med">دوا تلاش کریں (فارما کوپیا)</label><input id="f-med" type="search" placeholder="دوا کا نام"><div class="list" id="medres" style="margin-top:6px"></div></div>'+
+   '<div class="field"><label for="f-med">فارما کوپیا سے دوا منتخب کریں</label><input id="f-med" type="search" placeholder="دوا کا نام"><div class="list" id="medres" style="margin-top:6px"></div></div>'+
    area('f-rx','نسخہ / منتخب دوا',v.rx,200)+
    '<div class="field"><label for="f-plan">علاج بالغذاء (پرنٹ کے پچھلے صفحے پر)</label><select id="f-plan"><option value="">— کوئی نہیں —</option>'+S.plans.map(function(b){return '<option value="'+b.id+'"'+((vselGet(v).b===b.id)?' selected':'')+'>'+esc(b.name)+'</option>'}).join('')+'</select>'+(S.plans.length?'':'<div class="meta">پہلے "غذائیں" ٹیب میں غذا شامل کریں</div>')+'</div>'+
    '<div class="moneybox"><div class="grid2">'+field('f-fees','رقم',v.fees,'number','inputmode="decimal"')+field('f-paid','ادا شدہ رقم',v.paid,'number','inputmode="decimal"')+'</div>'+
@@ -595,10 +626,10 @@ function viewForm(u,vk){
    '<div class="cols"><section class="card pc'+(folded?' folded':'')+'" id="psec"><div class="sechead"><button type="button" class="foldbtn" data-act="pfold" aria-expanded="'+(!folded)+'" aria-label="مریض کی معلومات لپیٹیں / کھولیں">'+(folded?ICPLUS:ICMINUS)+'</button><b>مریض کی معلومات</b><span class="psum">'+esc(p.name||'')+'</span><span class="chip">'+pidLabel(p)+(p._dirty?' ●':'')+'</span></div>'+
     '<div class="pmini"><button type="button" class="btn sm alt" data-act="pfold">معلومات کھولیں</button><button type="button" class="btn sm" data-act="newvisit"'+(u==='new'?' disabled':'')+'>+ وزٹ شامل کریں</button></div><div class="pbody"><div class="pcgrid">'+
     field('f-name','نام مریض',p.name)+field('f-father','والد/شوہر کا نام',p.father)+
-    '<div class="field"><label for="f-gender">جنس</label><select id="f-gender"><option value=""></option>'+g('مرد')+g('عورت')+'</select></div>'+field('f-age','عمر',p.age,'number','inputmode="numeric"')+
+    '<div class="field"><label for="f-gender">جنس</label><select id="f-gender"><option value=""></option>'+g('مرد')+g('عورت')+'</select></div>'+field('f-age','عمر',p.age,'number','inputmode="numeric"')+'<div class="field"><label for="f-blood">بلڈ گروپ</label><select id="f-blood" dir="ltr"><option value="">انتخاب کریں...</option>'+['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(function(x){return '<option'+(x===p.blood?' selected':'')+'>'+x+'</option>'}).join('')+'</select></div>'+
     field('f-phone','فون',p.phone,'tel','inputmode="tel"')+area('f-address','پتہ',p.address,60)+
-    '<div class="pdwrap"><button type="button" class="pdbtn" data-act="pdtoggle" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v5M9.5 5.5h5M6 21v-4a6 6 0 0 1 12 0v4"/><circle cx="12" cy="13" r="0"/></svg><span>گزشتہ معالج کی تفصیل</span><span class="chip" id="pdn"></span><svg class="ic pdarrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
-     '<div class="pdframe" id="pd" hidden>'+pdRows(p).map(pdRowHtml).join('')+area('f-arrival','گزشتہ حالت',p.arrival,60)+area('f-oldReports','پرانے طبی رپورٹس',p.oldReports,60)+'<button type="button" class="btn sm alt" data-act="pdadd">+ معالج شامل کریں</button>'+'</div></div></div></div></section>'+
+    '<div class="pdwrap"><button type="button" class="pdbtn" data-act="pdtoggle" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v5M9.5 5.5h5M6 21v-4a6 6 0 0 1 12 0v4"/><circle cx="12" cy="13" r="0"/></svg><span>گزشتہ معالجین</span><span class="chip" id="pdn"></span><svg class="ic pdarrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'+
+     '<div class="pdframe" id="pd" hidden>'+pdRows(p).map(function(x,i){return pdRowHtml(x,i,false)}).join('')+'<button type="button" class="btn sm alt" data-act="pdadd">+ معالج شامل کریں</button>'+'</div></div></div></div></section>'+
    '<section class="card pc" id="vsec"><div class="sechead"><button type="button" class="foldbtn" data-act="vfold" aria-expanded="true" aria-label="وزٹ لپیٹیں / کھولیں">'+ICMINUS+'</button><b>'+(cur?'وزٹ':'نئی وزٹ')+'</b><span class="psum">'+esc(cur?fmt(cur.date):'')+'</span></div><div class="vbody"><div class="vbar2"><span class="idb p big" title="مریض کی آئی ڈی">'+pidLabel(p)+'</span><button class="btn sm" style="direction:rtl" data-act="newvisit"'+(u==='new'?' disabled':'')+'><svg class="ic sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> نئی وزٹ</button><span class="idb v big" title="وزٹ آئی ڈی">'+(u==='new'?'SHCVID01':vidLabel(p,cur||{puid:p.uid}))+'</span></div>'+
     '<div class="vbar"><button class="navbtn" data-act="vnav" data-id="'+older+'" '+(older?'':'disabled')+' aria-label="پچھلی وزٹ" title="پچھلی وزٹ"><svg class="tri" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></button>'+
     '<div class="vtitle"><b>'+(cur?'وزٹ '+(total-idx)+' / '+total:'نئی وزٹ')+'</b></div>'+
@@ -778,7 +809,7 @@ function viewSet(){
    '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    '<div class="field"><label for="s-fs">تحریر کا سائز</label><select id="s-fs">'+[['0.9','چھوٹا'],['1','درمیانہ'],['1.12','بڑا'],['1.25','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fs||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div></div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-psym"'+(c.printSym===false?'':' checked')+'><span>پرنٹ میں "علامات / مریض کی شکایات" کا خانہ شامل کریں</span></label><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پرنٹ میں پچھلا صفحہ (غذائیں) شامل کریں</span></label>'+
-   ''+clinicUI()+'</div>'+'<h2>💾 ڈیٹا کا تحفظ</h2><div class="card"><div class="meta">'+(idb?'ڈیٹا اس فون کی مستقل میموری (IndexedDB) میں محفوظ ہے۔':'⚠ اس براؤزر میں مستقل ذخیرہ دستیاب نہیں، ڈیٹا عارضی ہے۔')+' ایپ ڈیلیٹ کرنے سے ڈیٹا مٹ جاتا ہے، اس لیے وقتاً فوقتاً بیک اپ لیں۔'+(S.cfg.lastBackup?'<br>آخری بیک اپ: '+new Date(S.cfg.lastBackup).toLocaleDateString('en-GB'):'<br>ابھی تک بیک اپ نہیں لیا')+'</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ بیک اپ محفوظ کریں</button><button type="button" class="btn alt grow" data-act="impdata">⬆ فائل سے ڈیٹا درآمد</button></div></div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
+   ''+clinicUI()+'</div>'+'<h2>💾 ڈیٹا کا تحفظ</h2><div class="card"><div class="meta">'+(idb?'ڈیٹا اس فون کی مستقل میموری (IndexedDB) میں محفوظ ہے۔':'⚠ اس براؤزر میں مستقل ذخیرہ دستیاب نہیں، ڈیٹا عارضی ہے۔')+' ایپ ڈیلیٹ کرنے سے ڈیٹا مٹ جاتا ہے، اس لیے وقتاً فوقتاً بیک اپ لیں۔'+(S.cfg.lastBackup?'<br>آخری بیک اپ: '+new Date(S.cfg.lastBackup).toLocaleDateString('en-GB'):'<br>ابھی تک بیک اپ نہیں لیا')+'</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ بیک اپ محفوظ کریں</button><button type="button" class="btn alt grow" data-act="impdata">⬆ فائل سے ڈیٹا درآمد</button></div></div><h2>🔁 فون سے فون</h2><div class="card"><div class="meta">دوسرے فون کا بیک اپ فائل (واٹس ایپ/بلوٹوتھ سے) یہاں ملائیں۔ صرف نئی انٹریز شامل ہوں گی، پہلے سے موجود ڈیٹا جوں کا توں رہے گا۔ PC کی ضرورت نہیں۔</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ اپنا ڈیٹا بھیجنے کے لیے فائل بنائیں</button><button type="button" class="btn alt grow" data-act="mergedata">🔁 دوسرے فون کی فائل ملائیں</button></div></div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
    '<h2>سنک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-auto"'+(c.autoSync===false?'':' checked')+'><span>تبدیلی محفوظ ہوتے ہی خودکار سنک</span></label></div>'+
    '<h2>نسخے میں دوا کا نشان</h2><div class="card"><div class="field"><label for="s-rxm">ہر منتخب دوا کی لائن سے پہلے</label><select id="s-rxm">'+[['num','1️⃣ 2️⃣ 3️⃣ نمبر (ایموجی)'],['red','🔴 سرخ گولا'],['hand','👈🏻 اشارہ'],['circ','① ② ③ دائروں میں نمبر'],['dot','● سادہ نقطہ'],['plain','1. 2. 3. سادہ نمبر'],['none','کوئی نشان نہیں']].map(function(o){return '<option value="'+o[0]+'"'+((c.rxMark||'hand')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="meta">ایموجی والے نشان Access کے پرانے پرنٹ میں خانہ بن کر آ سکتے ہیں؛ وہاں کے لیے "سادہ نقطہ" یا "سادہ نمبر" چنیں۔</div></div>'+
    '<h2>SMS سانچہ</h2><div class="card"><div class="field"><label for="s-tpl">{name} اور {date} خود بدل جائیں گے</label><textarea id="s-tpl">'+esc(c.tpl)+'</textarea></div><button class="btn sm alt" data-act="savetpl">سانچہ محفوظ کریں</button></div>'+
@@ -854,7 +885,7 @@ async function saveVisit(o){o=o||{};
   var w=$('[data-vu]'),u=w.getAttribute('data-vu'),pu=w.getAttribute('data-pu');
   var v=u==='new'?{uid:uid(),puid:pu,pid:null,vid:null,base:null}:S.visits.find(function(x){return x.uid===u});
   var p=S.patients.find(function(x){return x.uid===pu});var snap0=u==='new'?null:JSON.stringify([v.date,v.days,v.pulse,v.symptoms,v.rx,v.fees,v.paid,v.weight,v.bp,v.tests]);v.pid=p?p.pid:null;
-  v.date=val('f-date')||today();v.days=val('f-days')===''?null:+val('f-days');v.pulse=val('f-pulse')||null;if(u==='new')v.status='جاری ہے';
+  v.date=val('f-date')||today();v.vtime=val('f-time')||null;v.days=val('f-days')===''?null:+val('f-days');v.pulse=val('f-pulse')||null;if(u==='new')v.status='جاری ہے';
   v.symptoms=val('f-symptoms')||null;v.rx=$('#f-rx').value.replace(/\s+$/,'')||null;v.fees=val('f-fees')||null;v.paid=val('f-paid')||null;v.weight=val('f-weight')||null;v.bp=val('f-bp')||null;
   v.tests=Array.prototype.map.call(document.querySelectorAll('#tests input:checked'),function(b){return b.value}).join(', ');
   if(o.silent&&snap0&&snap0===JSON.stringify([v.date,v.days,v.pulse,v.symptoms,v.rx,v.fees,v.paid,v.weight,v.bp,v.tests])&&((S.cfg.vsel||{})[selKey(v)]||{b:''}).b===(val('f-plan')||''))return;
@@ -1025,7 +1056,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.22',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.23',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1153,15 +1184,17 @@ document.addEventListener('click',function(e){var t=e.target;if(!t.closest||t.cl
   new MutationObserver(function(){document.body.classList.toggle('mlock',!!document.querySelector(q))}).observe(document.body,{childList:true});
   document.addEventListener('touchmove',function(e){var t=e.target;if(!t.closest||!t.closest(q))return;var sc=t.closest('.selbx,.setbx .sb');if(!sc||sc.scrollHeight<=sc.clientHeight+1)e.preventDefault()},{passive:false})})();
 document.addEventListener('click',function(e){var pn=document.getElementById('tpanel');if(!pn||pn.hidden)return;var t=e.target;if(t.closest&&(t.closest('.tsel')||t.closest('#selsh')))return;pn.hidden=true;var ts=document.getElementById('tsum');if(ts)ts.setAttribute('aria-expanded','false')},true);
-(function(){if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;var w=document.createElement('div');w.className='wctl';
-  w.innerHTML='<button class="wk" type="button" title="Window">&#8943;</button><div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="full" title="Fullscreen / Window">&#9974;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
-  document.body.appendChild(w);
-  w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;e.stopPropagation();
-    if(b.classList.contains('wk')){w.classList.toggle('open');return}
-    var a=b.getAttribute('data-w');if(!a)return;w.classList.remove('open');
+(function(){if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;var w=document.createElement('div');w.className='wctl';var tm=0;
+  w.innerHTML='<div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="full" title="Fullscreen / Window">&#9974;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
+  var z=document.createElement('div');z.className='wzone';document.body.appendChild(z);document.body.appendChild(w);
+  function show(){w.classList.add('show');clearTimeout(tm);tm=setTimeout(function(){if(!w.matches(':hover'))w.classList.remove('show')},4000)}
+  z.addEventListener('mouseenter',show);
+  document.addEventListener('mousemove',function(e){if(e.clientY<4)show()});
+  document.addEventListener('mousedown',function(e){if(e.clientY<48)show();else if(!w.contains(e.target))w.classList.remove('show')});
+  w.addEventListener('mouseleave',function(){tm=setTimeout(function(){w.classList.remove('show')},1200)});
+  w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var a=b.getAttribute('data-w');if(!a)return;w.classList.remove('show');
     if(a==='exit'&&!confirm('پروگرام بند کریں؟'))return;
-    fetch('/api/win?a='+a).catch(function(){})});
-  document.addEventListener('click',function(e){if(!w.contains(e.target))w.classList.remove('open')})})();
+    fetch('/api/win?a='+a).catch(function(){})})})();
 function growTa(t){if(!t||!t.offsetParent)return;var mh=parseInt(t.getAttribute('data-mh')||'0',10);if(!mh){mh=t.clientHeight;t.setAttribute('data-mh',mh)}t.style.height='auto';var h=Math.max(mh,t.scrollHeight+4);t.style.height=h+'px'}
 function growAll(){Array.prototype.forEach.call(document.querySelectorAll('.field textarea'),function(t){if(t.offsetParent&&(t.scrollHeight>t.clientHeight+2||t.getAttribute('data-gv')!==String(t.value.length))){t.setAttribute('data-gv',String(t.value.length));growTa(t)}})}
 document.addEventListener('input',function(e){if(e.target&&e.target.tagName==='TEXTAREA')growTa(e.target)});
@@ -1239,6 +1272,24 @@ async function importData(){
     busyOff();toast('درآمد مکمل: '+S.patients.length+' مریض، '+S.visits.length+' وزٹس');render()
   }catch(e){busyOff();toast('درآمد نہیں ہو سکا: '+(e&&e.message||e))}
 }
+async function mergeData(){
+  var txt=await pickFile();if(!txt)return;var o;try{o=JSON.parse(txt)}catch(e){toast('یہ درست ڈیٹا فائل نہیں');return}
+  if(!o||(!o.patients&&!o.visits)){toast('فائل میں مریضوں کا ڈیٹا نہیں ملا');return}
+  await busyOn('نئی انٹریز ملائی جا رہی ہیں…');
+  try{
+    function nk(x){return ((x.name||'')+'|'+(x.phone||'')).replace(/\s+/g,'').toLowerCase()}
+    var addP=0,addV=0,map={};
+    (o.patients||[]).forEach(function(p){if(p._demo)return;
+      var f=S.patients.find(function(x){return x.uid===p.uid||(p.pid&&x.pid&&String(x.pid)===String(p.pid))||(p.name&&nk(x)===nk(p))});
+      if(f){map[p.uid]=f.uid;return}
+      var q=Object.assign({},p);q._dirty=true;S.patients.push(q);map[p.uid]=q.uid;addP++});
+    (o.visits||[]).forEach(function(v){if(v._demo)return;var pu=map[v.puid]||v.puid;
+      var dup=S.visits.find(function(x){return x.uid===v.uid||(v.pid&&v.vid&&x.pid&&x.vid&&String(x.pid)===String(v.pid)&&String(x.vid)===String(v.vid))||(x.puid===pu&&x.date===v.date&&(x.symptoms||'')===(v.symptoms||'')&&(x.rx||'')===(v.rx||''))});
+      if(dup)return;var q=Object.assign({},v);q.puid=pu;q._dirty=true;S.visits.push(q);addV++});
+    await Promise.all([putMany('patients',S.patients),putMany('visits',S.visits),saveCfg()]);
+    busyOff();toast('ملا دیا: '+addP+' نئے مریض، '+addV+' نئی وزٹس (پرانا ڈیٹا جوں کا توں)');render();autoSync()
+  }catch(e){busyOff();toast('ملانا نہیں ہو سکا: '+(e&&e.message||e))}
+}
 async function backupData(){
   var o={kind:'clinic-backup',ver:APP_VER,time:Date.now(),patients:S.patients.filter(function(p){return !p._demo}),visits:S.visits.filter(function(v){return !v._demo}),sms:S.sms,meds:S.meds,diets:S.diets,plans:S.plans,cfg:Object.assign({},S.cfg,{server:'',token:''})};
   var txt=JSON.stringify(o),d=new Date(),nm='clinic-backup-'+iso(d)+'.json',N=nativeApp();
@@ -1302,11 +1353,12 @@ document.addEventListener('click',function(e){
   if(a==='newvisitfor')go('/f/'+u+'/new','visitfocus');else if(a==='newp')go('/f/new','name');else if(a==='saveform')saveForm();else if(a==='vnav'){if(id){var pu1=$('[data-pu]').getAttribute('data-pu');saveForm({silent:true}).then(function(){go('/f/'+pu1+'/'+id,'visit')})}}else if(a==='newvisit'){var pu2=$('[data-pu]').getAttribute('data-pu');saveForm({silent:true}).then(function(){go('/f/'+pu2+'/new','visitfocus')})}else if(a==='editp')go('/pe/'+u);else if(a==='savep')savePatient(u);
   else if(a==='newv')go('/vn/'+u);else if(a==='savev')saveVisit();else if(a==='printv')printVisit();
   else if(a==='back')back();
-  else if(a==='backup'){backupData()}else if(a==='impdata'){importData()}else if(a==='checkupd'){checkUpdate(true)}else if(a==='sharedl'){shareDl()}else if(a==='imgdel'){var c4=CL();c4[t.dataset.k]='';if(t.dataset.k==='logo')c4.logoOff=true;S.cfg.clinic=c4;saveCfg();render()}else if(a==='adddeg'){var c6=CL(),k6=t.dataset.k;c6[k6]=c6[k6].concat(['']);S.cfg.clinic=c6;saveCfg();render();setTimeout(function(){var xs=document.querySelectorAll('.ckarr[data-ck="'+k6+'"]');if(xs.length)xs[xs.length-1].focus()},50)}else if(a==='pvclose')closePv();else if(a==='pvprint')pvPrint();else if(a==='pvpdf')pvPdf();else if(a==='plview')plView(id);else if(a==='pldel')plDel(id);else if(a==='pladd'){peCollect();var T0=PTY[PE.type];for(var q0=0;q0<T0.n;q0++)PE.cells.push({t:'',x:''});render()}else if(a==='plrm'){peCollect();PE.pages.splice(+id,1);render()}else if(a==='plsave')plSave();else if(a==='plcancel'){PE=null;back()}else if(a==='pickfile'){var fi=document.getElementById(id);if(fi)fi.click()}else if(a==='boxnew')go('/box/new');else if(a==='boxedit')go('/box/'+id);else if(a==='boxdel')boxDel(id);else if(a==='boxsave')boxSave();else if(a==='attopen')attOpen(id);else if(a==='attdel')attDel(id);else if(a==='attclose')attClose();else if(a==='pvshare')pvShare();else if(a==='pvcopy')pvCopy();
+  else if(a==='backup'){backupData()}else if(a==='impdata'){importData()}else if(a==='mergedata'){mergeData()}else if(a==='checkupd'){checkUpdate(true)}else if(a==='sharedl'){shareDl()}else if(a==='imgdel'){var c4=CL();c4[t.dataset.k]='';if(t.dataset.k==='logo')c4.logoOff=true;S.cfg.clinic=c4;saveCfg();render()}else if(a==='adddeg'){var c6=CL(),k6=t.dataset.k;c6[k6]=c6[k6].concat(['']);S.cfg.clinic=c6;saveCfg();render();setTimeout(function(){var xs=document.querySelectorAll('.ckarr[data-ck="'+k6+'"]');if(xs.length)xs[xs.length-1].focus()},50)}else if(a==='pvclose')closePv();else if(a==='pvprint')pvPrint();else if(a==='pvpdf')pvPdf();else if(a==='plview')plView(id);else if(a==='pldel')plDel(id);else if(a==='pladd'){peCollect();var T0=PTY[PE.type];for(var q0=0;q0<T0.n;q0++)PE.cells.push({t:'',x:''});render()}else if(a==='plrm'){peCollect();PE.pages.splice(+id,1);render()}else if(a==='plsave')plSave();else if(a==='plcancel'){PE=null;back()}else if(a==='pickfile'){var fi=document.getElementById(id);if(fi)fi.click()}else if(a==='boxnew')go('/box/new');else if(a==='boxedit')go('/box/'+id);else if(a==='boxdel')boxDel(id);else if(a==='boxsave')boxSave();else if(a==='attopen')attOpen(id);else if(a==='attdel')attDel(id);else if(a==='attclose')attClose();else if(a==='pvshare')pvShare();else if(a==='pvcopy')pvCopy();
   else if(a==='vfold'){var vs=$('#vsec');if(vs){var vf=vs.classList.toggle('folded');var vb=vs.querySelector('.foldbtn');vb.innerHTML=vf?ICPLUS:ICMINUS;vb.setAttribute('aria-expanded',String(!vf))}}else if(a==='pfold'){var ps=$('#psec');if(ps){var fd=ps.classList.toggle('folded');var fb=ps.querySelector('.foldbtn');fb.innerHTML=fd?ICPLUS:ICMINUS;fb.setAttribute('aria-expanded',String(!fd));if((S.cfg.layout||'fold')==='fold'){S.cfg.pfold=fd;saveCfg()}}}
   else if(a==='ptab'){var pf=$('.pcform');pf.setAttribute('data-page',id);document.querySelectorAll('.ptabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-id')===id)});window.scrollTo(0,0)}
-  else if(a==='pdtoggle'){var pd=$('#pd');pd.hidden=!pd.hidden;t.setAttribute('aria-expanded',String(!pd.hidden));if(!pd.hidden&&!pd.querySelector('.pdrow'))pd.insertAdjacentHTML('afterbegin',pdRowHtml({d:'',m:'',t:''},0))}
-  else if(a==='pdadd'){var n0=document.querySelectorAll('#pd .pdrow').length;t.insertAdjacentHTML('beforebegin',pdRowHtml({d:'',m:'',t:''},n0));var ni=document.querySelectorAll('#pd .pd-d');ni[ni.length-1].focus()}
+  else if(a==='pdtoggle'){var pd=$('#pd');pd.hidden=!pd.hidden;t.setAttribute('aria-expanded',String(!pd.hidden));if(!pd.hidden&&!pd.querySelector('.pdrow'))pd.insertAdjacentHTML('afterbegin',pdRowHtml({},0,true))}
+  else if(a==='pdadd'){var n0=document.querySelectorAll('#pd .pdrow').length;t.insertAdjacentHTML('beforebegin',pdRowHtml({},n0,true));var ni=document.querySelectorAll('#pd .pd-d');ni[ni.length-1].focus()}
+  else if(a==='pdopen'){var pr=t.closest('.pdrow');pr.classList.toggle('open')}
   else if(a==='pddel'){t.closest('.pdrow').remove();document.querySelectorAll('#pd .pdn').forEach(function(x,i){x.textContent=i+1});pdCount()}
   else if(a==='ttoggle'){var pn=$('#tpanel');pn.hidden=!pn.hidden;$('#tsum').setAttribute('aria-expanded',String(!pn.hidden))}
   else if(a==='newmed')medDialog(null,id,'rx');else if(a==='medit')medDialog(id,'','list');else if(a==='newmed2')medDialog(null,'','list');
@@ -1464,9 +1516,9 @@ document.addEventListener('input',function(e){
   if(/^f-(date|days|fees|paid)$/.test(e.target.id))updNext();
   if(e.target.closest&&e.target.closest('#pd'))pdCount();
   if(e.target.id==='f-med'){var q=e.target.value.trim().toLowerCase(),box=$('#medres');
-    var m=q?S.meds.filter(function(x){return (x.name||'').toLowerCase().indexOf(q)>=0}).slice(0,6):[];
+    var m=q?S.meds.filter(function(x){return (x.name||'').toLowerCase().indexOf(q)>=0}).slice(0,14):[];
     var exact=S.meds.some(function(x){return (x.name||'').trim().toLowerCase()===q});
-    box.innerHTML=(q&&!exact?'<a class="card tap addmed" data-act="newmed" data-id="'+esc(e.target.value.trim())+'"><b>＋ «'+esc(e.target.value.trim())+'» کو نئی دوا کے طور پر شامل کریں</b></a>':'')+m.map(function(x){return '<a class="card tap" data-med="'+x.id+'"><b class="ur">'+esc(x.name)+'</b><div class="meta ur">'+esc(x.usage||'')+'</div></a>'}).join('')}
+    box.innerHTML=(q&&!exact?'<a class="card tap addmed" data-act="newmed" data-id="'+esc(e.target.value.trim())+'"><b>＋ «'+esc(e.target.value.trim())+'» کو نئی دوا کے طور پر شامل کریں</b></a>':'')+m.map(function(x){return '<a class="mi tap" data-med="'+x.id+'">'+esc(x.name)+'</a>'}).join('');placeMed(box)}
   if(e.target.id==='mq')fillMeds();
 });
 document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('backdrop'))closeModal();var m=e.target.closest('[data-med]');if(!m)return;
