@@ -42,12 +42,6 @@ button,input,select,textarea{font-family:inherit}
 @media (pointer:coarse){#backBtn{display:none!important}}
 
 .field select{pointer-events:none}
-.wctl{position:fixed;top:0;right:0;z-index:700;display:flex;direction:ltr;font-family:sans-serif;transform:translateY(-110%);transition:transform .18s}
-.wctl.show{transform:none}
-.wctl .wb{display:flex}
-.wctl .wb button{height:34px;min-width:50px;border:0;background:rgba(14,92,75,.95);color:#fff;font-size:16px;cursor:pointer}
-.wctl .wb button:hover{background:#0b4a3d}.wctl .wb button.x{background:#b42318;border-radius:0 0 0 8px}
-.wzone{position:fixed;top:0;left:0;right:0;height:5px;z-index:699}
 .srch nav.tabs{display:none!important}.srch #app{padding-bottom:12px}
 .dtrow{display:grid;grid-template-columns:2fr 1fr;gap:8px}
 .pdhead{cursor:pointer;display:flex;align-items:center;gap:8px}.pdhead b{flex:1}.pdarr{transition:transform .2s}.pdrow.open .pdarr{transform:rotate(180deg)}
@@ -315,6 +309,16 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
 .rxs.bk .rxt{margin-top:0}.rxs.bk .dietb{padding:0 6px}
 
 @media (min-width:1100px) and (pointer:fine){
+ :root:not([data-theme="dark"]):not([data-skin]){--bg:#eef4f1;--surface2:#d9ece4;--line:#b4cfc5;--muted:#2c6355}
+ header.top{background:linear-gradient(135deg,var(--primary) 0%,color-mix(in srgb,var(--primary) 82%,#fff) 100%)}
+ body::before{background:var(--primary)}
+ .field label{font-size:16px;font-weight:700;color:var(--primary)}
+ .field input,.field select,.field textarea{border-color:var(--line);background:var(--surface)}
+ .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,138,18,.18);outline:0}
+ .sechead{background:linear-gradient(90deg,var(--surface2),color-mix(in srgb,var(--surface2) 40%,var(--surface)));border-radius:12px;padding:8px 14px;border:1px solid var(--line)}
+ .btn{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 80%,#fff));border-color:var(--primary)}
+ .btn.alt{background:var(--surface);color:var(--primary)}
+ nav.tabs{background:linear-gradient(180deg,var(--surface),var(--surface2))}
  #app,#app.wide{max-width:none;padding-bottom:0;margin:0}
  header.top{padding-inline:28px}
  nav.tabs{top:70px;bottom:0;left:auto;right:0;width:200px;border-top:0;border-left:1px solid var(--line);padding:14px 10px;align-items:flex-start;justify-content:flex-start}
@@ -374,6 +378,18 @@ body.m-old .pname{font-size:24px}
 body.m-old #tabs button{min-height:64px;font-size:17px}
 body.m-old #toast{font-size:22px}
 @media print{body.m-old #app{zoom:1!important}}
+/* skins */
+:root[data-skin="sea"]{--bg:#e8f1f8;--surface:#ffffff;--surface2:#d3e5f2;--ink:#0d2236;--muted:#35566f;--primary:#0b5a8f;--on-primary:#ffffff;--accent:#e08a1e;--line:#a9c4d8;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="sea"] .btn,:root[data-skin="sea"] .card{border-radius:10px}
+:root[data-skin="royal"]{--bg:#f1ecf7;--surface:#ffffff;--surface2:#e2d6f0;--ink:#24123a;--muted:#5a4378;--primary:#5b2a9a;--on-primary:#ffffff;--accent:#d4a017;--line:#c4b2dc;--f-ui:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="royal"] .btn,:root[data-skin="royal"] .card{border-radius:20px}
+:root[data-skin="wine"]{--bg:#f8efe8;--surface:#ffffff;--surface2:#efdccd;--ink:#3a1410;--muted:#7a4a3c;--primary:#8a1f2d;--on-primary:#ffffff;--accent:#c98a12;--line:#d9b8a6;--f-ui:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;--f-ur:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;color-scheme:light}
+:root[data-skin="wine"] header.top{border-bottom:3px solid var(--accent)}
+:root[data-skin="night"]{--bg:#0b0b0d;--surface:#17171b;--surface2:#232329;--ink:#f2e9d0;--muted:#b9a974;--primary:#e0b341;--on-primary:#1a1405;--accent:#f0c860;--line:#3a3524;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:dark}
+:root[data-skin="night"] .btn,:root[data-skin="night"] .card{border-radius:6px}
+:root[data-skin="rose"]{--bg:#fdf0f3;--surface:#ffffff;--surface2:#f9dbe3;--ink:#3b1220;--muted:#8a4a5e;--primary:#c2185b;--on-primary:#ffffff;--accent:#00897b;--line:#eebccb;--f-ui:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;--f-ur:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;color-scheme:light}
+:root[data-skin="rose"] .btn,:root[data-skin="rose"] .card{border-radius:24px}
+:root[data-skin="rose"] body{letter-spacing:.2px}
 </style>
 
 <div id="app" dir="rtl" lang="ur" translate="no">
@@ -551,7 +567,7 @@ async function scanQR(){
   try{st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=st;await v.play()}catch(e){stop();fail('کیمرے کی اجازت نہیں ملی');return}
   while(run){try{var r=await det.detect(v);if(r&&r.length){var pp=parsePair(r[0].rawValue);if(pp){stop();S.cfg.server=pp.server;S.cfg.token=pp.token;await saveCfg();toast('PC جڑ گئی');render();doSync(true);return}}}catch(e){}await new Promise(function(z){setTimeout(z,250)})}
 }
-function applyPrefs(){var r=document.documentElement,t=S.cfg.theme||'auto';if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
+function applyPrefs(){var r=document.documentElement,t=S.cfg.theme||'auto';if(S.cfg.skin)r.setAttribute('data-skin',S.cfg.skin);else r.removeAttribute('data-skin');if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
   var a=$('#app'),z=parseFloat(S.cfg.fs||1)||1;if(S.cfg.old)z=Math.max(z,1.45);if(a)a.style.zoom=z!==1?z:'';applyLang()}
 var FOCUS=null;
 function go(r,focus){if(guard(function(){go2(r,focus)}))return;go2(r,focus)}
@@ -845,7 +861,7 @@ function viewSet(){
    '<div class="field"><label for="s-mz">مزاج کی قسم</label><select id="s-mz">'+[['','انتخاب کریں…'],['m8','مفرد اعضاء اربعہ'],['m6','مفرد اعضاء ثلاثہ']].map(function(o){return '<option value="'+o[0]+'"'+((c.mizajSys||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select><div class="meta">مفرد اعضاء اربعہ (آٹھ مزاج) یا ثلاثہ (چھ مزاج)۔ نہ چنیں تو آٹھ مزاج رہتے ہیں۔</div></div>'+
    '<div class="field"><label for="s-start">ایپ کھلنے پر</label><select id="s-start"><option value="last"'+(c.startOn!=='list'?' selected':'')+'>آخری مریض اور اس کی آخری وزٹ</option><option value="list"'+(c.startOn==='list'?' selected':'')+'>مریضوں کی فہرست</option></select></div>'+
    '<div class="field"><label for="s-defdays">نئی وزٹ میں مقررہ ایام پہلے سے (خالی = کچھ نہیں)</label><input id="s-defdays" type="number" inputmode="numeric" value="'+esc(c.defDays||'')+'"></div></div>'+
-   '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
+   '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-skin">تھیم (رنگ اور فونٹ)</label><select id="s-skin">'+[['','اصل سبز (ڈیفالٹ)'],['sea','سمندری نیلا'],['royal','شاہی بنفشی'],['wine','عنابی و سنہری'],['night','سیاہ و سنہری (رات)'],['rose','گلابی بہار']].map(function(o){return '<option value="'+o[0]+'"'+((c.skin||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    '<div class="field"><label for="s-fs">تحریر کا سائز</label><select id="s-fs">'+[['0.9','چھوٹا'],['1','درمیانہ'],['1.12','بڑا'],['1.25','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fs||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div></div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-psym"'+(c.printSym===false?'':' checked')+'><span>پرنٹ میں "علامات / مریض کی شکایات" کا خانہ شامل کریں</span></label><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پرنٹ میں پچھلا صفحہ (غذائیں) شامل کریں</span></label>'+
    ''+clinicUI()+'</div>'+'<h2>ℹ️ ایپ کا تعارف (About)</h2><div class="card"><div class="meta" style="line-height:2"><b>سلمان ہربل کلینک</b> v '+APP_VER+'<br>• مریضوں اور وزٹس کا مکمل ریکارڈ، آف لائن بھی؛ فون اور PC کے درمیان خودکار سنک<br>• <b>خودکار محفوظ:</b> جیسے جیسے ایک خانے سے دوسرے میں جائیں، پہلا خانہ خود محفوظ ہوتا جاتا ہے<br>• <b>خالی وزٹ نہیں بنتی:</b> نئی وزٹ تب بنتی ہے جب تاریخ/وقت اور خود بھرے خانوں کے علاوہ کم از کم ایک خانہ بھرا جائے؛ جب تک موجودہ نئی وزٹ خالی ہو، دوسری نئی وزٹ نہیں کھلتی<br>• <b>غلطی سے تبدیلی سے حفاظت:</b> پہلے سے محفوظ معلومات میں بیچ میں ترمیم یا مٹنے کو اتفاقی سمجھا جاتا ہے (آخر میں اضافہ محفوظ رہتا ہے)؛ اگلی وزٹ، دوسرے مریض یا ایپ بند کرتے وقت پیغام آتا ہے: "نئی تبدیلی محفوظ کریں؟"<br>• بلڈ گروپ، وزٹ کا وقت، گزشتہ معالجین کی فہرست، فارما کوپیا، علاج بالغذاء، تین زبانیں، OldAge اور Doctor موڈ<br>• فون سے فون: بیک اپ فائل ملانے سے صرف نئی انٹریز شامل ہوتی ہیں</div></div>'+'<h2>💾 ڈیٹا کا تحفظ</h2><div class="card"><div class="meta">'+(idb?'ڈیٹا اس فون کی مستقل میموری (IndexedDB) میں محفوظ ہے۔':'⚠ اس براؤزر میں مستقل ذخیرہ دستیاب نہیں، ڈیٹا عارضی ہے۔')+' ایپ ڈیلیٹ کرنے سے ڈیٹا مٹ جاتا ہے، اس لیے وقتاً فوقتاً بیک اپ لیں۔'+(S.cfg.lastBackup?'<br>آخری بیک اپ: '+new Date(S.cfg.lastBackup).toLocaleDateString('en-GB'):'<br>ابھی تک بیک اپ نہیں لیا')+'</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ بیک اپ محفوظ کریں</button><button type="button" class="btn alt grow" data-act="impdata">⬆ فائل سے ڈیٹا درآمد</button></div></div><h2>🔁 فون سے فون</h2><div class="card"><div class="meta">دوسرے فون کا بیک اپ فائل (واٹس ایپ/بلوٹوتھ سے) یہاں ملائیں۔ صرف نئی انٹریز شامل ہوں گی، پہلے سے موجود ڈیٹا جوں کا توں رہے گا۔ PC کی ضرورت نہیں۔</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ اپنا ڈیٹا بھیجنے کے لیے فائل بنائیں</button><button type="button" class="btn alt grow" data-act="mergedata">🔁 دوسرے فون کی فائل ملائیں</button></div></div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
@@ -1118,7 +1134,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.28',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.29',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1246,17 +1262,7 @@ document.addEventListener('click',function(e){var t=e.target;if(!t.closest||t.cl
   new MutationObserver(function(){document.body.classList.toggle('mlock',!!document.querySelector(q))}).observe(document.body,{childList:true});
   document.addEventListener('touchmove',function(e){var t=e.target;if(!t.closest||!t.closest(q))return;var sc=t.closest('.selbx,.setbx .sb,.updn');if(!sc||sc.scrollHeight<=sc.clientHeight+1)e.preventDefault()},{passive:false})})();
 document.addEventListener('click',function(e){var pn=document.getElementById('tpanel');if(!pn||pn.hidden)return;var t=e.target;if(t.closest&&(t.closest('.tsel')||t.closest('#selsh')))return;pn.hidden=true;var ts=document.getElementById('tsum');if(ts)ts.setAttribute('aria-expanded','false')},true);
-(function(){if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;var w=document.createElement('div');w.className='wctl';var tm=0;
-  w.innerHTML='<div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
-  var z=document.createElement('div');z.className='wzone';document.body.appendChild(z);document.body.appendChild(w);
-  function show(){w.classList.add('show');clearTimeout(tm);tm=setTimeout(function(){if(!w.matches(':hover'))w.classList.remove('show')},4000)}
-  z.addEventListener('mouseenter',show);
-  document.addEventListener('mousemove',function(e){if(e.clientY<4)show()});
-  document.addEventListener('mousedown',function(e){if(e.clientY<48)show();else if(!w.contains(e.target))w.classList.remove('show')});
-  w.addEventListener('mouseleave',function(){tm=setTimeout(function(){w.classList.remove('show')},1200)});
-  w.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var a=b.getAttribute('data-w');if(!a)return;w.classList.remove('show');
-    if(a==='exit'){if(guard(function(){fetch('/api/win?a=exit').catch(function(){})}))return;if(!confirm('پروگرام بند کریں؟'))return}
-    fetch('/api/win?a='+a).catch(function(){})})})();
+
 (function(){function on(e){var t=e.target;if(t&&t.matches&&t.matches('#q,#ff'))document.body.classList.add('srch')}
   function off(e){var t=e.target;if(t&&t.matches&&t.matches('#q,#ff'))setTimeout(function(){var a=document.activeElement;if(!(a&&a.matches&&a.matches('#q,#ff')))document.body.classList.remove('srch')},250)}
   document.addEventListener('focusin',on);document.addEventListener('focusout',off)})();
@@ -1447,6 +1453,9 @@ async function doSync(manual,quiet){
       if(kind==='plan'){S.plans=S.plans.filter(function(x){return x.id!==id});if(it.del)kvdel.push(it.k);else{it.v.ts=it.ts;S.plans.push(it.v);kvput.push({k:it.k,v:it.v})}}
       else if(kind==='vs'){S.cfg.vsel=S.cfg.vsel||{};S.cfg.vts=S.cfg.vts||{};if(it.del)delete S.cfg.vsel[id];else{S.cfg.vsel[id]=it.v;S.cfg.vts[id]=it.ts}}});
     if(kvdel.length)await delKeys('kv',kvdel);if(kvput.length)await putMany('kv',kvput);
+    var orph=0;if(Array.isArray(snap.patients)){var spid={};snap.patients.forEach(function(x){spid[String(x.pid)]=1});
+      S.patients.forEach(function(p){if(p._demo||!p.pid||p._dirty||spid[String(p.pid)])return;p.pid=null;p.base=null;p._dirty=true;orph++;
+        S.visits.forEach(function(v){if(v.puid===p.uid&&!v._demo){v.pid=null;v.vid=null;v.base=null;v._dirty=true}})})}
     await applySnap(snap);
     var nb5=S.patients.length+S.visits.length+S.meds.length+S.diets.length;
     BGF=0;if(quiet){if(nb5!==nb4&&!errors&&!conflicts)toast('نیا ڈیٹا موصول ہوا')}else toast(errors?('سنک مکمل، '+errors+' اندراج میں مسئلہ'):conflicts?('سنک مکمل، '+conflicts+' اندراج PC کے ورژن سے بدلے گئے'):'سنک مکمل');
@@ -1455,7 +1464,7 @@ async function doSync(manual,quiet){
     if(quiet){BGF=Math.min(BGF+1,4);BGNEXT=Date.now()+20000*Math.pow(2,BGF)}
     if(!quiet)toast(/Failed to fetch|NetworkError|Load failed/.test(m)?'PC سے رابطہ نہیں ہو سکا — PC پروگرام چل رہا ہو، دونوں ایک ہی وائی فائی پر ہوں، اور ایپ (APK) استعمال کریں':m)
   }
-  busy=false;$('#syncBtn').style.opacity=1;
+  busy=false;$('#syncBtn').style.opacity=1;if(typeof orph!=='undefined'&&orph)setTimeout(function(){doSync(false,true)},600);
   if(/^\/(f|v|vn|dedit|pe|pled)\//.test(route)||(route==='/meds'&&!$('#modal').hidden)||!$('#modal').hidden){var pn=pending();$('#syncN').textContent=pn?'('+pn+')':''}else render()
 }
 function autoSync(){if(S.cfg.autoSync===false)return;if(Date.now()<BGNEXT)return;if(S.cfg.server&&S.cfg.token&&navigator.onLine!==false)doSync(false,true)}
@@ -1647,6 +1656,7 @@ document.addEventListener('change',function(e){
   if(e.target.id==='f-med'){var v2=e.target.value.trim();if(v2&&!S.meds.some(function(x){return (x.name||'').toLowerCase().indexOf(v2.toLowerCase())>=0})&&!document.activeElement.closest('#medres'))medDialog(null,v2,'rx')}
   if(e.target.id==='s-layout'){S.cfg.layout=e.target.value;saveCfg();toast('ترتیب محفوظ ہو گئی')}
   if(e.target.id==='s-fs'){S.cfg.fs=e.target.value;saveCfg();applyPrefs()}
+  if(e.target.id==='s-skin'){S.cfg.skin=e.target.value;saveCfg();applyPrefs();return}
   if(e.target.id==='s-theme'){S.cfg.theme=e.target.value;saveCfg();applyPrefs()}
   if(e.target.id==='s-defdays'){S.cfg.defDays=e.target.value.trim();saveCfg();toast('محفوظ ہو گیا')}
   if(e.target.id==='s-lang'){S.cfg.lang=e.target.value;saveCfg().then(function(){applyLang();render()})}

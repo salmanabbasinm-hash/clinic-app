@@ -839,9 +839,19 @@ def open_app_window(url):
         if os.path.exists(exe):
             try:
                 prof = os.path.join(HERE, "window")
-                subprocess.Popen([exe, "--app=" + url, "--kiosk", "--user-data-dir=" + prof, "--no-first-run",
-                                  "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
-                                  "--disable-translate", "--lang=ur"])
+                t0 = time.time()
+                p = subprocess.Popen([exe, "--app=" + url, "--start-maximized", "--user-data-dir=" + prof, "--no-first-run",
+                                      "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
+                                      "--disable-translate", "--lang=ur"])
+
+                def _watch(p=p, t0=t0):
+                    try:
+                        p.wait()
+                        if time.time() - t0 > 8:
+                            os._exit(0)
+                    except Exception:
+                        pass
+                threading.Thread(target=_watch, daemon=True).start()
                 return
             except Exception:
                 pass
