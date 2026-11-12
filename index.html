@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"></head><body style="margin:0">
+<html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"></head><body style="margin:0">
 <title>کلینک موبائل</title>
 <meta name="google" content="notranslate"><meta http-equiv="Content-Language" content="ur">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -335,11 +335,31 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
  .pcform #vsec .vbody>.fnext{order:80;grid-column:2;margin-top:6px}
  .pcform #vsec .vbody>#leftnote{order:81}
  .pcform #vsec .vbody>.moneybox{order:79}
- .pcform #psec .pcgrid{grid-template-columns:repeat(6,1fr);gap:0 14px}
- .pcform #psec .pcgrid>.field:has(textarea),.pcform #psec .pcgrid>.pdwrap{grid-column:1/-1}
+ .pcform #psec .pcgrid{grid-template-columns:1.3fr 1.3fr .8fr .6fr .9fr 1.2fr 2.2fr;gap:0 12px}
+ .pcform #psec .pcgrid>.pdwrap{grid-column:1/-1}
+ .pcform #psec #f-address{min-height:52px!important;height:52px!important}
  .pcform #vsec .vbody{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;align-items:start}
  .pcform #vsec .vbody>*{min-width:0}
  .pcform #vsec .vbody>.vbar2,.pcform #vsec .vbody>.vbar,.pcform #vsec .vbody>.examh,.pcform #vsec .vbody>.moneybox,.pcform #vsec .vbody>.row,.pcform #vsec .vbody>#leftnote{grid-column:1/-1}
+ .pcform.pcx .cols{gap:0!important;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:visible}
+ .pcform.pcx .cols>section.card{border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;background:transparent!important}
+ .pcform.pcx #vsec{border-top:1px solid var(--line)!important}
+ .pcform.pcx #vsec .vbody{display:block}
+ .pcform.pcx #vsec>.examh{text-align:center;font-size:20px;font-weight:700;margin:2px 0 10px;border-bottom:2px solid var(--primary);padding-bottom:6px}
+ .pcform.pcx #vsec .sechead{gap:14px}
+ .pcform.pcx #vsec .sechead .vbar2{flex:1;margin:0;padding:0;border:0}
+ .pcform.pcx .dtrow2{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:0 14px}
+ .pcform.pcx .dtrow2 .field{text-align:center}.pcform.pcx .dtrow2 input{text-align:center}
+ .pcform.pcx .exrow{display:grid;grid-template-columns:1.5fr 1fr 1.5fr;gap:0 14px}
+ .pcform.pcx .rxgroup{border:1px solid var(--line);border-radius:14px;padding:10px 12px 6px;background:var(--surface);margin-bottom:12px}
+ .pcform.pcx .rxgroup>.field{margin-bottom:8px}
+ .pcform.pcx #f-rx{display:none}
+ .rxflow{display:flex;flex-wrap:wrap;gap:10px;padding:8px;min-height:150px;align-content:flex-start;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+ .rxl{flex:0 0 calc(33.333% - 7px);box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:var(--surface);font-family:var(--f-ur);font-size:17px;line-height:1.7;min-height:38px;outline:none;white-space:pre-wrap;word-break:break-word}
+ .rxl:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(14,92,75,.2)}
+ .rxnew{border-style:dashed;background:transparent}.rxnew:empty:before{content:attr(data-ph);color:var(--muted);font-size:15px}
+ .pcform.pcx .nxbox{width:34%;margin-right:auto;margin-top:6px}
+ .pcform.pcx .nxbox #leftnote{margin:-6px 0 0}
  .pcform .ptabs{display:none!important}
  #view .pcform .cols>section{display:block!important}
 }
@@ -868,6 +888,7 @@ function render(){
   var due=dueList().filter(function(x){return x.diff>=0&&x.diff<=1}).length+S.queue.length;
   $('#tabs').innerHTML=NAV.map(function(n){return '<button data-go="'+n[0]+'" class="'+(n[0]===tab?'on':'')+'">'+n[2]+n[1]+(n[0]==='/rem'&&due?'<span class="badge">'+due+'</span>':'')+'</button>'}).join('');
   var pn=pending();$('#syncN').textContent=pn?'('+pn+')':'';
+  pcReshape();
 }
 function testRow(t,on){return '<label class="trow'+(on?' on':'')+'"><input type="checkbox" value="'+esc(t)+'"'+(on?' checked':'')+'><span>'+esc(t)+'</span>'+(TESTS.indexOf(t)<0&&(S.cfg.tests||[]).indexOf(t)>=0?'<button type="button" class="tdel" data-act="deltest" data-id="'+esc(t)+'" aria-label="فہرست سے ہٹائیں">×</button>':'')+'</label>'}
 function updTests(){var ch=document.querySelectorAll('#tests input:checked'),o=$('#tsumtxt');
@@ -1097,7 +1118,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.27',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.28',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1226,7 +1247,7 @@ document.addEventListener('click',function(e){var t=e.target;if(!t.closest||t.cl
   document.addEventListener('touchmove',function(e){var t=e.target;if(!t.closest||!t.closest(q))return;var sc=t.closest('.selbx,.setbx .sb,.updn');if(!sc||sc.scrollHeight<=sc.clientHeight+1)e.preventDefault()},{passive:false})})();
 document.addEventListener('click',function(e){var pn=document.getElementById('tpanel');if(!pn||pn.hidden)return;var t=e.target;if(t.closest&&(t.closest('.tsel')||t.closest('#selsh')))return;pn.hidden=true;var ts=document.getElementById('tsum');if(ts)ts.setAttribute('aria-expanded','false')},true);
 (function(){if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname))return;var w=document.createElement('div');w.className='wctl';var tm=0;
-  w.innerHTML='<div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="full" title="Fullscreen / Window">&#9974;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
+  w.innerHTML='<div class="wb"><button type="button" data-w="min" title="Minimize">&#8211;</button><button type="button" data-w="exit" class="x" title="Close">&#10005;</button></div>';
   var z=document.createElement('div');z.className='wzone';document.body.appendChild(z);document.body.appendChild(w);
   function show(){w.classList.add('show');clearTimeout(tm);tm=setTimeout(function(){if(!w.matches(':hover'))w.classList.remove('show')},4000)}
   z.addEventListener('mouseenter',show);
@@ -1247,6 +1268,39 @@ function fitRx(t){if(!t||t.id!=='f-rx'||document.body.classList.contains('m-old'
   for(;sz>=14;sz-=1){FITC.font=sz+'px '+cs.fontFamily;var mx=0;for(var i=0;i<lines.length;i++){var m=FITC.measureText(lines[i]).width;if(m>mx)mx=m}if(mx<=w)break}
   if(sz<14)sz=Math.min(14,base);if(sz<base)t.style.fontSize=sz+'px'}
 function growTa(t){if(!t||!t.offsetParent)return;fitRx(t);var mh=parseInt(t.getAttribute('data-mh')||'0',10);if(!mh){mh=t.clientHeight;t.setAttribute('data-mh',mh)}t.style.height='auto';var h=Math.max(mh,t.scrollHeight+4);t.style.height=h+'px'}
+
+/* ---- PC: ایک صفحہ جیسی ترتیب ---- */
+function rxSync(){var ta=$('#f-rx'),fl=$('#rxflow');if(!ta||!fl)return;if(fl.contains(document.activeElement))return;
+  var lines=ta.value.split('\n').filter(function(x){return x.trim()}),k=lines.join('\n');if(fl.getAttribute('data-k')===k&&fl.firstChild)return;fl.setAttribute('data-k',k);
+  fl.innerHTML=lines.map(function(l){return '<div class="rxl" contenteditable="true" spellcheck="false">'+esc(l)+'</div>'}).join('')+'<div class="rxl rxnew" contenteditable="true" data-ph="+ دوا یا طریقہ استعمال لکھیں" spellcheck="false"></div>'}
+function rxPush(){var ta=$('#f-rx'),fl=$('#rxflow');if(!ta||!fl)return;
+  var lines=Array.prototype.map.call(fl.querySelectorAll('.rxl'),function(e){return e.innerText.replace(/\s*\n+\s*/g,' ').trim()}).filter(Boolean);
+  ta.value=lines.join('\n');fl.setAttribute('data-k',lines.join('\n'))}
+document.addEventListener('input',function(e){if(e.target&&e.target.classList&&e.target.classList.contains('rxl')){rxPush();var ta=$('#f-rx');if(ta)ta.dispatchEvent(new Event('input',{bubbles:true}))}});
+document.addEventListener('focusout',function(e){if(e.target&&e.target.classList&&e.target.classList.contains('rxl')){rxPush();var ta=$('#f-rx');if(ta)ta.dispatchEvent(new Event('change',{bubbles:true}));setTimeout(rxSync,60)}});
+document.addEventListener('keydown',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('rxl'))return;
+  if(e.key==='Enter'){e.preventDefault();var n=document.createElement('div');n.className='rxl';n.contentEditable='true';n.spellcheck=false;
+    var nw=t.parentNode.querySelector('.rxnew');if(t.classList.contains('rxnew')){t.parentNode.insertBefore(n,t)}else t.after(n);n.focus();
+    if(t.classList.contains('rxnew')){n.remove();return}}
+  else if(e.key==='Backspace'&&!t.classList.contains('rxnew')&&!t.innerText.trim()){e.preventDefault();var pv=t.previousElementSibling;t.remove();rxPush();if(pv)pv.focus()}});
+document.addEventListener('paste',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('rxl'))return;e.preventDefault();var x=(e.clipboardData||window.clipboardData).getData('text').replace(/\s*\n+\s*/g,' ');document.execCommand('insertText',false,x)});
+setInterval(rxSync,500);
+function pcReshape(){var f=document.querySelector('.pcform');if(!f||f.classList.contains('pcx')||!(window.matchMedia&&matchMedia('(min-width:1100px)').matches))return;
+  var vs=f.querySelector('#vsec'),vb=vs&&vs.querySelector('.vbody'),sh=vs&&vs.querySelector('.sechead');if(!vb||!sh)return;f.classList.add('pcx');
+  var g=function(id){return vb.querySelector('#'+id)},fld=function(id){var e=g(id);return e?e.closest('.field'):null};
+  var ex=vb.querySelector('.examh'),vb2=vb.querySelector('.vbar2'),vbar=vb.querySelector('.vbar');
+  if(ex){vs.insertBefore(ex,sh)}
+  if(vb2){Array.prototype.forEach.call(sh.children,function(x){if(x.tagName==='B'||x.classList.contains('psum'))x.style.display='none'});sh.appendChild(vb2)}
+  var dt=document.createElement('div');dt.className='dtrow2';['f-date','f-days','f-left','f-time'].forEach(function(id){var e=fld(id);if(e)dt.appendChild(e)});
+  var er=document.createElement('div');er.className='exrow';['f-pulse','f-weight','f-bp'].forEach(function(id){var e=fld(id);if(e)er.appendChild(e)});
+  if(vbar){vbar.after(dt)}else vb.insertBefore(dt,vb.firstChild);dt.after(er);
+  Array.prototype.forEach.call(vb.querySelectorAll('.dtrow,.fdays,.fexam'),function(w){if(!w.querySelector('.field'))w.remove()});
+  var sym=fld('f-symptoms'),med=fld('f-med'),rxf=fld('f-rx');
+  if(sym&&med&&rxf){var grp=document.createElement('div');grp.className='rxgroup';grp.appendChild(med);grp.appendChild(rxf);er.after(sym);sym.after(grp);
+    var fl=document.createElement('div');fl.id='rxflow';fl.className='rxflow';rxf.appendChild(fl);rxSync()}
+  var nx=vb.querySelector('.fnext'),ln=vb.querySelector('#leftnote');if(nx){var nb=document.createElement('div');nb.className='nxbox';nb.appendChild(nx);if(ln)nb.appendChild(ln);vb.appendChild(nb)}
+  ['f-date','f-time','f-days','f-left'].forEach(function(id){var e=g(id);if(e)e.tabIndex=-1});
+  Array.prototype.forEach.call(vs.querySelectorAll('.sechead button,.vbar button,.vbar2 button'),function(b){b.tabIndex=-1})}
 function growAll(){Array.prototype.forEach.call(document.querySelectorAll('.field textarea'),function(t){if(t.offsetParent&&(t.scrollHeight>t.clientHeight+2||t.getAttribute('data-gv')!==String(t.value.length))){t.setAttribute('data-gv',String(t.value.length));growTa(t)}})}
 document.addEventListener('input',function(e){if(e.target&&e.target.tagName==='TEXTAREA')growTa(e.target)});
 document.addEventListener('focusin',function(e){if(e.target&&e.target.tagName==='TEXTAREA')growTa(e.target)});
@@ -1272,16 +1326,17 @@ async function sendQ(id){var m=S.queue.find(function(x){return String(x.id)===St
 /* ---------- sync ---------- */
 async function api(path,opt,nofind){
   var s=S.cfg.server.replace(/\/+$/,'');opt=opt||{};opt.headers=Object.assign({'X-Token':S.cfg.token},opt.headers||{});
-  var r;try{r=await fetch(s+path,opt)}catch(e){if(nofind)throw e;var f=await findPC();if(!f)throw e;opt.headers['X-Token']=S.cfg.token;r=await fetch(f+path,opt)}
+  var r;try{r=await fetch(s+path,opt)}catch(e){if(nofind==='q'){if(Date.now()-FPT<300000)throw e;FPT=Date.now()}else if(nofind)throw e;var f=await findPC(nofind==='q');if(!f)throw e;opt.headers['X-Token']=S.cfg.token;r=await fetch(f+path,opt)}
   if(!r.ok)throw new Error(r.status===401?'ٹوکن غلط ہے':'سرور ایرر '+r.status);return r.json()
 }
 /* PC کا IP بدل جائے تو اسی نیٹ ورک میں PC خود تلاش کرتا ہے */
-async function findPC(){
+var FPT=0;
+async function findPC(silent){
   var m=/^(https?:\/\/)(\d+\.\d+\.\d+)\.(\d+)(?::(\d+))?/.exec(S.cfg.server||'');if(!m||!S.cfg.token)return null;
-  toast('PC تلاش کی جا رہی ہے…');var pref=m[1]+m[2]+'.',port=m[4]?':'+m[4]:'',found=null,i=1;
+  if(!silent)toast('PC تلاش کی جا رہی ہے…');var pref=m[1]+m[2]+'.',port=m[4]?':'+m[4]:'',found=null,i=1;
   async function probe(n){var u=pref+n+port;try{var c=new AbortController(),t=setTimeout(function(){c.abort()},1500);var r=await fetch(u+'/api/ping',{headers:{'X-Token':S.cfg.token},signal:c.signal});clearTimeout(t);var j=await r.json();if(j&&j.name==='Clinic Sync'&&j.auth&&!found)found=u}catch(e){}}
   while(i<=254&&!found){var batch=[];for(var k=0;k<40&&i<=254;k++,i++)batch.push(probe(i));await Promise.all(batch)}
-  if(found){S.cfg.server=found;await saveCfg();toast('PC مل گئی')}return found
+  if(found){S.cfg.server=found;await saveCfg();if(!silent)toast('PC مل گئی')}return found
 }
 function parsePair(t){t=(t||'').trim();var m=/^(https?:\/\/[^\/?#\s]+)[^?#\s]*\?[^#\s]*\bt=([\w-]+)/.exec(t);return m?{server:m[1],token:m[2]}:null}
 async function pairFill(){
@@ -1376,7 +1431,7 @@ async function doSync(manual,quiet){
     Object.keys(xq).forEach(function(k){var q=xq[k],kind=k.split(':')[0],id=k.slice(kind.length+1),val=null;if(!q.del){val=kind==='plan'?S.plans.find(function(x){return x.id===id}):(S.cfg.vsel||{})[id];if(!val)return}
       known[k]=q.ts;sent[k]=q.ts;xitems.push({k:k,ts:q.ts,del:!!q.del,v:val})});
     body.extras={items:xitems,known:known};
-    var snap=await api('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},!!quiet);
+    var snap=await api('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},quiet?'q':false);
     var nb4=S.patients.length+S.visits.length+S.meds.length+S.diets.length;
     var conflicts=0,errors=0,byU={};
     (snap.results||[]).forEach(function(r){byU[r.kind+':'+r.uid]=r});
@@ -1403,7 +1458,7 @@ async function doSync(manual,quiet){
   busy=false;$('#syncBtn').style.opacity=1;
   if(/^\/(f|v|vn|dedit|pe|pled)\//.test(route)||(route==='/meds'&&!$('#modal').hidden)||!$('#modal').hidden){var pn=pending();$('#syncN').textContent=pn?'('+pn+')':''}else render()
 }
-function autoSync(){if(S.cfg.autoSync===false)return;if(S.cfg.server&&S.cfg.token&&navigator.onLine!==false)doSync(false)}
+function autoSync(){if(S.cfg.autoSync===false)return;if(Date.now()<BGNEXT)return;if(S.cfg.server&&S.cfg.token&&navigator.onLine!==false)doSync(false,true)}
 
 /* ---------- events ---------- */
 document.addEventListener('click',function(e){

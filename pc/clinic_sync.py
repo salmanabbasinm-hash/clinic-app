@@ -839,7 +839,7 @@ def open_app_window(url):
         if os.path.exists(exe):
             try:
                 prof = os.path.join(HERE, "window")
-                subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run",
+                subprocess.Popen([exe, "--app=" + url, "--kiosk", "--user-data-dir=" + prof, "--no-first-run",
                                   "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
                                   "--disable-translate", "--lang=ur"])
                 return
