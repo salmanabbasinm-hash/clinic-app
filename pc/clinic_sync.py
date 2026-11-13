@@ -1073,16 +1073,21 @@ def _fw_has_rule():
 
 def open_firewall(port, cfgp, cfg):
     """Let the phone reach this PC on the Wi-Fi. Checked on every start (Windows asks permission only if the rule is missing)."""
-    if os.name != "nt" or _fw_has_rule():
+    if os.name != "nt":
         return
-    for _ in range(2):
-        try:
-            _run_admin("netsh", ["advfirewall", "firewall", "add", "rule", "name=Clinic Sync", "dir=in", "action=allow",
-                                 "protocol=TCP", "localport=%d" % port, "profile=any"])
-        except Exception:
-            pass
-        if _fw_has_rule():
-            return
+    mk = os.path.join(os.path.dirname(os.path.abspath(cfgp)), "fw_asked")
+    if os.path.exists(mk) or _fw_has_rule():
+        return
+    try:
+        with open(mk, "w") as f:
+            f.write("1")
+    except Exception:
+        pass
+    try:
+        _run_admin("netsh", ["advfirewall", "firewall", "add", "rule", "name=Clinic Sync", "dir=in", "action=allow",
+                             "protocol=TCP", "localport=%d" % port, "profile=any"])
+    except Exception:
+        pass
 
 
 def self_install():
@@ -1118,11 +1123,12 @@ def self_install():
             return
         ps = (
             "$w=New-Object -ComObject WScript.Shell;"
+            "foreach($q in @([Environment]::GetFolderPath('Desktop'),[Environment]::GetFolderPath('Programs'))){Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $q 'Salman Herbal Clinic.lnk')};"
             "$t='%s';$d='%s';$o=@();"
             "foreach($p in @([Environment]::GetFolderPath('Desktop'),[Environment]::GetFolderPath('Programs'))){"
-            "$f=Join-Path $p 'Salman Herbal Clinic.lnk';"
+            "$f=Join-Path $p 'HealthClinic.lnk';"
             "$s=$w.CreateShortcut($f);"
-            "$s.TargetPath=$t;$s.WorkingDirectory=$d;$s.IconLocation=$t+',0';$s.Description='Salman Herbal Clinic';$s.Save();$o+=$f};"
+            "$s.TargetPath=$t;$s.WorkingDirectory=$d;$s.IconLocation=$t+',0';$s.Description='HealthClinic';$s.Save();$o+=$f};"
             "$o -join '|'"
         ) % (target.replace("'", "''"), d.replace("'", "''"))
         r = subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", ps],
@@ -1137,14 +1143,14 @@ def self_install():
                 fh.write("\r\n".join(lines) + "\r\n")
             un = 'cmd /c copy /y "%s" "%%TEMP%%\\shc_un.cmd" >nul & "%%TEMP%%\\shc_un.cmd"' % os.path.join(d, "uninstall.cmd")
             k = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key.split("\\", 1)[1])
-            for n, v in (("DisplayName", "Salman Herbal Clinic"), ("Publisher", "Salman Herbal Clinic"),
+            for n, v in (("DisplayName", "HealthClinic"), ("Publisher", "HealthClinic"),
                          ("DisplayIcon", target), ("InstallLocation", d), ("UninstallString", un)):
                 winreg.SetValueEx(k, n, 0, winreg.REG_SZ, v)
             winreg.CloseKey(k)
         except Exception:
             pass
         try:
-            ctypes.windll.user32.MessageBoxW(0, "Salman Herbal Clinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nسلمان ہربل کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "Salman Herbal Clinic", 0x40)
+            ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nسلمان ہربل کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40)
         except Exception:
             pass
         subprocess.Popen([target, "--noinstall"], cwd=d, creationflags=0x00000008 | 0x00000200, close_fds=True)

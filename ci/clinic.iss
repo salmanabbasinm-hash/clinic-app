@@ -2,11 +2,11 @@
 #define AppVer GetEnv("CLINIC_VER")
 [Setup]
 AppId={{6B0B6C9E-5C1A-4D3B-9A52-5A1C11C0A001}
-AppName=Salman Herbal Clinic
+AppName=HealthClinic
 AppVersion={#AppVer}
-AppPublisher=Salman Herbal Clinic
-DefaultDirName={autopf}\Salman Herbal Clinic
-DefaultGroupName=Salman Herbal Clinic
+AppPublisher=HealthClinic
+DefaultDirName={autopf}\HealthClinic
+DefaultGroupName=HealthClinic
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
 OutputDir=..\dist
@@ -27,12 +27,12 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; Flags: checkedon
 Source: "..\build_app\HealthClinic.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Salman Herbal Clinic"; Filename: "{app}\HealthClinic.exe"
-Name: "{autodesktop}\Salman Herbal Clinic"; Filename: "{app}\HealthClinic.exe"; Tasks: desktopicon
+Name: "{autoprograms}\HealthClinic"; Filename: "{app}\HealthClinic.exe"
+Name: "{autodesktop}\HealthClinic"; Filename: "{app}\HealthClinic.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Clinic Sync"" dir=in action=allow protocol=TCP localport=8765 profile=any"; Flags: runhidden
-Filename: "{app}\HealthClinic.exe"; Description: "Start Salman Herbal Clinic now"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\HealthClinic.exe"; Description: "Start HealthClinic now"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Clinic Sync"""; Flags: runhidden
