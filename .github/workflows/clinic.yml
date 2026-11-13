@@ -55,7 +55,7 @@
       "tag_name": "latest",
       "name": "Latest build",
       "make_latest": "true",
-      "files": "dist/HealthClinic.exe"
+      "files": "dist/HealthClinic.exe\ndist/ClinicSync.exe"
      }
     },
     {
