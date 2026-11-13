@@ -991,9 +991,79 @@ def open_firewall(port, cfgp, cfg):
             return
 
 
+def self_install():
+    """Frozen Windows exe run from anywhere (Downloads etc.): install like normal software
+    (copy to LocalAppData, Desktop + Start-menu shortcuts, Add/Remove Programs entry) then start installed copy."""
+    if not (FROZEN and sys.platform == "win32") or "--noinstall" in sys.argv:
+        return
+    try:
+        import ctypes, winreg
+        exe = os.path.abspath(sys.executable)
+        low = exe.lower()
+        if "salman herbal clinic" in low or "salmanherbalclinic" in low or "programs\\salman" in low:
+            return
+        base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+        d = os.path.join(base, "Programs", "SalmanHerbalClinic")
+        target = os.path.join(d, "HealthClinic.exe")
+        cnw = 0x08000000
+        os.makedirs(d, exist_ok=True)
+        for im in ("HealthClinic.exe", "ClinicSync.exe"):
+            subprocess.run(["taskkill", "/F", "/FI", "PID ne %d" % os.getpid(), "/IM", im],
+                           creationflags=cnw, capture_output=True, stdin=subprocess.DEVNULL)
+        try:
+            os.remove(os.path.join(d, "ClinicSync.exe"))
+        except Exception:
+            pass
+        time.sleep(1.0)
+        copied = True
+        try:
+            shutil.copy2(exe, target)
+        except Exception:
+            copied = os.path.exists(target)
+        if not copied:
+            return
+        ps = (
+            "$w=New-Object -ComObject WScript.Shell;"
+            "$t='%s';$d='%s';$o=@();"
+            "foreach($p in @([Environment]::GetFolderPath('Desktop'),[Environment]::GetFolderPath('Programs'))){"
+            "$f=Join-Path $p 'Salman Herbal Clinic.lnk';"
+            "$s=$w.CreateShortcut($f);"
+            "$s.TargetPath=$t;$s.WorkingDirectory=$d;$s.IconLocation=$t+',0';$s.Description='Salman Herbal Clinic';$s.Save();$o+=$f};"
+            "$o -join '|'"
+        ) % (target.replace("'", "''"), d.replace("'", "''"))
+        r = subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", ps],
+                           creationflags=cnw, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+        lnks = [x.strip() for x in (r.stdout or "").strip().split("|") if x.strip()]
+        try:
+            key = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\SalmanHerbalClinic"
+            lines = ["@echo off", "taskkill /F /IM HealthClinic.exe >nul 2>&1", "ping -n 3 127.0.0.1 >nul"]
+            lines += ['del /f /q "%s"' % x for x in lnks]
+            lines += ['reg delete %s /f >nul 2>&1' % key, "cd /d %TEMP%", 'rmdir /s /q "%s"' % d]
+            with open(os.path.join(d, "uninstall.cmd"), "w", encoding="mbcs", errors="replace") as fh:
+                fh.write("\r\n".join(lines) + "\r\n")
+            un = 'cmd /c copy /y "%s" "%%TEMP%%\\shc_un.cmd" >nul & "%%TEMP%%\\shc_un.cmd"' % os.path.join(d, "uninstall.cmd")
+            k = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key.split("\\", 1)[1])
+            for n, v in (("DisplayName", "Salman Herbal Clinic"), ("Publisher", "Salman Herbal Clinic"),
+                         ("DisplayIcon", target), ("InstallLocation", d), ("UninstallString", un)):
+                winreg.SetValueEx(k, n, 0, winreg.REG_SZ, v)
+            winreg.CloseKey(k)
+        except Exception:
+            pass
+        try:
+            ctypes.windll.user32.MessageBoxW(0, "Salman Herbal Clinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nسلمان ہربل کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "Salman Herbal Clinic", 0x40)
+        except Exception:
+            pass
+        subprocess.Popen([target, "--noinstall"], cwd=d, creationflags=0x00000008 | 0x00000200, close_fds=True)
+        os._exit(0)
+    except Exception:
+        return
+
+
 def main():
+    self_install()
     ap = argparse.ArgumentParser()
     ap.add_argument("mdb", nargs="?")
+    ap.add_argument("--noinstall", action="store_true")
     ap.add_argument("--sqlite")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--public", action="store_true", help="also open a public https link through cloudflared (use from anywhere)")
@@ -1042,7 +1112,7 @@ def main():
 def _fatal(title, text):
     """Show the error where the user can read it (the console window closes instantly otherwise)."""
     try:
-        with open(os.path.join(HERE, "ClinicSync-error.txt"), "w", encoding="utf-8") as f:
+        with open(os.path.join(HERE, "HealthClinic-error.txt"), "w", encoding="utf-8") as f:
             f.write(title + "\n\n" + text)
     except Exception:
         pass

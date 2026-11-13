@@ -4,7 +4,7 @@
 <meta name="google" content="notranslate"><meta http-equiv="Content-Language" content="ur">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0f6b5a">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&family=Amiri:wght@400;700&display=swap">
 <style>
 /* Layout: one column app, sticky teal header, bottom tab bar, list cards; wide screens centre a 720px column */
 :root{
@@ -50,7 +50,7 @@ button,input,select,textarea{font-family:inherit}
 #medres{position:absolute;left:0;right:0;z-index:60;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);margin-top:2px!important}
 #medres:empty{display:none}#medres{top:100%}#medres.up{top:auto;bottom:100%;margin-bottom:2px}
 #medres .mi{display:block;padding:2px 12px;line-height:1.55;font-size:17px;border-bottom:1px solid #e3e8e6;cursor:pointer;color:var(--ink);text-decoration:none}
-#medres .mi:hover{background:var(--surface2)}#medres .addmed{margin:4px}
+#medres .mi:hover,#medres .mi:focus,#medres .addmed:focus{background:var(--surface2);outline:2px solid var(--accent);outline-offset:-2px}#medres .addmed{margin:4px}
 .medbox{position:relative}
 .selsh{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.18)}
 .selbx{position:fixed;background:#fff;color:#111;overflow:auto;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);border:1px solid #cfd8d5;font-family:var(--f-ur);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -163,8 +163,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:center}
 .wtool .imp{display:inline-flex;align-items:center;padding:0 12px;height:40px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--primary);font-size:13px;font-weight:700;cursor:pointer}
 #pv{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:#7d8782}#pv[hidden]{display:none}
 .pvbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--primary);color:var(--on-primary);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
-.pvscroll{flex:1;overflow:auto;padding:14px}
-.pvpad{max-width:620px;margin:0 auto}
+.pvscroll{flex:1;overflow:auto;padding:14px;direction:ltr;outline:0}
+.pvpad{max-width:620px;margin:0 auto;direction:rtl}
 .pvlab{color:#fff;font-size:13px;margin:10px 4px 6px;text-align:center}
 .pvpage{position:relative;background:#fff;color:#000;border-radius:4px;box-shadow:0 4px 18px rgba(0,0,0,.35);padding:30px 14px 14px;margin-bottom:14px;min-height:300px;overflow:hidden}
 .pvbind{position:absolute;top:0;left:0;right:0;height:14px;background:repeating-linear-gradient(90deg,#555 0 10px,#999 10px 14px);opacity:.75}
@@ -222,6 +222,7 @@ nav.tabs .in{display:flex;width:100%;max-width:720px;gap:4px}
 nav.tabs button{flex:1;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:6px 2px;border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:52px;position:relative}
 nav.tabs button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs button.on{color:var(--primary);background:var(--surface2)}
+#hambBtn{display:none}
 nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(--danger);color:#fff;border-radius:999px;font-size:11px;min-width:18px;line-height:18px;text-align:center}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:15px}
 .kv dt{color:var(--muted);font-size:13px}
@@ -321,10 +322,12 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
  nav.tabs{background:linear-gradient(180deg,var(--surface),var(--surface2))}
  #app,#app.wide{max-width:none;padding-bottom:0;margin:0}
  header.top{padding-inline:28px}
- nav.tabs{top:70px;bottom:0;left:auto;right:0;width:200px;border-top:0;border-left:1px solid var(--line);padding:14px 10px;align-items:flex-start;justify-content:flex-start}
+ #hambBtn{display:inline-flex!important}
+ nav.tabs{display:none;z-index:70;top:74px;bottom:auto;left:auto;right:14px;width:240px;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 36px rgba(0,0,0,.28);padding:10px;align-items:flex-start;justify-content:flex-start}
+ body.navopen nav.tabs{display:flex}
  nav.tabs .in{flex-direction:column;max-width:none;gap:6px}
  nav.tabs button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;font-size:16px;min-height:48px;padding:6px 14px;width:100%}
- #view{margin-right:200px}
+ #view{margin-right:0}
  #view>.wrap{max-width:1500px;margin:0 auto}
  #plist{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
  .pcform{display:flex;flex-direction:column}
@@ -424,10 +427,47 @@ body.m-old #toast{font-size:22px}
 :root[data-skin="sky"] header.top,header.top *{color:#10223f}
 :root[data-skin="sky"] body::before{background:#ffffff}
 :root[data-skin="sky"] .btn{border-radius:14px}
+:root[data-font="kasheeda"]{--f-ui:"Jameel Noori Nastaleeq Kasheeda","JameelNooriNastaleeqKasheeda","Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;--f-ur:"Jameel Noori Nastaleeq Kasheeda","JameelNooriNastaleeqKasheeda","Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif}
+:root[data-font="arabic"]{--f-ui:"Amiri","Traditional Arabic","Arabic Typesetting","Noto Naskh Arabic",serif;--f-ur:"Amiri","Traditional Arabic","Arabic Typesetting","Noto Naskh Arabic",serif}
+/* skins3 */
+:root[data-skin="bw"]{--bg:#ffffff;--surface:#ffffff;--surface2:#f1f1f1;--ink:#000000;--muted:#222222;--primary:#000000;--on-primary:#ffffff;--accent:#444444;--line:#999999;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="bw"] header.top{background:#fff;color:#000;border-bottom:2px solid #000}
+:root[data-skin="bw"] header.top,header.top *{color:#000}
+:root[data-skin="bw"] header.top .iconbtn{background:rgba(0,0,0,.08)}
+:root[data-skin="bw"] body::before{background:#fff}
+:root[data-skin="bw"] .card{box-shadow:none;border:1px solid #888}
+:root[data-skin="wb"]{--bg:#000000;--surface:#000000;--surface2:#1a1a1a;--ink:#ffffff;--muted:#dddddd;--primary:#ffffff;--on-primary:#000000;--accent:#cccccc;--line:#666666;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:dark}
+:root[data-skin="wb"] header.top{background:#000;color:#fff;border-bottom:2px solid #fff}
+:root[data-skin="wb"] header.top,header.top *{color:#fff}
+:root[data-skin="wb"] body::before{background:#000}
+:root[data-skin="wb"] .card{box-shadow:none;border:1px solid #777}
+:root[data-skin="lavender"]{--bg:#f4f0fb;--surface:#ffffff;--surface2:#e6dcf6;--ink:#2b2142;--muted:#62558a;--primary:#7e57c2;--on-primary:#ffffff;--accent:#ec407a;--line:#d3c6ec;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="lavender"] .card,.btn{border-radius:16px}
+:root[data-skin="mint"]{--bg:#effaf5;--surface:#ffffff;--surface2:#d4f1e4;--ink:#0f3a2c;--muted:#3f7a65;--primary:#1fa97a;--on-primary:#ffffff;--accent:#ff7043;--line:#b7e2cf;--f-ui:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;--f-ur:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;color-scheme:light}
+:root[data-skin="mint"] .card,.btn{border-radius:14px}
+:root[data-skin="coffee"]{--bg:#f2e9e1;--surface:#fbf6f1;--surface2:#e3d2c3;--ink:#35231a;--muted:#7a5c4a;--primary:#6f4e37;--on-primary:#ffffff;--accent:#d08a3c;--line:#cfb7a2;--f-ui:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;--f-ur:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;color-scheme:light}
+:root[data-skin="coffee"] .card,.btn{border-radius:8px}
+:root[data-skin="slate"]{--bg:#eceff3;--surface:#ffffff;--surface2:#d9dfe8;--ink:#1b2430;--muted:#546275;--primary:#3d5a80;--on-primary:#ffffff;--accent:#ee6c4d;--line:#c3ccd8;--f-ui:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;--f-ur:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;color-scheme:light}
+:root[data-skin="slate"] .card{box-shadow:none;border:1px solid var(--line)}
+:root[data-skin="slate"] .btn{border-radius:6px}
+:root[data-skin="peach"]{--bg:#fff1ec;--surface:#ffffff;--surface2:#ffe0d4;--ink:#43211a;--muted:#94594b;--primary:#ef6c4a;--on-primary:#ffffff;--accent:#26a69a;--line:#f6c7b8;--f-ui:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="peach"] .card,.btn{border-radius:20px}
+:root[data-skin="navy"]{--bg:#0a1628;--surface:#12233f;--surface2:#1b3358;--ink:#e6efff;--muted:#9db6dc;--primary:#4da3ff;--on-primary:#04152b;--accent:#ffd166;--line:#27406b;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:dark}
+:root[data-skin="navy"] .card,.btn{border-radius:12px}
+:root[data-skin="olive"]{--bg:#f3f4e6;--surface:#fbfcf1;--surface2:#e3e6c4;--ink:#2a2f12;--muted:#66703a;--primary:#6b7a1f;--on-primary:#ffffff;--accent:#c2762b;--line:#cfd5a4;--f-ui:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;--f-ur:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;color-scheme:light}
+:root[data-skin="olive"] .card,.btn{border-radius:10px}
+:root[data-skin="crimson"]{--bg:#fdf0f0;--surface:#ffffff;--surface2:#f8d9d9;--ink:#3a0f12;--muted:#8a3b40;--primary:#c62828;--on-primary:#ffffff;--accent:#1565c0;--line:#efbcbc;--f-ui:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Naskh Arabic","Jameel Noori Nastaleeq",serif;color-scheme:light}
+:root[data-skin="crimson"] .card,.btn{border-radius:12px}
+:root[data-skin="ice"]{--bg:#eaf6fb;--surface:#ffffff;--surface2:#d3ecf7;--ink:#0c2f40;--muted:#3f7490;--primary:#00a6c8;--on-primary:#ffffff;--accent:#ff8a3d;--line:#b3dcec;--f-ui:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;--f-ur:"Segoe UI",Tahoma,"Noto Naskh Arabic","Jameel Noori Nastaleeq",sans-serif;color-scheme:light}
+:root[data-skin="ice"] .card{border-radius:22px;box-shadow:0 8px 24px rgba(0,166,200,.14);border:0}
+:root[data-skin="ice"] .btn{border-radius:999px}
+:root[data-skin="plum"]{--bg:#170d22;--surface:#231433;--surface2:#33204a;--ink:#f3e8ff;--muted:#c0a4e0;--primary:#c77dff;--on-primary:#1a0a28;--accent:#ffd166;--line:#4a2f6b;--f-ui:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;--f-ur:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;color-scheme:dark}
+:root[data-skin="plum"] .card,.btn{border-radius:18px}
 </style>
 
 <div id="app" dir="rtl" lang="ur" translate="no">
   <header class="top">
+    <button class="iconbtn" id="hambBtn" aria-label="مینو" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <button class="iconbtn" id="backBtn" aria-label="واپس" hidden><svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     <img id="appLogo" src="icon-192.png" alt="" style="width:38px;height:38px;border-radius:50%;flex:none;object-fit:cover;background:#fff"><h1 id="title">مریض<span class="sub" id="subtitle"></span></h1>
     <button class="iconbtn" id="syncBtn" aria-label="سنک"><svg class="ic" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4M4 5v4h4M4 13a8 8 0 0 0 14 4M20 19v-4h-4"/></svg><span id="syncN"></span></button>
@@ -895,7 +935,7 @@ function viewSet(){
    '<div class="field"><label for="s-mz">مزاج کی قسم</label><select id="s-mz">'+[['','انتخاب کریں…'],['m8','مفرد اعضاء اربعہ'],['m6','مفرد اعضاء ثلاثہ']].map(function(o){return '<option value="'+o[0]+'"'+((c.mizajSys||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select><div class="meta">مفرد اعضاء اربعہ (آٹھ مزاج) یا ثلاثہ (چھ مزاج)۔ نہ چنیں تو آٹھ مزاج رہتے ہیں۔</div></div>'+
    '<div class="field"><label for="s-start">ایپ کھلنے پر</label><select id="s-start"><option value="last"'+(c.startOn!=='list'?' selected':'')+'>آخری مریض اور اس کی آخری وزٹ</option><option value="list"'+(c.startOn==='list'?' selected':'')+'>مریضوں کی فہرست</option></select></div>'+
    '<div class="field"><label for="s-defdays">نئی وزٹ میں مقررہ ایام پہلے سے (خالی = کچھ نہیں)</label><input id="s-defdays" type="number" inputmode="numeric" value="'+esc(c.defDays||'')+'"></div></div>'+
-   '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-skin">تھیم (رنگ اور فونٹ)</label><select id="s-skin">'+[['','اصل سبز (ڈیفالٹ)'],['sea','سمندری نیلا'],['royal','شاہی بنفشی'],['wine','عنابی و سنہری'],['night','سیاہ و سنہری (رات)'],['rose','گلابی بہار'],['paper','کاغذی (پرانی کتاب)'],['glass','شیشہ (جدید)'],['mono','سیاہ سفید (نمایاں)'],['sunset','غروب آفتاب'],['forest','جنگل (رات)'],['sky','آسمانی (ہلکا)']].map(function(o){return '<option value="'+o[0]+'"'+((c.skin||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="field"><label for="s-font">فونٹ</label><select id="s-font">'+[['','تھیم کے مطابق'],['jameel','جمیل نوری نستعلیق'],['nast','نوٹو نستعلیق'],['naskh','نوٹو نسخ'],['plain','سادہ (Segoe UI)']].map(function(o){return '<option value="'+o[0]+'"'+((c.font||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
+   '<h2>ظاہری شکل</h2><div class="card"><div class="field"><label for="s-skin">تھیم (رنگ اور فونٹ)</label><select id="s-skin">'+[['','اصل سبز (ڈیفالٹ)'],['sea','سمندری نیلا'],['royal','شاہی بنفشی'],['wine','عنابی و سنہری'],['night','سیاہ و سنہری (رات)'],['rose','گلابی بہار'],['paper','کاغذی (پرانی کتاب)'],['glass','شیشہ (جدید)'],['mono','سیاہ سفید (نمایاں)'],['sunset','غروب آفتاب'],['forest','جنگل (رات)'],['sky','آسمانی (ہلکا)'],['bw','سفید پس منظر، سیاہ تحریر'],['wb','سیاہ پس منظر، سفید تحریر'],['lavender','لیوینڈر'],['mint','پودینہ'],['coffee','کافی'],['slate','سلیٹی'],['peach','آڑو'],['navy','بحریہ نیلا (رات)'],['olive','زیتونی'],['crimson','سرخ'],['ice','برفانی'],['plum','بنفشی (رات)']].map(function(o){return '<option value="'+o[0]+'"'+((c.skin||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="field"><label for="s-font">فونٹ</label><select id="s-font">'+[['','تھیم کے مطابق'],['jameel','جمیل نوری نستعلیق'],['nast','نوٹو نستعلیق'],['naskh','نوٹو نسخ'],['kasheeda','جمیل نوری نستعلیق کشیدہ'],['arabic','عربی (امیری)'],['plain','سادہ (Segoe UI)']].map(function(o){return '<option value="'+o[0]+'"'+((c.font||'')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div><div class="field"><label for="s-theme">رنگوں کا انداز</label><select id="s-theme">'+[['auto','خودکار (فون کے مطابق)'],['light','روشن'],['dark','گہرا']].map(function(o){return '<option value="'+o[0]+'"'+((c.theme||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    '<div class="field"><label for="s-fs">تحریر کا سائز</label><select id="s-fs">'+[['0.9','چھوٹا'],['1','درمیانہ'],['1.12','بڑا'],['1.25','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fs||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+'<div class="field"><label for="s-fin">خانوں (ان پٹ) کی تحریر کا سائز</label><select id="s-fin">'+[['0.88','چھوٹا'],['1','درمیانہ'],['1.15','بڑا'],['1.3','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.fin||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+'<div class="field"><label for="s-flb">لیبلز کا سائز</label><select id="s-flb">'+[['0.88','چھوٹا'],['1','درمیانہ'],['1.15','بڑا'],['1.3','بہت بڑا']].map(function(o){return '<option value="'+o[0]+'"'+((c.flb||'1')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div></div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-psym"'+(c.printSym===false?'':' checked')+'><span>پرنٹ میں "علامات / مریض کی شکایات" کا خانہ شامل کریں</span></label><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پرنٹ میں پچھلا صفحہ (غذائیں) شامل کریں</span></label>'+
    ''+clinicUI()+'</div>'+'<h2>ℹ️ ایپ کا تعارف (About)</h2><div class="card"><div class="meta" style="line-height:2"><b>سلمان ہربل کلینک</b> v '+APP_VER+'<br>• مریضوں اور وزٹس کا مکمل ریکارڈ، آف لائن بھی؛ فون اور PC کے درمیان خودکار سنک<br>• <b>خودکار محفوظ:</b> جیسے جیسے ایک خانے سے دوسرے میں جائیں، پہلا خانہ خود محفوظ ہوتا جاتا ہے<br>• <b>خالی وزٹ نہیں بنتی:</b> نئی وزٹ تب بنتی ہے جب تاریخ/وقت اور خود بھرے خانوں کے علاوہ کم از کم ایک خانہ بھرا جائے؛ جب تک موجودہ نئی وزٹ خالی ہو، دوسری نئی وزٹ نہیں کھلتی<br>• <b>غلطی سے تبدیلی سے حفاظت:</b> پہلے سے محفوظ معلومات میں بیچ میں ترمیم یا مٹنے کو اتفاقی سمجھا جاتا ہے (آخر میں اضافہ محفوظ رہتا ہے)؛ اگلی وزٹ، دوسرے مریض یا ایپ بند کرتے وقت پیغام آتا ہے: "نئی تبدیلی محفوظ کریں؟"<br>• بلڈ گروپ، وزٹ کا وقت، گزشتہ معالجین کی فہرست، فارما کوپیا، علاج بالغذاء، تین زبانیں، OldAge اور Doctor موڈ<br>• فون سے فون: بیک اپ فائل ملانے سے صرف نئی انٹریز شامل ہوتی ہیں</div></div>'+'<h2>💾 ڈیٹا کا تحفظ</h2><div class="card"><div class="meta">'+(idb?'ڈیٹا اس فون کی مستقل میموری (IndexedDB) میں محفوظ ہے۔':'⚠ اس براؤزر میں مستقل ذخیرہ دستیاب نہیں، ڈیٹا عارضی ہے۔')+' ایپ ڈیلیٹ کرنے سے ڈیٹا مٹ جاتا ہے، اس لیے وقتاً فوقتاً بیک اپ لیں۔'+(S.cfg.lastBackup?'<br>آخری بیک اپ: '+new Date(S.cfg.lastBackup).toLocaleDateString('en-GB'):'<br>ابھی تک بیک اپ نہیں لیا')+'</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ بیک اپ محفوظ کریں</button><button type="button" class="btn alt grow" data-act="impdata">⬆ فائل سے ڈیٹا درآمد</button></div></div><h2>🔁 فون سے فون</h2><div class="card"><div class="meta">دوسرے فون کا بیک اپ فائل (واٹس ایپ/بلوٹوتھ سے) یہاں ملائیں۔ صرف نئی انٹریز شامل ہوں گی، پہلے سے موجود ڈیٹا جوں کا توں رہے گا۔ PC کی ضرورت نہیں۔</div><div class="row" style="margin-top:10px;gap:8px"><button type="button" class="btn grow" data-act="backup">⬇ اپنا ڈیٹا بھیجنے کے لیے فائل بنائیں</button><button type="button" class="btn alt grow" data-act="mergedata">🔁 دوسرے فون کی فائل ملائیں</button></div></div>'+'<h2>📲 ایپ ڈاؤنلوڈ اور ورژن</h2><div class="card"><div class="meta">موجودہ ورژن: <b dir="ltr">v '+APP_VER+'</b></div><div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">'+(nativeApp()?'':'<a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicApp.apk" target="_blank" rel="noopener">Android APK</a><a class="btn alt grow" style="text-align:center;text-decoration:none" href="'+REL_BASE+'ClinicSync.exe" target="_blank" rel="noopener">Windows EXE</a><a class="btn alt grow" style="text-align:center;text-decoration:none;flex-basis:100%" href="'+WEB_URL+'" target="_blank" rel="noopener">🍎 iPhone / ویب ایپ</a></div>')+'<button type="button" class="btn alt" style="width:100%;margin-top:10px" data-act="checkupd">نیا ورژن چیک کریں</button><button type="button" class="btn alt" style="width:100%;margin-top:8px" data-act="sharedl">🔗 ڈاؤنلوڈ لنک بھیجیں</button></div>'+'<h2>⌨ شارٹ کیز (اکسس کی طرز پر)</h2><div class="card"><div class="meta">کی بورڈ والے کمپیوٹر پر یہ کیز استعمال کریں۔ خانہ بدلنے پر وزٹ خود محفوظ بھی ہوتی ہے۔</div><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + S &nbsp;/&nbsp; Shift + Enter</b></td><td style="padding:6px 4px;width:55%">محفوظ کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + P</b></td><td style="padding:6px 4px;width:55%">پرنٹ ویو کھولیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + N</b></td><td style="padding:6px 4px;width:55%">نیا مریض</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + +</b></td><td style="padding:6px 4px;width:55%">نئی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + F</b></td><td style="padding:6px 4px;width:55%">تلاش (مریض / دوا)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Up</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Page Down</b></td><td style="padding:6px 4px;width:55%">اگلی وزٹ (آخری وزٹ پر نئی وزٹ)</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Enter</b></td><td style="padding:6px 4px;width:55%">اگلے خانے پر جائیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + ;</b></td><td style="padding:6px 4px;width:55%">آج کی تاریخ لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + Shift + :</b></td><td style="padding:6px 4px;width:55%">موجودہ وقت لکھیں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Ctrl + \'</b></td><td style="padding:6px 4px;width:55%">پچھلی وزٹ کے اسی خانے کی قدر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F2</b></td><td style="padding:6px 4px;width:55%">خانے کے آخر میں کرسر</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>F9</b></td><td style="padding:6px 4px;width:55%">سنک کریں</td></tr><tr><td dir="ltr" style="white-space:nowrap;font-family:monospace;font-size:12px;padding:6px 4px"><b>Esc</b></td><td style="padding:6px 4px;width:55%">کھلی ونڈو / کیلنڈر بند</td></tr></table></div>'+
@@ -1117,7 +1157,7 @@ function printVisit(){
    '<div class="pvscroll"><div class="pvpad"><div class="pvlab">صفحہ 1 — نسخہ</div><div class="pvpage">'+front+'</div>'+(back?'<div class="pvlab">صفحہ 2 — علاج بالغذاء</div><div class="pvpage">'+back+'</div>':'')+'</div></div>'+
    '<div class="pvfoot"><div class="row"><button class="btn grow" data-act="pvprint"><svg class="ic sm" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H4v-7h16v7h-3M7 14h10v6H7z"/></svg> پرنٹ کریں</button><button class="btn alt" data-act="pvpdf">PDF محفوظ</button><button class="btn alt" data-act="pvshare">شیئر</button></div>'+
    '<div class="meta" style="margin-top:6px">پرنٹ ونڈو نہ کھلے تو "PDF محفوظ" دبائیں؛ دو صفحوں کی A4 PDF بنے گی جسے کسی بھی پرنٹر یا PDF ویور سے پرنٹ کریں۔ دو طرفہ پرنٹ میں پہلا صفحہ سامنے اور دوسرا پیچھے آئے گا۔</div></div>';
-  pv.hidden=false;document.body.classList.add('pvopen');fitPv()
+  pv.hidden=false;document.body.classList.add('pvopen');fitPv();setTimeout(function(){var sc=pv.querySelector('.pvscroll');if(sc){sc.tabIndex=0;try{sc.focus({preventScroll:true})}catch(x){}}},50)
 }
 function fitPv(){var pg=document.querySelectorAll('#pv .pvpage');pg.forEach(function(g){var r=g.querySelector('.rxs');if(!r)return;var k=Math.min(1,(g.clientWidth)/794);r.style.zoom=k;g.style.height=(1123*k)+'px'})}
 window.addEventListener('resize',function(){if(!$('#pv').hidden)fitPv()});
@@ -1169,7 +1209,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.29',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
+var APP_VER='3.0.30',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-app/releases/latest',UPD={last:0,ready:null};
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<600000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     if(j&&j.v&&verNew(j.v,APP_VER)){showUpdate(j.v,manual,j.notes)}else if(manual)toast('آپ کے پاس تازہ ترین ورژن ہے (v '+APP_VER+')')}
@@ -1686,7 +1726,7 @@ document.addEventListener('input',function(e){
 });
 document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('backdrop'))closeModal();var m=e.target.closest('[data-med]');if(!m)return;
   var x=S.meds.find(function(y){return String(y.id)===m.getAttribute('data-med')});if(!x)return;
-  var ta=$('#f-rx');addRxLine(ta,x.name,x.usage);$('#f-med').value='';$('#medres').innerHTML='';ta.focus()});
+  var ta=$('#f-rx');addRxLine(ta,x.name,x.usage);var fm=$('#f-med');fm.value='';$('#medres').innerHTML='';fm.focus()});
 document.addEventListener('change',function(e){
   if(e.target.id==='f-med'){var v2=e.target.value.trim();if(v2&&!S.meds.some(function(x){return (x.name||'').toLowerCase().indexOf(v2.toLowerCase())>=0})&&!document.activeElement.closest('#medres'))medDialog(null,v2,'rx')}
   if(e.target.id==='s-layout'){S.cfg.layout=e.target.value;saveCfg();toast('ترتیب محفوظ ہو گئی')}
@@ -1752,6 +1792,27 @@ async function boot(){
   autoSync()
 }
 boot();
+})();
+
+(function(){
+ function closeNav(){document.body.classList.remove('navopen');var h=document.getElementById('hambBtn');if(h)h.setAttribute('aria-expanded','false')}
+ document.addEventListener('click',function(e){var h=e.target.closest&&e.target.closest('#hambBtn');
+  if(h){var o=document.body.classList.toggle('navopen');h.setAttribute('aria-expanded',o?'true':'false');if(o){var b=document.querySelector('nav.tabs button');if(b)setTimeout(function(){b.focus()},30)}return}
+  if(document.body.classList.contains('navopen')&&!(e.target.closest&&e.target.closest('nav.tabs'))||(e.target.closest&&e.target.closest('nav.tabs button')))closeNav()});
+ document.addEventListener('keydown',function(e){
+  var t=e.target;
+  if(e.key==='Escape'&&document.body.classList.contains('navopen')){closeNav();return}
+  if(t&&t.closest&&t.closest('nav.tabs')&&(e.key==='ArrowDown'||e.key==='ArrowUp')){var bs=[].slice.call(document.querySelectorAll('nav.tabs button')),i=bs.indexOf(t.closest('button'));if(i<0)return;e.preventDefault();bs[(i+(e.key==='ArrowDown'?1:bs.length-1))%bs.length].focus();return}
+  if(t&&t.id==='f-med'&&e.key==='ArrowDown'){var it=document.querySelector('#medres .mi,#medres .addmed');if(it){e.preventDefault();it.tabIndex=-1;it.focus()}return}
+  if(t&&t.closest&&t.closest('#medres')){var its=[].slice.call(document.querySelectorAll('#medres .mi,#medres .addmed')),cur=t.closest('.mi,.addmed'),j=its.indexOf(cur);if(j<0)return;
+   if(e.key==='ArrowDown'){e.preventDefault();var n=its[j+1];if(n){n.tabIndex=-1;n.focus()}}
+   else if(e.key==='ArrowUp'){e.preventDefault();if(j>0){its[j-1].tabIndex=-1;its[j-1].focus()}else{var fm=document.getElementById('f-med');if(fm)fm.focus()}}
+   else if(e.key==='Enter'||e.key===' '){e.preventDefault();cur.click()}
+   else if(e.key==='Escape'){var fm2=document.getElementById('f-med');if(fm2)fm2.focus()}
+   return}
+  var pv=document.getElementById('pv');
+  if(pv&&!pv.hidden&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='PageDown'||e.key==='PageUp')){var sc=pv.querySelector('.pvscroll');if(sc&&document.activeElement!==sc){e.preventDefault();sc.scrollBy(0,(e.key==='ArrowDown'?1:e.key==='ArrowUp'?-1:e.key==='PageDown'?8:-8)*60)}}
+ });
 })();
 </script>
 
