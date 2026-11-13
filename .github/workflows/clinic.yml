@@ -16,7 +16,7 @@
     },
     {
      "name": "Unzip into repository",
-     "run": "git config user.name \"github-actions\"\ngit config user.email \"actions@users.noreply.github.com\"\ngit diff --name-only --diff-filter=A HEAD^ HEAD -- '*.zip' > /tmp/newzips.txt || true\n[ -s /tmp/newzips.txt ] || ls -1 ./*.zip 2>/dev/null | sed 's#^\\./##' > /tmp/newzips.txt || true\ncat /tmp/newzips.txt\nOK=0\nwhile IFS= read -r z; do\n  [ -f \"$z\" ] || continue\n  if unzip -tq \"$z\" >/dev/null 2>&1; then\n    unzip -o \"$z\" -x \".github/*\" -d . && OK=1\n  else\n    echo \"BAD (incomplete) zip skipped: $z\"\n  fi\ndone < /tmp/newzips.txt\nfind . -maxdepth 1 -name '*.zip' -delete\ngit add -A\ngit commit -m \"unpack zip\" || echo \"nothing to commit\"\ngit push\nif [ \"$OK\" != \"1\" ]; then echo \"No valid zip found - upload it again\"; exit 1; fi\n"
+     "run": "git config user.name \"github-actions\"\ngit config user.email \"actions@users.noreply.github.com\"\ngit diff --name-only --diff-filter=A HEAD^ HEAD -- '*.zip' > /tmp/newzips.txt || true\n[ -s /tmp/newzips.txt ] || ls -1 ./*.zip 2>/dev/null | sed 's#^\\./##' > /tmp/newzips.txt || true\ncat /tmp/newzips.txt\nOK=0\nwhile IFS= read -r z; do\n [ -f \"$z\" ] || continue\n if unzip -tq \"$z\" >/dev/null 2>&1; then\n unzip -o \"$z\" -x \".github/*\" -d . && OK=1\n else\n echo \"BAD (incomplete) zip skipped: $z\"\n fi\ndone < /tmp/newzips.txt\nfind . -maxdepth 1 -name '*.zip' -delete\ngit add -A\ngit commit -m \"unpack zip\" || echo \"nothing to commit\"\ngit push\nif [ \"$OK\" != \"1\" ]; then echo \"No valid zip found - upload it again\"; exit 1; fi\n"
     }
    ]
   },
@@ -45,7 +45,7 @@
      "run": "bash ci/make_icons.sh"
     },
     {
-     "name": "Build ClinicSync.exe",
+     "name": "Build HealthClinic.exe",
      "shell": "bash",
      "run": "bash ci/build_exe.sh"
     },
@@ -55,13 +55,13 @@
       "tag_name": "latest",
       "name": "Latest build",
       "make_latest": "true",
-      "files": "dist/ClinicSync.exe"
+      "files": "dist/HealthClinic.exe"
      }
     },
     {
      "name": "Publish to updates repo (skipped if no UPDATE_TOKEN)",
      "shell": "bash",
-     "run": "bash ci/publish.sh dist/ClinicSync.exe",
+     "run": "bash ci/publish.sh dist/HealthClinic.exe",
      "env": {
       "UPDATE_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
       "GH_TOKEN": "${{ secrets.UPDATE_TOKEN }}",
