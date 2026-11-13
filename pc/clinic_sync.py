@@ -701,6 +701,15 @@ def make_handler(app):
                         return self.send(403, {"error": "local only"})
                     q = parse_qs(urlparse(self.path).query)
                     act = (q.get("a") or [""])[0]
+                    if act == "upd":
+                        u = (q.get("url") or [""])[0]
+                        if not u.startswith("https://github.com/salmanabbasinm-hash/") or not u.endswith(".exe"):
+                            return self.send(400, {"error": "bad url"})
+                        if UPDST["state"] != "run":
+                            threading.Thread(target=self_update, args=(u,), daemon=True).start()
+                        return self.send(200, {"ok": True})
+                    if act == "updst":
+                        return self.send(200, dict(UPDST))
                     if act == "info":
                         return self.send(200, {"bl": bool(WIN.get("bl"))})
                     ok = win_action(act)
@@ -783,6 +792,37 @@ def lan_ip():
 
 
 WIN = {"hwnd": None, "bl": False}
+UPDST = {"state": "idle", "pct": 0, "msg": ""}
+
+
+def self_update(url):
+    """Download the new installer ourselves (no browser warning), run it and quit; it replaces the installed copy."""
+    import urllib.request
+    try:
+        UPDST.update(state="run", pct=0, msg="")
+        tmp = os.path.join(os.environ.get("TEMP") or os.path.expanduser("~"), "HealthClinic_update.exe")
+        req = urllib.request.Request(url, headers={"User-Agent": "HealthClinic"})
+        with urllib.request.urlopen(req, timeout=60) as r, open(tmp, "wb") as f:
+            tot = int(r.headers.get("Content-Length") or 0)
+            got = 0
+            while True:
+                b = r.read(262144)
+                if not b:
+                    break
+                f.write(b)
+                got += len(b)
+                if tot:
+                    UPDST["pct"] = int(got * 100 / tot)
+        if os.path.getsize(tmp) < 1000000:
+            raise RuntimeError("file too small")
+        UPDST.update(state="done", pct=100)
+        time.sleep(1.2)
+        subprocess.Popen([tmp], creationflags=0x00000008 | 0x00000200, close_fds=True)
+        time.sleep(0.5)
+        os._exit(0)
+    except Exception as e:
+        UPDST.update(state="err", msg=str(e)[:120])
+
 
 
 def make_borderless(pid):
