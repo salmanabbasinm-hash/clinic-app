@@ -701,9 +701,9 @@ def make_handler(app):
                         return self.send(403, {"error": "local only"})
                     q = parse_qs(urlparse(self.path).query)
                     act = (q.get("a") or [""])[0]
+                    if act == "info":
+                        return self.send(200, {"bl": bool(WIN.get("bl"))})
                     ok = win_action(act)
-                    if ok and act == "exit":
-                        threading.Timer(0.7, os._exit, [0]).start()
                     return self.send(200, {"ok": ok})
                 if p == "/api/snapshot":
                     if not self.authed():
@@ -782,19 +782,72 @@ def lan_ip():
     return l[0] if l else "127.0.0.1"
 
 
+WIN = {"hwnd": None, "bl": False}
+
+
+def make_borderless(pid):
+    """Remove the Edge title bar/buttons of our app window (our own bar is drawn by the page instead)."""
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        from ctypes import wintypes as wt
+        u = ctypes.windll.user32
+        found = []
+        EP = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
+
+        def cb(h, l):
+            try:
+                if not u.IsWindowVisible(h):
+                    return True
+                cls = ctypes.create_unicode_buffer(80)
+                u.GetClassNameW(h, cls, 80)
+                if cls.value != "Chrome_WidgetWin_1":
+                    return True
+                n = u.GetWindowTextLengthW(h)
+                if n <= 0:
+                    return True
+                buf = ctypes.create_unicode_buffer(n + 1)
+                u.GetWindowTextW(h, buf, n + 1)
+                pv = wt.DWORD()
+                u.GetWindowThreadProcessId(h, ctypes.byref(pv))
+                if pv.value == pid or "Clinic" in buf.value or "کلینک" in buf.value:
+                    found.append(h)
+            except Exception:
+                pass
+            return True
+        for _ in range(60):
+            del found[:]
+            u.EnumWindows(EP(cb), 0)
+            if found:
+                break
+            time.sleep(0.5)
+        if not found:
+            return
+        h = found[0]
+        time.sleep(1.0)
+        st = u.GetWindowLongW(h, -16)
+        st &= ~(0x00C00000 | 0x00040000 | 0x00080000)
+        u.SetWindowLongW(h, -16, st)
+        r = wt.RECT()
+        u.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)
+        u.SetWindowPos(h, 0, r.left, r.top, r.right - r.left, r.bottom - r.top, 0x0020 | 0x0004 | 0x0040)
+        WIN["hwnd"] = h
+        WIN["bl"] = True
+    except Exception:
+        pass
+
+
 def win_action(a):
-    """Window buttons for the chrome-less program window (Windows only, called from this PC only)."""
+    """Window buttons for our own title bar (Windows only, called from this PC only)."""
     if os.name != "nt":
         return False
     import ctypes
     u = ctypes.windll.user32
-    h = u.GetForegroundWindow()
+    h = WIN.get("hwnd") or u.GetForegroundWindow()
     if a == "min":
         u.ShowWindow(h, 6)
-    elif a == "full":
-        u.keybd_event(0x7A, 0, 0, 0)
-        u.keybd_event(0x7A, 0, 2, 0)
-    elif a == "exit":
+    elif a == "close":
         u.PostMessageW(h, 0x0010, 0, 0)
     else:
         return False
@@ -852,6 +905,7 @@ def open_app_window(url):
                     except Exception:
                         pass
                 threading.Thread(target=_watch, daemon=True).start()
+                threading.Thread(target=make_borderless, args=(p.pid,), daemon=True).start()
                 return
             except Exception:
                 pass

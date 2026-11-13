@@ -21,7 +21,19 @@ EXE=ClinicSync.exe; echo "$ASSETS" | grep -qx HealthClinic.exe && EXE=HealthClin
 git clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd
 B=https://github.com/$UPD_REPO/releases/latest/download
 NOTES=$(python3 -c "import json;print(json.dumps(json.load(open('../version.json')).get('notes','')))" 2>/dev/null || echo '""')
-echo "{\"v\":\"$VER\",\"notes\":$NOTES,\"apk\":\"$B/ClinicApp.apk\",\"exe\":\"$B/$EXE\",\"web\":\"https://salmanabbasinm-hash.github.io/clinic-app/\"}" > version.json
+PLAT=exev; case "$NAME" in *.apk) PLAT=apkv;; esac
+export PLAT B EXE VER
+python3 - <<'PY'
+import json,os
+try: d=json.load(open('version.json'))
+except Exception: d={}
+n=json.load(open('../version.json')).get('notes','')
+d['v']=os.environ['VER']; d['notes']=n
+d[os.environ['PLAT']]=os.environ['VER']
+d['apk']=os.environ['B']+'/ClinicApp.apk'; d['exe']=os.environ['B']+'/'+os.environ['EXE']
+d['web']='https://salmanabbasinm-hash.github.io/clinic-app/'
+json.dump(d,open('version.json','w'),ensure_ascii=False)
+PY
 cat > index.html <<H
 <!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Salman Herbal Clinic - Downloads</title>
 <body dir=rtl style="font-family:sans-serif;max-width:420px;margin:0 auto;padding:24px 16px;text-align:center;background:#f4f7f4">
