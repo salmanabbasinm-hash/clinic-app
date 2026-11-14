@@ -129,6 +129,21 @@ public class AppNative extends Plugin {
                 i.setType("text/plain");
             }
             if (text != null) i.putExtra(Intent.EXTRA_TEXT, text);
+            String phone = call.getString("phone");
+            if (phone != null && phone.length() > 0 && b64 != null && b64.length() > 0) {
+                String[] pks = {"com.whatsapp", "com.whatsapp.w4b"};
+                for (String pk : pks) {
+                    try {
+                        Intent w = new Intent(i);
+                        w.setPackage(pk);
+                        w.putExtra("jid", phone + "@s.whatsapp.net");
+                        getActivity().startActivity(w);
+                        call.resolve();
+                        return;
+                    } catch (Exception ex) {
+                    }
+                }
+            }
             Intent ch = Intent.createChooser(i, title);
             getActivity().startActivity(ch);
             call.resolve();
