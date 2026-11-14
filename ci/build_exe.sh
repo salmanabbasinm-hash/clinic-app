@@ -18,10 +18,9 @@ mkdir -p build_app && cp dist/HealthClinic.exe build_app/HealthClinic.exe
 ISCC="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"
 if [ ! -f "$ISCC" ]; then choco install innosetup -y --no-progress || true; fi
 if [ -f "$ISCC" ]; then
-  cp dist/HealthClinic.exe dist/HealthClinic-portable.exe
-  "$ISCC" ci/clinic.iss && echo "installer built" || { echo "installer failed - keeping portable exe"; cp dist/HealthClinic-portable.exe dist/HealthClinic.exe; }
+  "$ISCC" ci/clinic.iss && echo "installer built" || echo "installer failed"
 else
-  echo "Inno Setup missing - keeping portable exe"
+  echo "Inno Setup missing"
 fi
 # keep old file name too so an older workflow file still finds the exe
 cp -f dist/HealthClinic.exe dist/ClinicSync.exe

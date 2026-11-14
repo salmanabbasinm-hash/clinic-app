@@ -5,12 +5,15 @@ AppId={{6B0B6C9E-5C1A-4D3B-9A52-5A1C11C0A001}
 AppName=HealthClinic
 AppVersion={#AppVer}
 AppPublisher=HealthClinic
-DefaultDirName={autopf}\HealthClinic
+DefaultDirName={localappdata}\Programs\SalmanHerbalClinic
 DefaultGroupName=HealthClinic
 DisableProgramGroupPage=yes
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
+DisableDirPage=yes
+DisableReadyPage=no
+UsePreviousAppDir=no
 OutputDir=..\dist
-OutputBaseFilename=HealthClinic
+OutputBaseFilename=HealthClinic-Setup
 SetupIconFile=..\pc\icon.ico
 UninstallDisplayIcon={app}\HealthClinic.exe
 Compression=lzma2
@@ -31,11 +34,9 @@ Name: "{autoprograms}\HealthClinic"; Filename: "{app}\HealthClinic.exe"
 Name: "{autodesktop}\HealthClinic"; Filename: "{app}\HealthClinic.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Clinic Sync"" dir=in action=allow protocol=TCP localport=8765 profile=any"; Flags: runhidden
-Filename: "{app}\HealthClinic.exe"; Description: "Start HealthClinic now"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\HealthClinic.exe"; Description: "Start HealthClinic now"; Parameters: "--noinstall"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Clinic Sync"""; Flags: runhidden
 Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM HealthClinic.exe"; Flags: runhidden
 
 [Code]

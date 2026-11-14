@@ -866,12 +866,22 @@ def make_borderless(pid):
             return
         h = found[0]
         time.sleep(1.0)
-        st = u.GetWindowLongW(h, -16)
-        st &= ~(0x00C00000 | 0x00040000 | 0x00080000)
-        u.SetWindowLongW(h, -16, st)
-        r = wt.RECT()
-        u.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)
-        u.SetWindowPos(h, 0, r.left, r.top, r.right - r.left, r.bottom - r.top, 0x0020 | 0x0004 | 0x0040)
+        ok = False
+        for _try in range(12):
+            st = u.GetWindowLongW(h, -16)
+            if st & 0x00C00000 == 0:
+                ok = True
+                break
+            st &= ~(0x00C00000 | 0x00080000)
+            u.SetWindowLongW(h, -16, st)
+            ex = u.GetWindowLongW(h, -20)
+            u.SetWindowLongW(h, -20, ex & ~(0x00000001 | 0x00000200 | 0x00020000))
+            r = wt.RECT()
+            u.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)
+            u.SetWindowPos(h, 0, r.left, r.top, r.right - r.left, r.bottom - r.top, 0x0020 | 0x0004 | 0x0040)
+            time.sleep(1.0)
+        if not ok:
+            return
         WIN["hwnd"] = h
         WIN["bl"] = True
     except Exception:
@@ -1099,7 +1109,7 @@ def self_install():
         import ctypes, winreg
         exe = os.path.abspath(sys.executable)
         low = exe.lower()
-        if "salman herbal clinic" in low or "salmanherbalclinic" in low or "programs\\salman" in low:
+        if "healthclinic-setup" in low or "salman herbal clinic" in low or "salmanherbalclinic" in low or "programs\\salman" in low:
             return
         base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
         d = os.path.join(base, "Programs", "SalmanHerbalClinic")
@@ -1168,7 +1178,9 @@ def main():
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--public", action="store_true", help="also open a public https link through cloudflared (use from anywhere)")
     ap.add_argument("--app", action="store_true", help="open the program in its own window (Edge/Chrome app mode) on this PC")
-    a = ap.parse_args()
+    a, _unk = ap.parse_known_args()
+    if a.mdb and not os.path.exists(a.mdb):
+        a.mdb = None
     cfgp = os.path.join(HERE, "sync_config.json")
     cfg = json.load(open(cfgp)) if os.path.exists(cfgp) else {}
     if "token" not in cfg:
