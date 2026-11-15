@@ -4,7 +4,9 @@
 AppId={{6B0B6C9E-5C1A-4D3B-9A52-5A1C11C0A001}
 AppName=HealthClinic
 AppVersion={#AppVer}
-AppPublisher=HealthClinic
+AppPublisher=Salman Herbal Clinic
+VersionInfoVersion={#AppVer}.0
+VersionInfoCompany=Salman Herbal Clinic
 DefaultDirName={localappdata}\Programs\SalmanHerbalClinic
 DefaultGroupName=HealthClinic
 DisableProgramGroupPage=yes
