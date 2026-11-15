@@ -20,10 +20,6 @@ import android.print.PrintManager;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.WebView;
-import android.telephony.SmsManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import java.util.ArrayList;
 
 import androidx.core.content.FileProvider;
 import com.getcapacitor.JSObject;
@@ -41,33 +37,6 @@ import java.net.URL;
 
 @CapacitorPlugin(name = "AppNative")
 public class AppNative extends Plugin {
-
-    @PluginMethod
-    public void smsPerm(PluginCall call) {
-        boolean ok = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
-        if (!ok) ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.SEND_SMS}, 4412);
-        JSObject r = new JSObject();
-        r.put("ok", ok);
-        call.resolve(r);
-    }
-
-    @PluginMethod
-    public void sendSms(PluginCall call) {
-        try {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                call.reject("no permission");
-                return;
-            }
-            String phone = call.getString("phone", "");
-            String text = call.getString("text", "");
-            SmsManager sm = Build.VERSION.SDK_INT >= 31 ? getContext().getSystemService(SmsManager.class) : SmsManager.getDefault();
-            ArrayList<String> parts = sm.divideMessage(text);
-            sm.sendMultipartTextMessage(phone, null, parts, null, null);
-            call.resolve();
-        } catch (Exception e) {
-            call.reject(String.valueOf(e));
-        }
-    }
 
     @PluginMethod
     public void smsPerm(PluginCall call) {
