@@ -426,7 +426,48 @@ class State:
         CREATE TABLE IF NOT EXISTS sms_done(uid TEXT PRIMARY KEY);
         CREATE TABLE IF NOT EXISTS vtests(pid INTEGER, vid INTEGER, tests TEXT, PRIMARY KEY(pid, vid));
         CREATE TABLE IF NOT EXISTS kvx(k TEXT PRIMARY KEY, v TEXT, ts INTEGER, del INTEGER DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS reps(id TEXT PRIMARY KEY, pu TEXT, pid INTEGER, name TEXT, ts INTEGER, w INTEGER, h INTEGER, del INTEGER DEFAULT 0);
         """)
+
+    # ---- patient test reports (compressed page images kept in a folder next to the program data) ----
+    def rep_dir(self):
+        d = os.path.join(HERE, "reports")
+        os.makedirs(d, exist_ok=True)
+        return d
+
+    def rep_put(self, d):
+        import base64
+        rid = re.sub(r"[^A-Za-z0-9_\-]", "", str(d.get("id") or ""))
+        if not rid:
+            raise ValueError("bad id")
+        raw = base64.b64decode(d.get("data") or "")
+        if not raw or len(raw) > 20 * 1024 * 1024:
+            raise ValueError("bad size")
+        with open(os.path.join(self.rep_dir(), rid + ".jpg"), "wb") as f:
+            f.write(raw)
+        self.c.execute("INSERT OR REPLACE INTO reps VALUES (?,?,?,?,?,?,?,0)",
+                       (rid, d.get("pu"), d.get("pid"), d.get("name") or "", int(d.get("ts") or 0), int(d.get("w") or 0), int(d.get("h") or 0)))
+        self.c.commit()
+        return {"ok": True, "id": rid}
+
+    def rep_list(self):
+        rows = self.c.execute("SELECT id,pu,pid,name,ts,w,h,del FROM reps ORDER BY ts").fetchall()
+        return {"items": [{"id": r[0], "pu": r[1], "pid": r[2], "name": r[3], "ts": r[4], "w": r[5], "h": r[6], "del": bool(r[7])} for r in rows]}
+
+    def rep_del(self, rid):
+        rid = re.sub(r"[^A-Za-z0-9_\-]", "", str(rid or ""))
+        self.c.execute("UPDATE reps SET del=1 WHERE id=?", (rid,))
+        self.c.commit()
+        try:
+            os.remove(os.path.join(self.rep_dir(), rid + ".jpg"))
+        except Exception:
+            pass
+        return {"ok": True}
+
+    def rep_file(self, rid):
+        rid = re.sub(r"[^A-Za-z0-9_\-]", "", str(rid or ""))
+        fp = os.path.join(self.rep_dir(), rid + ".jpg")
+        return open(fp, "rb").read() if os.path.exists(fp) else None
 
     def get_tests(self, pid, vid):
         r = self.c.execute("SELECT tests FROM vtests WHERE pid=? AND vid=?", (pid, vid)).fetchone()
@@ -708,6 +749,11 @@ def make_handler(app):
                         if UPDST["state"] != "run":
                             threading.Thread(target=self_update, args=(u,), daemon=True).start()
                         return self.send(200, {"ok": True})
+                    if act == "bk":
+                        try:
+                            return self.send(200, {"ok": True, "path": make_backup()})
+                        except Exception as e:
+                            return self.send(500, {"error": str(e)})
                     if act == "updst":
                         return self.send(200, dict(UPDST))
                     if act == "info":
@@ -719,6 +765,16 @@ def make_handler(app):
                         return self.send(401, {"error": "bad token"})
                     with LOCK:
                         return self.send(200, app.snapshot())
+                if p == "/api/reps" or p.startswith("/api/rep/"):
+                    if not self.authed():
+                        return self.send(401, {"error": "bad token"})
+                    with LOCK:
+                        if p == "/api/reps":
+                            return self.send(200, app.s.rep_list())
+                        data = app.s.rep_file(p[len("/api/rep/"):])
+                    if data is None:
+                        return self.send(404, {"error": "no file"})
+                    return self.send(200, data, "image/jpeg")
                 files = {"/": ("app.html", "text/html; charset=utf-8"), "/index.html": ("app.html", "text/html; charset=utf-8"),
                          "/sw.js": ("sw.js", "application/javascript"), "/manifest.webmanifest": ("manifest.webmanifest", "application/manifest+json"),
                          "/icon.svg": ("icon.svg", "image/svg+xml"),
@@ -750,6 +806,10 @@ def make_handler(app):
                         return self.send(200, app.sync(body))
                     if p == "/api/sms/enqueue":
                         return self.send(200, app.enqueue(body))
+                    if p == "/api/rep":
+                        return self.send(200, app.s.rep_put(body))
+                    if p == "/api/repdel":
+                        return self.send(200, app.s.rep_del(body.get("id")))
                 self.send(404, {"error": "not found"})
             except Exception as e:
                 print("  ERROR", e)
@@ -851,6 +911,8 @@ def make_borderless(pid):
                 u.GetWindowTextW(h, buf, n + 1)
                 pv = wt.DWORD()
                 u.GetWindowThreadProcessId(h, ctypes.byref(pv))
+                if "Microsoft\u200b Edge" in buf.value or "- Microsoft" in buf.value or "Google Chrome" in buf.value:
+                    return True
                 if pv.value == pid or "Clinic" in buf.value or "کلینک" in buf.value:
                     found.append(h)
             except Exception:
@@ -880,8 +942,15 @@ def make_borderless(pid):
             u.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)
             u.SetWindowPos(h, 0, r.left, r.top, r.right - r.left, r.bottom - r.top, 0x0020 | 0x0004 | 0x0040)
             time.sleep(1.0)
-        if not ok:
-            return
+        if not ok:    # caption cannot be removed: slide the window up so the native bar is off-screen
+            try:
+                u.ShowWindow(h, 9)
+                capH = u.GetSystemMetrics(4) + u.GetSystemMetrics(33) + u.GetSystemMetrics(92)
+                r = wt.RECT()
+                u.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)
+                u.SetWindowPos(h, 0, r.left - 1, r.top - capH, r.right - r.left + 2, r.bottom - r.top + capH, 0x0004 | 0x0040)
+            except Exception:
+                return
         WIN["hwnd"] = h
         WIN["bl"] = True
     except Exception:
@@ -894,7 +963,7 @@ def win_action(a):
         return False
     import ctypes
     u = ctypes.windll.user32
-    h = WIN.get("hwnd") or u.GetForegroundWindow()
+    h = u.GetForegroundWindow() or WIN.get("hwnd")
     if a == "min":
         u.ShowWindow(h, 6)
     elif a == "close":
@@ -1030,6 +1099,71 @@ def _build_sqlite_from_mdb(mdb, dbpath):
     if os.path.exists(dbpath):
         os.remove(dbpath)
     os.replace(tmp, dbpath)
+
+
+MDB_PATH = None
+
+
+def backup_dir():
+    d = os.path.join(os.path.expanduser("~"), "Documents", "HealthClinic-Backup")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def make_backup():
+    """Zip the program's data (consistent sqlite copy + settings) into Documents\\HealthClinic-Backup."""
+    import zipfile, sqlite3, tempfile, shutil
+    d = backup_dir()
+    name = "HealthClinic-backup-%s.zip" % time.strftime("%Y-%m-%d_%H%M")
+    out = os.path.join(d, name)
+    tmp = tempfile.mkdtemp()
+    try:
+        with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+            for fn in ("clinic_data.db", "sync_state.db"):
+                src = os.path.join(HERE, fn)
+                if os.path.exists(src):
+                    dst = os.path.join(tmp, fn)
+                    try:
+                        a = sqlite3.connect(src)
+                        b = sqlite3.connect(dst)
+                        a.backup(b)
+                        b.close()
+                        a.close()
+                    except Exception:
+                        shutil.copyfile(src, dst)
+                    z.write(dst, fn)
+            cj = os.path.join(HERE, "sync_config.json")
+            if os.path.exists(cj):
+                z.write(cj, "sync_config.json")
+            if MDB_PATH and os.path.exists(MDB_PATH):
+                z.write(MDB_PATH, os.path.basename(MDB_PATH))
+            rd = os.path.join(HERE, "reports")
+            if os.path.isdir(rd):
+                for fn in os.listdir(rd):
+                    z.write(os.path.join(rd, fn), "reports/" + fn)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    olds = sorted([f for f in os.listdir(d) if f.startswith("HealthClinic-backup-") and f.endswith(".zip")])
+    for f in olds[:-8]:
+        try:
+            os.remove(os.path.join(d, f))
+        except Exception:
+            pass
+    return out
+
+
+def backup_loop():
+    time.sleep(120)
+    while True:
+        try:
+            d = backup_dir()
+            zs = [os.path.getmtime(os.path.join(d, f)) for f in os.listdir(d) if f.startswith("HealthClinic-backup-")]
+            if not zs or time.time() - max(zs) > 7 * 86400:
+                make_backup()
+        except Exception:
+            pass
+        time.sleep(6 * 3600)
+
 
 
 def open_backend(mdb):
@@ -1200,6 +1334,9 @@ def main():
         pass
     if not a.sqlite and not a.mdb:
         a.sqlite = os.path.join(HERE, "clinic_data.db")   # the program's own database - nothing to install or choose
+    global MDB_PATH
+    MDB_PATH = a.mdb
+    threading.Thread(target=backup_loop, daemon=True).start()
     if a.sqlite:
         if not os.path.exists(a.sqlite):
             init_empty_db(a.sqlite)

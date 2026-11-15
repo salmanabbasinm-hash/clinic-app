@@ -18,6 +18,9 @@ if [ "$NAME" = "HealthClinic.exe" ] && [ -f dist/HealthClinic-Setup.exe ]; then
   gh release delete-asset latest HealthClinic-Setup.exe -R $UPD_REPO -y >/dev/null 2>&1 || true
   gh release upload latest dist/HealthClinic-Setup.exe -R $UPD_REPO --clobber || true
 fi
+SETUP_OK=0
+gh release view latest -R $UPD_REPO --json assets -q ".assets[].name" 2>/dev/null | grep -qx HealthClinic-Setup.exe && SETUP_OK=1
+echo "setup asset present: $SETUP_OK"
 if [ "$OKUP" != "1" ]; then echo "ERROR: $NAME was not uploaded to $UPD_REPO"; exit 1; fi
 if [ "$NAME" = "HealthClinic.exe" ]; then gh release delete-asset latest ClinicSync.exe -R $UPD_REPO -y >/dev/null 2>&1 || true; fi
 ASSETS=$(gh release view latest -R $UPD_REPO --json assets -q ".assets[].name" 2>/dev/null)
@@ -26,6 +29,7 @@ git clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd &
 B=https://github.com/$UPD_REPO/releases/latest/download
 NOTES=$(python3 -c "import json;print(json.dumps(json.load(open('../version.json')).get('notes','')))" 2>/dev/null || echo '""')
 PLAT=exev; case "$NAME" in *.apk) PLAT=apkv;; esac
+PCLINK=$B/$EXE; [ "$SETUP_OK" = "1" ] && PCLINK=$B/HealthClinic-Setup.exe
 export PLAT B EXE VER
 python3 - <<'PY'
 import json,os
@@ -43,7 +47,7 @@ cat > index.html <<H
 <body dir=rtl style="font-family:sans-serif;max-width:420px;margin:0 auto;padding:24px 16px;text-align:center;background:#f4f7f4">
 <h2 style="color:#1b5e20">سلمان ہربل کلینک</h2><p>اپنی مرضی کی ایپ ڈاؤنلوڈ کریں</p>
 <a style="display:block;padding:18px;margin:14px 0;background:#2e7d32;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="$B/ClinicApp.apk">📱 Android ایپ (APK)</a>
-<a style="display:block;padding:18px;margin:14px 0;background:#1565c0;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="$B/HealthClinic-Setup.exe">💻 Windows انسٹالر (Setup)</a>
+<a style="display:block;padding:18px;margin:14px 0;background:#1565c0;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="$PCLINK">💻 Windows ایپ (انسٹالر)</a>
 <a style="display:block;padding:18px;margin:14px 0;background:#6a1b9a;color:#fff;border-radius:14px;text-decoration:none;font-size:20px" href="https://salmanabbasinm-hash.github.io/clinic-app/">🍎 iPhone / ویب ایپ</a>
 <small dir=ltr>v $VER</small>
 H
