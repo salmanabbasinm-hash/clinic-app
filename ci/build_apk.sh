@@ -16,6 +16,20 @@ open(p,'w').write(s)
 PY
 rm -rf android/app/src/main/res/mipmap-anydpi-v26 android/app/src/main/res/drawable/splash.png android/app/src/main/res/drawable-port-* android/app/src/main/res/drawable-land-* android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
 cp -r ci/res/* android/app/src/main/res/
+python3 - <<'PY'
+import re
+p='android/app/src/main/res/values/styles.xml'
+try:
+    s=open(p).read()
+    m=re.search(r'<style name="AppTheme.NoActionBarLaunch"[^>]*>',s)
+    if m:
+        add='<item name="android:windowSplashScreenBackground">@color/clinic_splash_bg</item><item name="android:windowSplashScreenAnimatedIcon">@drawable/clinic_splash_v31</item><item name="android:windowSplashScreenIconBackgroundColor">@color/clinic_splash_bg</item>'
+        if 'Theme.SplashScreen' in m.group(0):
+            add+='<item name="windowSplashScreenBackground">@color/clinic_splash_bg</item><item name="windowSplashScreenAnimatedIcon">@drawable/clinic_splash_v31</item>'
+        s=s[:m.end()]+add+s[m.end():]
+        open(p,'w').write(s);print('splash theme patched')
+except Exception as e: print('splash patch skipped',e)
+PY
 mkdir -p android/app/src/main/java/com/salman/clinic
 cp ci/java/*.java android/app/src/main/java/com/salman/clinic/
 grep -q WRITE_EXTERNAL android/app/src/main/AndroidManifest.xml || sed -i 's#<application#<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />\n    <application#' android/app/src/main/AndroidManifest.xml

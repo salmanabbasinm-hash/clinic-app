@@ -174,6 +174,10 @@ class Backend:
     def update_med(self, mid, name, usage):
         self.exec("UPDATE [tblMedicine] SET [Medicines]=?, [DefaultUsage]=? WHERE [ID]=?", [name, usage, mid])
 
+    def delete_patient(self, pid):
+        self.exec("DELETE FROM [Daily Treatment] WHERE [PatientID]=?", [pid])
+        self.exec("DELETE FROM [patient history] WHERE [PatientID]=?", [pid])
+
     def delete_med(self, mid):
         self.exec("DELETE FROM [tblMedicine] WHERE [ID]=?", [mid])
 
@@ -536,6 +540,14 @@ class App:
             results.append(self.apply_sms(sm))
         for m in body.get("meds", []):
             results.append(self.apply_med(m))
+        pdl = body.get("patDel", [])
+        if pdl:
+            try:
+                make_backup()
+            except Exception as e:
+                print("  !! backup before delete:", e)
+        for pid in pdl:
+            results.append(self.apply_patient_del(pid))
         for mid in body.get("medDel", []):
             results.append(self.apply_med_del(mid))
         for d in body.get("diets", []):
@@ -569,6 +581,15 @@ class App:
             return {"uid": uid, "kind": "med", "id": mid, "status": "ok"}
         except Exception as e:
             return {"uid": uid, "kind": "med", "status": "error", "msg": str(e)}
+
+    def apply_patient_del(self, pid):
+        try:
+            p = int(pid) if str(pid).lstrip("-").isdigit() else pid
+            self.b.delete_patient(p)
+            print("  - patient %s deleted (with visits)" % pid)
+            return {"uid": str(pid), "kind": "patdel", "status": "ok"}
+        except Exception as e:
+            return {"uid": str(pid), "kind": "patdel", "status": "error", "msg": str(e)}
 
     def apply_med_del(self, mid):
         try:
