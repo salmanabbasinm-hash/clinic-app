@@ -898,7 +898,7 @@ def self_update(url):
             raise RuntimeError("file too small")
         UPDST.update(state="done", pct=100)
         time.sleep(1.2)
-        subprocess.Popen([tmp], creationflags=0x00000008 | 0x00000200, close_fds=True)
+        subprocess.Popen([tmp, "/SILENT", "/NORESTART", "/CLOSEAPPLICATIONS", "/SUPPRESSMSGBOXES"], creationflags=0x00000008 | 0x00000200, close_fds=True)
         time.sleep(0.5)
         os._exit(0)
     except Exception as e:

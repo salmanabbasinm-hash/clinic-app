@@ -37,6 +37,7 @@ Name: "{autodesktop}\HealthClinic"; Filename: "{app}\HealthClinic.exe"; Tasks: d
 
 [Run]
 Filename: "{app}\HealthClinic.exe"; Description: "Start HealthClinic now"; Parameters: "--noinstall"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\HealthClinic.exe"; Parameters: "--noinstall"; Flags: nowait; Check: WizardSilent
 
 [UninstallRun]
 Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM HealthClinic.exe"; Flags: runhidden

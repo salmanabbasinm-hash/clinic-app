@@ -24,9 +24,12 @@ os.makedirs(res + '/mipmap-anydpi-v26', exist_ok=True)
 for nm in ('ic_launcher.xml', 'ic_launcher_round.xml'):
     open(res + '/mipmap-anydpi-v26/' + nm, 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/clinic_icon_bg"/>\n    <foreground android:drawable="@mipmap/clinic_fg"/>\n</adaptive-icon>\n')
 os.makedirs(res + '/values', exist_ok=True)
-open(res + '/values/clinic_icon.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="clinic_icon_bg">#FFFFFF</color>\n</resources>\n')
+open(res + '/values/clinic_icon.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="clinic_icon_bg">#FFFFFF</color>\n    <color name="clinic_splash_bg">#F6F0E6</color>\n</resources>\n')
 # پرانے اینڈرائیڈ کی اسپلیش: سفید پس منظر + درمیان میں بڑا صاف آئیکن
-os.makedirs(res + '/drawable-nodpi', exist_ok=True); R(768).save(res + '/drawable-nodpi/clinic_splash_icon.png')
+os.makedirs(res + '/drawable-nodpi', exist_ok=True); 
+def pad(canvas, diam, path):
+    cv = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0)); d = R(diam); cv.paste(d, ((canvas-diam)//2, (canvas-diam)//2), d); cv.save(path)
+pad(960, 900, res + '/drawable-nodpi/clinic_splash_icon.png'); pad(1152, 780, res + '/drawable-nodpi/clinic_splash_v31.png')
 os.makedirs(res + '/drawable', exist_ok=True)
-open(res + '/drawable/splash.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<layer-list xmlns:android="http://schemas.android.com/apk/res/android">\n    <item android:drawable="@color/clinic_icon_bg"/>\n    <item android:gravity="center" android:width="240dp" android:height="240dp">\n        <bitmap android:src="@drawable/clinic_splash_icon" android:gravity="fill"/>\n    </item>\n</layer-list>\n')
+open(res + '/drawable/splash.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<layer-list xmlns:android="http://schemas.android.com/apk/res/android">\n    <item android:drawable="@color/clinic_splash_bg"/>\n    <item android:gravity="center" android:width="250dp" android:height="250dp">\n        <bitmap android:src="@drawable/clinic_splash_icon" android:gravity="fill"/>\n    </item>\n</layer-list>\n')
 print('icons ok')
