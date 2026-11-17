@@ -620,6 +620,17 @@ class App:
         try:
             pid = ch.get("pid") or (self.s.get_map(uid) or [None])[0]
             if not pid:
+                # never create a second copy of the same person (re-push after a reset / lost reply)
+                try:
+                    nm = lambda x: re.sub(r"\s+", "", str(x or "")).lower()
+                    for ex in self.b.list_patients():
+                        if nm(ex.get("name")) and nm(ex.get("name")) == nm(ch.get("name")) and nm(ex.get("father")) == nm(ch.get("father")) \
+                           and nm(ex.get("phone")) == nm(ch.get("phone")) and nm(ex.get("age")) == nm(ch.get("age")):
+                            self.s.set_map(uid, "patient", ex["pid"])
+                            print("  = patient already on PC #%s (no duplicate made)" % ex["pid"])
+                            return {"uid": uid, "kind": "patient", "pid": ex["pid"], "status": "ok"}
+                except Exception as e:
+                    print("  (dup check: %s)" % e)
                 pid = self.b.insert_patient(ch)
                 self.s.set_map(uid, "patient", pid)
                 print("  + new patient #%s" % pid)
@@ -647,6 +658,15 @@ class App:
                 return {"uid": uid, "kind": "visit", "status": "error", "msg": "patient unknown"}
             vid = ch.get("vid") or (self.s.get_map(uid) or [None, None])[1]
             if not vid:
+                try:
+                    for ex in self.b.list_visits():
+                        if ex["pid"] == pid and (ex.get("date") or "") == str(ch.get("date") or "")[:10] and (ch.get("symptoms") or ch.get("rx")) \
+                           and (ex.get("symptoms") or "") == (ch.get("symptoms") or "") and (ex.get("rx") or "") == (ch.get("rx") or ""):
+                            self.s.set_map(uid, "visit", pid, ex["vid"])
+                            print("  = visit already on PC %s/%s (no duplicate made)" % (pid, ex["vid"]))
+                            return {"uid": uid, "kind": "visit", "pid": pid, "vid": ex["vid"], "status": "ok"}
+                except Exception as e:
+                    print("  (visit dup check: %s)" % e)
                 d = dict(ch)
                 d["note"] = note_with_tests(ch.get("note"), ch.get("tests"))
                 vid = self.b.insert_visit(pid, d)
@@ -694,6 +714,35 @@ class App:
                           body.get("kind") or "manual", datetime.datetime.now().isoformat(timespec="seconds")))
         self.s.c.commit()
         return {"ok": True}
+
+
+def scan_page():
+    """Scan one page from a flatbed/ADF scanner through Windows WIA (opens the Windows scan dialog)."""
+    import base64, tempfile
+    if os.name != "nt":
+        return {"ok": False, "msg": "سکینر صرف ونڈوز PC پر چلتا ہے"}
+    out = os.path.join(tempfile.gettempdir(), "clinic_scan_%d.jpg" % int(time.time() * 1000))
+    ps = ("$ErrorActionPreference='Stop';try{$d=New-Object -ComObject WIA.CommonDialog;"
+          "$i=$d.ShowAcquireImage(1,1,0,'{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}',$false,$true,$false);"
+          "if($i -eq $null){exit 3};$i.SaveFile('%s')}catch{Write-Output $_.Exception.Message;exit 4}") % out.replace("'", "''")
+    try:
+        r = subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", ps], capture_output=True, text=True,
+                           stdin=subprocess.DEVNULL, timeout=300, creationflags=0x08000000)
+    except Exception as e:
+        return {"ok": False, "msg": "سکین شروع نہ ہو سکا: %s" % e}
+    if r.returncode == 3:
+        return {"ok": False, "cancel": True, "msg": "سکین منسوخ ہوا"}
+    if r.returncode != 0 or not os.path.exists(out):
+        return {"ok": False, "msg": "سکینر نہیں ملا یا سکین نہ ہو سکا۔ سکینر آن کر کے دوبارہ کوشش کریں، یا «فائل منتخب کریں» استعمال کریں"}
+    try:
+        with open(out, "rb") as f:
+            data = base64.b64encode(f.read()).decode("ascii")
+    finally:
+        try:
+            os.remove(out)
+        except Exception:
+            pass
+    return {"ok": True, "b64": data, "ext": "jpg"}
 
 
 PORT = 8765
@@ -827,6 +876,8 @@ def make_handler(app):
                         return self.send(200, app.sync(body))
                     if p == "/api/sms/enqueue":
                         return self.send(200, app.enqueue(body))
+                    if p == "/api/scan":
+                        return self.send(200, scan_page())
                     if p == "/api/rep":
                         return self.send(200, app.s.rep_put(body))
                     if p == "/api/repdel":
