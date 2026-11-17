@@ -1086,7 +1086,7 @@ def open_app_window(url):
                 t0 = time.time()
                 p = subprocess.Popen([exe, "--app=" + url, "--start-maximized", "--user-data-dir=" + prof, "--no-first-run",
                                       "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
-                                      "--disable-translate", "--lang=ur"])
+                                      "--disable-translate", "--lang=en-US", "--force-ui-direction=ltr"])
 
                 def _watch(p=p, t0=t0):
                     try:
