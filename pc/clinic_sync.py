@@ -540,7 +540,7 @@ class App:
             results.append(self.apply_sms(sm))
         for m in body.get("meds", []):
             results.append(self.apply_med(m))
-        pdl = body.get("patDel", [])
+        pdl = []  # حذف اب آگے منتقل نہیں ہوتا: ہر جگہ اپنا ریکارڈ خود حذف ہوتا ہے
         if pdl:
             try:
                 make_backup()
@@ -1216,7 +1216,7 @@ def make_backup():
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     olds = sorted([f for f in os.listdir(d) if f.startswith("HealthClinic-backup-") and f.endswith(".zip")])
-    for f in olds[:-8]:
+    for f in olds[:-10]:
         try:
             os.remove(os.path.join(d, f))
         except Exception:
@@ -1225,17 +1225,20 @@ def make_backup():
 
 
 def backup_loop():
-    time.sleep(120)
+    """One automatic backup per day, at (or after) 12:00 noon."""
+    time.sleep(90)
     while True:
         try:
-            d = backup_dir()
-            zs = [os.path.getmtime(os.path.join(d, f)) for f in os.listdir(d) if f.startswith("HealthClinic-backup-")]
-            if not zs or time.time() - max(zs) > 7 * 86400:
-                make_backup()
+            lt = time.localtime()
+            if lt.tm_hour >= 12:
+                d = backup_dir()
+                pre = "HealthClinic-backup-" + time.strftime("%Y-%m-%d_", lt)
+                done = [f for f in os.listdir(d) if f.startswith(pre) and f.endswith(".zip") and f[len(pre):len(pre) + 4] >= "1200"]
+                if not done:
+                    make_backup()
         except Exception:
             pass
-        time.sleep(6 * 3600)
-
+        time.sleep(300)
 
 
 def open_backend(mdb):
