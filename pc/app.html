@@ -1862,7 +1862,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.56',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest',UPD_URL='https://salmanabbasinm-hash.github.io/clinic-updates/version.json',UPD={last:0,ready:null,exe:''};function exeUrl(){return UPD.exe||REL_BASE+'HealthClinic.exe'}
+var APP_VER='3.0.57',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest',UPD_URL='https://salmanabbasinm-hash.github.io/clinic-updates/version.json',UPD={last:0,ready:null,exe:''};function exeUrl(){return UPD.exe||REL_BASE+'HealthClinic.exe'}
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<30000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     var NA0=nativeApp(),web0=/github\.io$/.test(location.hostname)&&!NA0;
@@ -2577,7 +2577,7 @@ boot();
    else if(e.key==='Enter'||e.key===' '){e.preventDefault();cur.click()}
    else if(e.key==='Escape'){var fm2=document.getElementById('f-med');if(fm2)fm2.focus()}
    return}
-  if(isPCUI()&&(e.key==='ArrowDown'||e.key==='ArrowUp')&&!e.ctrlKey&&!e.altKey&&!e.shiftKey&&t&&t.tagName&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)&&!t.closest('#selsh,#medres,.setmod,.updpop,.dlg,.modal')&&t.id!=='f-med'&&(function(){var q=document.getElementById('pv');return !q||q.hidden})()&&document.querySelector('.pcform')){
+  if(matchMedia('(min-width:1100px) and (pointer:fine)').matches&&(e.key==='ArrowDown'||e.key==='ArrowUp')&&!e.ctrlKey&&!e.altKey&&!e.shiftKey&&t&&t.tagName&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)&&!t.closest('#selsh,#medres,.setmod,.updpop,.dlg,.modal')&&t.id!=='f-med'&&(function(){var q=document.getElementById('pv');return !q||q.hidden})()&&document.querySelector('.pcform')){
    if(t.tagName==='TEXTAREA'&&t.scrollHeight>t.clientHeight+4)return;
    e.preventDefault();try{t.blur()}catch(x){}window.scrollBy({top:(e.key==='ArrowDown'?1:-1)*Math.round(window.innerHeight*.5),behavior:'smooth'});return}
   var pv=document.getElementById('pv');
