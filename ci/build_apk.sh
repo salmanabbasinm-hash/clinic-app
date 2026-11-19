@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 mkdir -p www
-cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png jameel.woff www/
+cp index.html manifest.webmanifest sw.js icon.svg icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png jameel.woff kasheeda.woff www/
 echo '{"appId":"com.salman.clinic","appName":"HealthClinic","webDir":"www","server":{"androidScheme":"http","cleartext":true}}' > capacitor.config.json
 npm init -y
 npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6

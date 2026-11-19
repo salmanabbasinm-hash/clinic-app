@@ -637,7 +637,7 @@ class App:
                 return {"uid": uid, "kind": "patient", "pid": pid, "status": "ok"}
             cur = self.b.get_patient(pid)
             if cur is None:
-                return {"uid": uid, "kind": "patient", "pid": pid, "status": "error", "msg": "not found on PC"}
+                return {"uid": uid, "kind": "patient", "pid": pid, "status": "ok", "skipped": True}  # PC سے حذف شدہ: اب غلطی نہیں گنی جاتی
             if rhash(cur, PAT_KEYS) != ch.get("base"):
                 if rhash(cur, PAT_KEYS) == rhash(ch, PAT_KEYS):
                     return {"uid": uid, "kind": "patient", "pid": pid, "status": "ok"}
@@ -676,7 +676,7 @@ class App:
                 return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "ok"}
             cur = self.b.get_visit(pid, vid)
             if cur is None:
-                return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "error", "msg": "not found on PC"}
+                return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "ok", "skipped": True}
             if rhash(cur, VIS_KEYS) != ch.get("base"):
                 same = all(cur.get(k) == ch.get(k) for k, _ in VIS_MAP)
                 return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "ok" if same else "conflict"}
@@ -851,6 +851,7 @@ def make_handler(app):
                          "/icon-192.png": ("icon-192.png", "image/png"), "/icon-512.png": ("icon-512.png", "image/png"),
                          "/icon-maskable-512.png": ("icon-maskable-512.png", "image/png"), "/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),
                          "/jameel.woff": ("jameel.woff", "font/woff"),
+                         "/kasheeda.woff": ("kasheeda.woff", "font/woff"),
                          "/pdf.min.js": ("pdf.min.js", "application/javascript"),
                          "/pdf.worker.min.js": ("pdf.worker.min.js", "application/javascript")}
                 if p in files:
@@ -927,6 +928,9 @@ WIN = {"hwnd": None, "bl": False}
 UPDST = {"state": "idle", "pct": 0, "msg": ""}
 
 
+APPWIN = {"pid": 0}
+
+
 def self_update(url):
     """Download the new installer ourselves (no browser warning), run it and quit; it replaces the installed copy."""
     import urllib.request
@@ -951,6 +955,11 @@ def self_update(url):
         time.sleep(1.2)
         subprocess.Popen([tmp, "/SILENT", "/NORESTART", "/CLOSEAPPLICATIONS", "/SUPPRESSMSGBOXES"], creationflags=0x00000008 | 0x00000200, close_fds=True)
         time.sleep(0.5)
+        try:
+            if APPWIN["pid"] and os.name == "nt":
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(APPWIN["pid"])], capture_output=True, timeout=8)
+        except Exception:
+            pass
         os._exit(0)
     except Exception as e:
         UPDST.update(state="err", msg=str(e)[:120])
@@ -1084,9 +1093,11 @@ def open_app_window(url):
             try:
                 prof = os.path.join(HERE, "window")
                 t0 = time.time()
-                p = subprocess.Popen([exe, "--app=" + url, "--start-maximized", "--user-data-dir=" + prof, "--no-first-run",
+                p = subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run",
                                       "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
                                       "--disable-translate", "--lang=en-US", "--force-ui-direction=ltr"])
+
+                APPWIN["pid"] = p.pid
 
                 def _watch(p=p, t0=t0):
                     try:
@@ -1096,7 +1107,6 @@ def open_app_window(url):
                     except Exception:
                         pass
                 threading.Thread(target=_watch, daemon=True).start()
-                threading.Thread(target=make_borderless, args=(p.pid,), daemon=True).start()
                 return
             except Exception:
                 pass

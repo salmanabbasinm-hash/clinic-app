@@ -8,7 +8,7 @@ open('pc/app.html','w',encoding='utf-8').write(h)
 PY
 pyinstaller --onefile --noupx --noconfirm --version-file ci/version_info.txt --noconsole --icon pc/icon.ico --name HealthClinic \
   --add-data "pc/app.html;." --add-data "pc/sw.js;." --add-data "pc/manifest.webmanifest;." \
-  --add-data "pc/icon.svg;." --add-data "pc/jameel.woff;." \
+  --add-data "pc/icon.svg;." --add-data "pc/jameel.woff;." --add-data "kasheeda.woff;." \
   --add-data "pc/icon-192.png;." --add-data "pc/icon-512.png;." --add-data "pc/icon-maskable-512.png;." --add-data "pc/apple-touch-icon.png;." \
   pc/clinic_sync.py
 
