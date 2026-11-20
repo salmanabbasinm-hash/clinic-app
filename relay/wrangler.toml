@@ -1,0 +1,11 @@
+name = "clinic-relay"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+[[durable_objects.bindings]]
+name = "BOX"
+class_name = "Box"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Box"]

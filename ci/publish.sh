@@ -4,6 +4,9 @@ export VER
 if [ -z "$UPDATE_TOKEN" ]; then echo 'no UPDATE_TOKEN - skipped'; exit 0; fi
 gh release view latest -R $UPD_REPO >/dev/null 2>&1 || gh release create latest -R $UPD_REPO -t "Latest" -n "Clinic app"
 NAME=$(basename "$1")
+DLADD=0
+oldc(){ gh release view latest -R $UPD_REPO --json assets -q ".assets[] | select(.name==\"$1\") | .download_count" 2>/dev/null | head -1 | grep -E '^[0-9]+$' || echo 0; }
+DLADD=$(( DLADD + $(oldc "$NAME") ))
 WANT=$(wc -c < "$1" | tr -d ' ')
 OKUP=0
 for i in 1 2 3 4 5; do
@@ -15,6 +18,7 @@ for i in 1 2 3 4 5; do
   sleep 8
 done
 if [ "$NAME" = "HealthClinic.exe" ] && [ -f dist/HealthClinic-Setup.exe ]; then
+  DLADD=$(( DLADD + $(oldc HealthClinic-Setup.exe) ))
   gh release delete-asset latest HealthClinic-Setup.exe -R $UPD_REPO -y >/dev/null 2>&1 || true
   gh release upload latest dist/HealthClinic-Setup.exe -R $UPD_REPO --clobber || true
 fi
@@ -22,7 +26,7 @@ SETUP_OK=0
 gh release view latest -R $UPD_REPO --json assets -q ".assets[].name" 2>/dev/null | grep -qx HealthClinic-Setup.exe && SETUP_OK=1
 echo "setup asset present: $SETUP_OK"
 if [ "$OKUP" != "1" ]; then echo "ERROR: $NAME was not uploaded to $UPD_REPO"; exit 1; fi
-if [ "$NAME" = "HealthClinic.exe" ]; then gh release delete-asset latest ClinicSync.exe -R $UPD_REPO -y >/dev/null 2>&1 || true; fi
+if [ "$NAME" = "HealthClinic.exe" ]; then DLADD=$(( DLADD + $(oldc ClinicSync.exe) )); gh release delete-asset latest ClinicSync.exe -R $UPD_REPO -y >/dev/null 2>&1 || true; fi
 ASSETS=$(gh release view latest -R $UPD_REPO --json assets -q ".assets[].name" 2>/dev/null)
 EXE=ClinicSync.exe; echo "$ASSETS" | grep -qx HealthClinic.exe && EXE=HealthClinic.exe
 git clone -q https://x-access-token:$UPDATE_TOKEN@github.com/$UPD_REPO.git upd && cd upd
@@ -30,7 +34,7 @@ B=https://github.com/$UPD_REPO/releases/latest/download
 NOTES=$(python3 -c "import json;print(json.dumps(json.load(open('../version.json')).get('notes','')))" 2>/dev/null || echo '""')
 PLAT=exev; case "$NAME" in *.apk) PLAT=apkv;; esac
 PCLINK=$B/$EXE; [ "$SETUP_OK" = "1" ] && PCLINK=$B/HealthClinic-Setup.exe
-export PLAT B EXE VER
+export PLAT B EXE VER DLADD
 python3 - <<'PY'
 import json,os
 try: d=json.load(open('version.json'))
@@ -39,6 +43,7 @@ n=json.load(open('../version.json')).get('notes','')
 d['v']=os.environ['VER']; d['notes']=n
 d[os.environ['PLAT']]=os.environ['VER']
 d['apk']=os.environ['B']+'/ClinicApp.apk'; d['exe']=os.environ['B']+'/'+os.environ['EXE']
+d['dl']=int(d.get('dl',0))+int(os.environ.get('DLADD','0') or 0)
 d['web']='https://salmanabbasinm-hash.github.io/clinic-app/'
 json.dump(d,open('version.json','w'),ensure_ascii=False)
 PY

@@ -874,9 +874,31 @@ def make_handler(app):
                 body = json.loads(self.rfile.read(n).decode("utf-8") or "{}")
                 with LOCK:
                     if p == "/api/sync":
-                        return self.send(200, app.sync(body))
+                        r = app.sync(body)
+                        try:
+                            c = json.load(open(RELAY_CFGP)) if RELAY_CFGP and os.path.exists(RELAY_CFGP) else {}
+                            if c.get("relay") or RELAY_DEF:
+                                r["relay"] = c.get("relay") or RELAY_DEF
+                            r["rtimes"] = c["times"] if isinstance(c.get("times"), list) else RT_DEF
+                        except Exception:
+                            pass
+                        return self.send(200, r)
+                    if p == "/api/relay":
+                        if self.client_address[0] not in ("127.0.0.1", "::1"):
+                            return self.send(403, {"error": "local only"})
+                        c = json.load(open(RELAY_CFGP)) if os.path.exists(RELAY_CFGP) else {}
+                        if "url" in body:
+                            c["relay"] = str(body.get("url") or "").strip().rstrip("/")
+                        if isinstance(body.get("times"), list):
+                            c["times"] = [int(x) for x in body["times"] if str(x).isdigit()]
+                        json.dump(c, open(RELAY_CFGP, "w"))
+                        return self.send(200, {"ok": True})
                     if p == "/api/sms/enqueue":
                         return self.send(200, app.enqueue(body))
+                    if p == "/api/clip":
+                        if self.client_address[0] not in ("127.0.0.1", "::1"):
+                            return self.send(403, {"error": "local only"})
+                        return self.send(200, clip_file(body))
                     if p == "/api/scan":
                         return self.send(200, scan_page())
                     if p == "/api/rep":
@@ -888,6 +910,34 @@ def make_handler(app):
                 print("  ERROR", e)
                 self.send(500, {"error": str(e)})
     return H
+
+
+def clip_file(body):
+    """Save a PDF to a temp folder and put it on the Windows clipboard as a file (paste into WhatsApp with Ctrl+V)."""
+    import base64, re, tempfile
+    name = re.sub(r"[^\w\-. ]", "_", str(body.get("name") or "nuskha.pdf"))[:80] or "nuskha.pdf"
+    if not name.lower().endswith(".pdf"):
+        name += ".pdf"
+    d = os.path.join(tempfile.gettempdir(), "clinic_wa")
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, name)
+    with open(path, "wb") as fh:
+        fh.write(base64.b64decode(body.get("b64") or ""))
+    if os.name != "nt":
+        return {"ok": False, "path": path}
+    ps = "Set-Clipboard -LiteralPath '%s'" % path.replace("'", "''")
+    r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps], capture_output=True, timeout=20,
+                       creationflags=0x08000000)
+    wa = False
+    num = re.sub(r"\D", "", str(body.get("phone") or ""))
+    if r.returncode == 0 and num:
+        try:
+            import urllib.parse
+            os.startfile("whatsapp://send?phone=%s&text=%s" % (num, urllib.parse.quote(str(body.get("text") or ""))))
+            wa = True
+        except Exception:
+            wa = False
+    return {"ok": r.returncode == 0, "path": path, "wa": wa}
 
 
 def lan_ips():
@@ -1053,6 +1103,71 @@ def win_action(a):
         return False
     return True
 
+
+
+# ---- online relay (store-and-forward through the user's own free Cloudflare Worker; messages are AES-GCM encrypted) ----
+RELAY_CFGP = None
+RT_DEF = [9, 10, 11, 12, 13, 17, 18, 19, 20, 21]
+RELAY_DEF = ""   # shared clinic relay address (filled in by the developer; users need no setup)
+def _relay_keys(token):
+    return hashlib.sha256(("relay-box|" + token).encode()).hexdigest(), hashlib.sha256(("relay-key|" + token).encode()).digest()
+
+def relay_loop(token):
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    except Exception:
+        print(" relay disabled: 'cryptography' package missing")
+        return
+    import base64, urllib.request
+    box, key = _relay_keys(token)
+    aes = AESGCM(key)
+    def enc(o):
+        n = os.urandom(12)
+        return base64.b64encode(n + aes.encrypt(n, json.dumps(o, ensure_ascii=False).encode("utf-8"), None)).decode()
+    def dec(s):
+        b = base64.b64decode(s)
+        return json.loads(aes.decrypt(b[:12], b[12:], None).decode("utf-8"))
+    def call(url, data=None):
+        rq = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", "User-Agent": "ClinicSync"})
+        return urllib.request.urlopen(rq, timeout=25).read().decode("utf-8")
+    seen = {}
+    while True:
+        try:
+            cfg = json.load(open(RELAY_CFGP)) if RELAY_CFGP and os.path.exists(RELAY_CFGP) else {}
+        except Exception:
+            cfg = {}
+        t = time.localtime()
+        if t.tm_hour not in (cfg.get('times') if isinstance(cfg.get('times'), list) else RT_DEF) or t.tm_min >= 15:
+            time.sleep(30)
+            continue
+        time.sleep(12)
+        try:
+            base = (cfg.get("relay") or RELAY_DEF or "").rstrip("/")
+            if not base:
+                time.sleep(10)
+                continue
+            items = json.loads(call(base + "/poll/" + box)).get("items", [])
+            for it in items:
+                try:
+                    m = json.loads(it["msg"])
+                    if seen.get(it["dev"]) == m.get("id"):
+                        continue
+                    req = dec(m["data"])
+                    rq = urllib.request.Request("http://127.0.0.1:%d%s" % (PORT, req["p"]), data=(req.get("b") or "").encode("utf-8") if req.get("m") == "POST" else None,
+                                                headers={"Content-Type": "application/json", "X-Token": token}, method=req.get("m") or "GET")
+                    try:
+                        r = urllib.request.urlopen(rq, timeout=60)
+                        out = {"s": r.status, "b": r.read().decode("utf-8")}
+                    except Exception as e:
+                        out = {"s": 500, "b": json.dumps({"error": str(e)})}
+                    seen[it["dev"]] = m.get("id")
+                    call(base + "/r/" + box + "/" + it["dev"], json.dumps({"id": m.get("id"), "data": enc(out)}).encode())
+                    print("  relay: handled request from", it["dev"])
+                except Exception as e:
+                    print("  relay item error:", e)
+        except Exception as e:
+            print("  relay poll:", str(e)[:80])
+            time.sleep(8)
 
 def start_tunnel(port, token):
     exe = shutil.which("cloudflared") or shutil.which("cloudflared.exe")
@@ -1435,6 +1550,9 @@ def main():
     print("   http://%s:%d/?t=%s" % (ip, a.port, cfg["token"]))
     print(" Access database is read/written only on explicit phone sync.")
     print("=" * 60)
+    global RELAY_CFGP
+    RELAY_CFGP = cfgp
+    threading.Thread(target=relay_loop, args=(cfg["token"],), daemon=True).start()
     if a.public:
         start_tunnel(a.port, cfg["token"])
     if a.app:
