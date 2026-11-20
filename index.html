@@ -2175,7 +2175,7 @@ async function api(path,opt,nofind){
 var RT_DEF=[9,10,11,12,13,17,18,19,20,21],RT_NM={9:'صبح 9 بجے',10:'صبح 10 بجے',11:'صبح 11 بجے',12:'شام 12 بجے',13:'شام 1 بجے',17:'شام 5 بجے',18:'شام 6 بجے',19:'شام 7 بجے',20:'شام 8 بجے',21:'شام 9 بجے'};
 function rtimes(){return Array.isArray(S.cfg.rtimes)?S.cfg.rtimes:RT_DEF}
 function inRelayWin(){var d=new Date();return rtimes().indexOf(d.getHours())>=0&&d.getMinutes()<15}
-var RELAY_DEF='';function relayUrl(){return S.cfg.relay||RELAY_DEF}
+var RELAY_DEF='https://clinic-relay.healthface6.workers.dev';function relayUrl(){return S.cfg.relay||RELAY_DEF}
 var RLK=null;
 async function rlKeys(){if(RLK)return RLK;var te=new TextEncoder(),h=async function(x){return new Uint8Array(await crypto.subtle.digest('SHA-256',te.encode(x)))};
   var b=await h('relay-box|'+S.cfg.token),k=await h('relay-key|'+S.cfg.token);RLK={box:Array.prototype.map.call(b,function(x){return ('0'+x.toString(16)).slice(-2)}).join(''),key:await crypto.subtle.importKey('raw',k,'AES-GCM',false,['encrypt','decrypt'])};return RLK}

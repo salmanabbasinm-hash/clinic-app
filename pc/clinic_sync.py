@@ -1108,7 +1108,7 @@ def win_action(a):
 # ---- online relay (store-and-forward through the user's own free Cloudflare Worker; messages are AES-GCM encrypted) ----
 RELAY_CFGP = None
 RT_DEF = [9, 10, 11, 12, 13, 17, 18, 19, 20, 21]
-RELAY_DEF = ""   # shared clinic relay address (filled in by the developer; users need no setup)
+RELAY_DEF = "https://clinic-relay.healthface6.workers.dev"   # shared clinic relay address (filled in by the developer; users need no setup)
 def _relay_keys(token):
     return hashlib.sha256(("relay-box|" + token).encode()).hexdigest(), hashlib.sha256(("relay-key|" + token).encode()).digest()
 
