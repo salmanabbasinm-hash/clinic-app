@@ -879,7 +879,6 @@ def make_handler(app):
                             c = json.load(open(RELAY_CFGP)) if RELAY_CFGP and os.path.exists(RELAY_CFGP) else {}
                             if c.get("relay") or RELAY_DEF:
                                 r["relay"] = c.get("relay") or RELAY_DEF
-                            r["rtimes"] = c["times"] if isinstance(c.get("times"), list) else RT_DEF
                         except Exception:
                             pass
                         return self.send(200, r)
@@ -889,8 +888,6 @@ def make_handler(app):
                         c = json.load(open(RELAY_CFGP)) if os.path.exists(RELAY_CFGP) else {}
                         if "url" in body:
                             c["relay"] = str(body.get("url") or "").strip().rstrip("/")
-                        if isinstance(body.get("times"), list):
-                            c["times"] = [int(x) for x in body["times"] if str(x).isdigit()]
                         json.dump(c, open(RELAY_CFGP, "w"))
                         return self.send(200, {"ok": True})
                     if p == "/api/sms/enqueue":
@@ -1107,10 +1104,72 @@ def win_action(a):
 
 # ---- online relay (store-and-forward through the user's own free Cloudflare Worker; messages are AES-GCM encrypted) ----
 RELAY_CFGP = None
-RT_DEF = [9, 10, 11, 12, 13, 17, 18, 19, 20, 21]
 RELAY_DEF = "https://clinic-relay.healthface6.workers.dev"   # shared clinic relay address (filled in by the developer; users need no setup)
 def _relay_keys(token):
     return hashlib.sha256(("relay-box|" + token).encode()).hexdigest(), hashlib.sha256(("relay-key|" + token).encode()).digest()
+
+
+def ws_open(url):
+    import ssl, base64
+    u = url.split("://", 1)
+    scheme, rest = u[0], u[1]
+    host, _, path = rest.partition("/")
+    path = "/" + path
+    port = 443 if scheme == "wss" else 80
+    if ":" in host:
+        host, port = host.rsplit(":", 1)
+        port = int(port)
+    s = socket.create_connection((host, port), 15)
+    if scheme == "wss":
+        s = ssl.create_default_context().wrap_socket(s, server_hostname=host)
+    key = base64.b64encode(os.urandom(16)).decode()
+    s.sendall(("GET %s HTTP/1.1\r\nHost: %s\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: %s\r\nSec-WebSocket-Version: 13\r\nUser-Agent: ClinicSync\r\n\r\n" % (path, host, key)).encode())
+    buf = b""
+    while b"\r\n\r\n" not in buf:
+        c = s.recv(1024)
+        if not c:
+            raise RuntimeError("ws closed")
+        buf += c
+    if b" 101 " not in buf.split(b"\r\n")[0] + b" ":
+        raise RuntimeError("ws refused: " + buf.split(b"\r\n")[0].decode("latin1"))
+    return s
+
+def ws_send(s, op, data):
+    n = len(data)
+    h = bytes([0x80 | op])
+    if n < 126:
+        h += bytes([0x80 | n])
+    elif n < 65536:
+        h += bytes([0x80 | 126]) + n.to_bytes(2, "big")
+    else:
+        h += bytes([0x80 | 127]) + n.to_bytes(8, "big")
+    mk = os.urandom(4)
+    s.sendall(h + mk + bytes(b ^ mk[i % 4] for i, b in enumerate(data)))
+
+def _rd(s, n):
+    b = b""
+    while len(b) < n:
+        c = s.recv(n - len(b))
+        if not c:
+            raise RuntimeError("ws closed")
+        b += c
+    return b
+
+def ws_recv(s):
+    while True:
+        h = _rd(s, 2)
+        op, n = h[0] & 0x0F, h[1] & 0x7F
+        if n == 126:
+            n = int.from_bytes(_rd(s, 2), "big")
+        elif n == 127:
+            n = int.from_bytes(_rd(s, 8), "big")
+        data = _rd(s, n) if n else b""
+        if op == 9:
+            ws_send(s, 10, data)
+            continue
+        if op == 8:
+            raise RuntimeError("ws closed by server")
+        return op, data
 
 def relay_loop(token):
     try:
@@ -1131,43 +1190,69 @@ def relay_loop(token):
         rq = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json", "User-Agent": "ClinicSync"})
         return urllib.request.urlopen(rq, timeout=25).read().decode("utf-8")
     seen = {}
-    while True:
+    def cfg_base():
         try:
             cfg = json.load(open(RELAY_CFGP)) if RELAY_CFGP and os.path.exists(RELAY_CFGP) else {}
         except Exception:
             cfg = {}
-        t = time.localtime()
-        if t.tm_hour not in (cfg.get('times') if isinstance(cfg.get('times'), list) else RT_DEF) or t.tm_min >= 15:
-            time.sleep(30)
-            continue
-        time.sleep(12)
-        try:
-            base = (cfg.get("relay") or RELAY_DEF or "").rstrip("/")
-            if not base:
-                time.sleep(10)
-                continue
-            items = json.loads(call(base + "/poll/" + box)).get("items", [])
-            for it in items:
+        return (cfg.get("relay") or RELAY_DEF or "").rstrip("/")
+    def drain(base):
+        items = json.loads(call(base + "/poll/" + box)).get("items", [])
+        for it in items:
+            try:
+                m = json.loads(it["msg"])
+                if seen.get(it["dev"]) == m.get("id"):
+                    continue
+                req = dec(m["data"])
+                rq = urllib.request.Request("http://127.0.0.1:%d%s" % (PORT, req["p"]), data=(req.get("b") or "").encode("utf-8") if req.get("m") == "POST" else None,
+                                            headers={"Content-Type": "application/json", "X-Token": token}, method=req.get("m") or "GET")
                 try:
-                    m = json.loads(it["msg"])
-                    if seen.get(it["dev"]) == m.get("id"):
-                        continue
-                    req = dec(m["data"])
-                    rq = urllib.request.Request("http://127.0.0.1:%d%s" % (PORT, req["p"]), data=(req.get("b") or "").encode("utf-8") if req.get("m") == "POST" else None,
-                                                headers={"Content-Type": "application/json", "X-Token": token}, method=req.get("m") or "GET")
-                    try:
-                        r = urllib.request.urlopen(rq, timeout=60)
-                        out = {"s": r.status, "b": r.read().decode("utf-8")}
-                    except Exception as e:
-                        out = {"s": 500, "b": json.dumps({"error": str(e)})}
-                    seen[it["dev"]] = m.get("id")
-                    call(base + "/r/" + box + "/" + it["dev"], json.dumps({"id": m.get("id"), "data": enc(out)}).encode())
-                    print("  relay: handled request from", it["dev"])
+                    r = urllib.request.urlopen(rq, timeout=60)
+                    out = {"s": r.status, "b": r.read().decode("utf-8")}
                 except Exception as e:
-                    print("  relay item error:", e)
+                    out = {"s": 500, "b": json.dumps({"error": str(e)})}
+                seen[it["dev"]] = m.get("id")
+                call(base + "/r/" + box + "/" + it["dev"], json.dumps({"id": m.get("id"), "data": enc(out)}).encode())
+                print("  relay: handled request from", it["dev"])
+            except Exception as e:
+                print("  relay item error:", e)
+    while True:
+        base = cfg_base()
+        if not base:
+            time.sleep(10)
+            continue
+        # preferred: one idle WebSocket (the relay wakes us the moment a phone has something); fallback: slow polling
+        try:
+            drain(base)
+            ws = ws_open(base.replace("https://", "wss://").replace("http://", "ws://") + "/ws/" + box)
+            print("  relay: live connection open")
+            last_ping = last_drain = time.time()
+            ws.settimeout(10)
+            while True:
+                if cfg_base() != base:
+                    break
+                try:
+                    op, data = ws_recv(ws)
+                    if op == 1 and data == b"q":
+                        drain(base)
+                        last_drain = time.time()
+                except socket.timeout:
+                    pass
+                now = time.time()
+                if now - last_ping > 45:
+                    ws_send(ws, 1, b"ping")
+                    last_ping = now
+                if now - last_drain > 600:
+                    drain(base)
+                    last_drain = now
         except Exception as e:
-            print("  relay poll:", str(e)[:80])
-            time.sleep(8)
+            print("  relay connection:", str(e)[:80])
+            try:
+                time.sleep(45)
+                drain(base)
+            except Exception as e2:
+                print("  relay poll:", str(e2)[:80])
+                time.sleep(30)
 
 def start_tunnel(port, token):
     exe = shutil.which("cloudflared") or shutil.which("cloudflared.exe")
