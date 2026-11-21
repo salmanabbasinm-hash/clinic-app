@@ -19,6 +19,9 @@ export class Box {
     this.ctx = state; this.st = state.storage; this.owait = {};
     try { state.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong")); } catch (e) {}
   }
+  async putBig(k, t) { const CH = 900000, n = Math.max(1, Math.ceil(t.length / CH)); await this.delBig(k); for (let i = 0; i < n; i++) await this.st.put(k + "#" + i, t.slice(i * CH, (i + 1) * CH)); await this.st.put(k, n); }
+  async getBig(k) { const n = await this.st.get(k); if (!n) return null; let s = ""; for (let i = 0; i < n; i++) { const c = await this.st.get(k + "#" + i); if (c == null) return null; s += c; } return s; }
+  async delBig(k) { const n = await this.st.get(k); if (n) { for (let i = 0; i < n; i++) await this.st.delete(k + "#" + i); await this.st.delete(k); } }
   webSocketMessage() {}
   webSocketClose(ws) { try { ws.close(); } catch (e) {} }
   async fetch(req) {
@@ -32,6 +35,7 @@ export class Box {
       if (p[2] === "put" && req.method === "POST") {
         const u = new URL(req.url).searchParams, id = u.get("id") || "", n = +u.get("n"), tot = +u.get("total"), ts = +u.get("ts") || Date.now();
         if (!/^[a-z0-9]{4,24}$/.test(id) || !(n >= 0) || !(tot >= 1 && tot <= 60) || n >= tot) return J({error:"bad"}, 400);
+        if (u.get("create") === "1" && n === 0 && await this.st.get("bkmeta")) return J({error:"exists"}, 409);   // password already used by someone else
         const t = await req.text(); if (t.length > 1500000) return J({error:"big"}, 413);
         await this.st.put("bk:" + id + ":" + n, t);
         if (n === tot - 1) {
@@ -49,27 +53,27 @@ export class Box {
     if ((p[0] === "q" || p[0] === "r" || p[0] === "o") && !/^[a-z0-9]{6,32}$/.test(dev||"")) return J({error:"bad dev"}, 400);
     if (p[0] === "q" && req.method === "POST") {            // phone -> PC
       const t = await req.text(); if (t.length > 20e6) return J({error:"big"}, 413);
-      await this.st.put("in:"+dev, t);
+      await this.delBig("out:"+dev); await this.putBig("in:"+dev, t);
       for (const s of this.ctx.getWebSockets()) { try { s.send("q"); } catch (e) {} }
       return J({ok:true});
     }
     if (p[0] === "poll") return J({items: await this.items()});   // PC polls (no waiting: keeps the free quota small)
     if (p[0] === "r" && req.method === "POST") {             // PC -> phone
       const t = await req.text(); if (t.length > 20e6) return J({error:"big"}, 413);
-      await this.st.put("out:"+dev, t); await this.st.delete("in:"+dev);
+      await this.putBig("out:"+dev, t); await this.delBig("in:"+dev);
       const w = this.owait[dev] || []; delete this.owait[dev]; w.forEach(f => f());
       return J({ok:true});
     }
     if (p[0] === "o") {                                      // phone: waits up to 15s for the answer
-      let v = await this.st.get("out:"+dev);
-      if (!v) { await new Promise(r => { const f = () => { clearTimeout(tm); r(); }; const tm = setTimeout(r, 15000); (this.owait[dev] = this.owait[dev] || []).push(f); }); v = await this.st.get("out:"+dev); }
+      let v = await this.getBig("out:"+dev);
+      if (!v) { await new Promise(r => { const f = () => { clearTimeout(tm); r(); }; const tm = setTimeout(r, 15000); (this.owait[dev] = this.owait[dev] || []).push(f); }); v = await this.getBig("out:"+dev); }
       return v ? new Response(v, {headers:{...H,"Content-Type":"application/json"}}) : J({none:true}, 404);
     }
     return J({error:"?"}, 404);
   }
   async items() {
     const m = await this.st.list({prefix:"in:"}), out = [];
-    for (const [k, v] of m) out.push({dev:k.slice(3), msg:v});
+    for (const [k, n] of m) { if (k.includes("#")) continue; const v = await this.getBig(k); if (v) out.push({dev:k.slice(3), msg:v}); }
     return out;
   }
 }

@@ -428,6 +428,7 @@ class State:
         CREATE TABLE IF NOT EXISTS sms_queue(id INTEGER PRIMARY KEY AUTOINCREMENT, phone TEXT, text TEXT, pid INTEGER, vid INTEGER,
                                               name TEXT, kind TEXT, created TEXT, status TEXT DEFAULT 'pending');
         CREATE TABLE IF NOT EXISTS sms_done(uid TEXT PRIMARY KEY);
+        CREATE TABLE IF NOT EXISTS vmts(pid INTEGER, vid INTEGER, ts INTEGER, PRIMARY KEY(pid, vid));
         CREATE TABLE IF NOT EXISTS vtests(pid INTEGER, vid INTEGER, tests TEXT, PRIMARY KEY(pid, vid));
         CREATE TABLE IF NOT EXISTS kvx(k TEXT PRIMARY KEY, v TEXT, ts INTEGER, del INTEGER DEFAULT 0);
         CREATE TABLE IF NOT EXISTS reps(id TEXT PRIMARY KEY, pu TEXT, pid INTEGER, name TEXT, ts INTEGER, w INTEGER, h INTEGER, del INTEGER DEFAULT 0);
@@ -476,6 +477,14 @@ class State:
     def get_tests(self, pid, vid):
         r = self.c.execute("SELECT tests FROM vtests WHERE pid=? AND vid=?", (pid, vid)).fetchone()
         return r[0] if r else None
+
+    def get_mts(self, pid, vid):
+        r = self.c.execute("SELECT ts FROM vmts WHERE pid=? AND vid=?", (pid, vid)).fetchone()
+        return int(r[0]) if r else 0
+
+    def set_mts(self, pid, vid, ts):
+        self.c.execute("INSERT OR REPLACE INTO vmts VALUES (?,?,?)", (pid, vid, int(ts or 0)))
+        self.c.commit()
 
     def set_tests(self, pid, vid, tests):
         self.c.execute("INSERT OR REPLACE INTO vtests VALUES (?,?,?)", (pid, vid, tests or ""))
@@ -677,9 +686,22 @@ class App:
             cur = self.b.get_visit(pid, vid)
             if cur is None:
                 return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "ok", "skipped": True}
+            mts = int(ch.get("mts") or 0)
             if rhash(cur, VIS_KEYS) != ch.get("base"):
                 same = all(cur.get(k) == ch.get(k) for k, _ in VIS_MAP)
+                if not same and mts > self.s.get_mts(pid, vid) and (str(cur.get("fees") or "") != str(ch.get("fees") or "") or str(cur.get("paid") or "") != str(ch.get("paid") or "")):
+                    try:  # رقم کے معاملے میں سب سے آخر میں درج ہونے والی رقم جیتتی ہے
+                        d2 = dict(cur)
+                        d2["fees"] = ch.get("fees")
+                        d2["paid"] = ch.get("paid")
+                        self.b.update_visit(pid, vid, d2)
+                        self.s.set_mts(pid, vid, mts)
+                        print("  $ money updated from latest entry %s/%s" % (pid, vid))
+                    except Exception as e:
+                        print("  (money merge: %s)" % e)
                 return {"uid": uid, "kind": "visit", "pid": pid, "vid": vid, "status": "ok" if same else "conflict"}
+            if mts:
+                self.s.set_mts(pid, vid, mts)
             d = dict(ch)
             d["note"] = note_with_tests(ch.get("note"), ch.get("tests"), cur.get("native_tests"))
             self.b.update_visit(pid, vid, d)
@@ -1211,8 +1233,8 @@ def relay_loop(token):
                     out = {"s": r.status, "b": r.read().decode("utf-8")}
                 except Exception as e:
                     out = {"s": 500, "b": json.dumps({"error": str(e)})}
-                seen[it["dev"]] = m.get("id")
                 call(base + "/r/" + box + "/" + it["dev"], json.dumps({"id": m.get("id"), "data": enc(out)}).encode())
+                seen[it["dev"]] = m.get("id")
                 print("  relay: handled request from", it["dev"])
             except Exception as e:
                 print("  relay item error:", e)
