@@ -36,10 +36,13 @@ export class Box {
         const u = new URL(req.url).searchParams, id = u.get("id") || "", n = +u.get("n"), tot = +u.get("total"), ts = +u.get("ts") || Date.now();
         if (!/^[a-z0-9]{4,24}$/.test(id) || !(n >= 0) || !(tot >= 1 && tot <= 60) || n >= tot) return J({error:"bad"}, 400);
         if (u.get("create") === "1" && n === 0 && await this.st.get("bkmeta")) return J({error:"exists"}, 409);   // password already used by someone else
+        const bs = u.get("base");                                // compare-and-set: save only if nobody saved in between
+        if (bs !== null && n === 0) { const m0 = await this.st.get("bkmeta"); if ((m0 ? m0.id : "-") !== bs) return J({error:"stale"}, 409); }
         const t = await req.text(); if (t.length > 1500000) return J({error:"big"}, 413);
         await this.st.put("bk:" + id + ":" + n, t);
         if (n === tot - 1) {
           const meta = await this.st.get("bkmeta"), prev = await this.st.get("bkprev");
+          if (bs !== null && (meta ? meta.id : "-") !== bs) { for (let i = 0; i < tot; i++) await this.st.delete("bk:" + id + ":" + i); return J({error:"stale"}, 409); }
           if (prev) for (let i = 0; i < prev.total; i++) await this.st.delete("bk:" + prev.id + ":" + i);
           if (meta) await this.st.put("bkprev", meta);
           await this.st.put("bkmeta", {id, total: tot, ts});

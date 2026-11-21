@@ -295,6 +295,7 @@ public class AppNative extends Plugin {
     @PluginMethod
     public void installApk(PluginCall call) {
         try {
+            getContext().getSharedPreferences("clinic_helper", Context.MODE_PRIVATE).edit().putLong("armed", System.currentTimeMillis()).apply();
             DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             Uri u = dm.getUriForDownloadedFile(savedId());
             if (u == null) throw new Exception("file missing");
@@ -305,6 +306,77 @@ public class AppNative extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("installApk: " + e);
+        }
+    }
+
+    @PluginMethod
+    public void helperStatus(PluginCall call) {
+        JSObject r = new JSObject();
+        boolean on = false;
+        try {
+            String v = android.provider.Settings.Secure.getString(getContext().getContentResolver(), android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            on = v != null && v.contains(getContext().getPackageName() + "/");
+        } catch (Exception e) {
+        }
+        r.put("on", on);
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void helperSettings(PluginCall call) {
+        try {
+            Intent i = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(String.valueOf(e));
+        }
+    }
+
+    @PluginMethod
+    public void helperArm(PluginCall call) {
+        getContext().getSharedPreferences("clinic_helper", Context.MODE_PRIVATE).edit().putLong("armed", System.currentTimeMillis()).apply();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void waSend(final PluginCall call) {
+        final Context cx = getContext();
+        try {
+            String phone = call.getString("phone", "").replaceAll("[^0-9]", "");
+            String text = call.getString("text", "");
+            if (phone.length() < 10) { call.reject("bad phone"); return; }
+            final android.content.SharedPreferences sp = cx.getSharedPreferences("clinic_helper", Context.MODE_PRIVATE);
+            sp.edit().putLong("wa_armed", System.currentTimeMillis()).putString("wa_res", "").apply();
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + phone + "?text=" + Uri.encode(text)));
+            i.setPackage("com.whatsapp");
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try { cx.startActivity(i); } catch (Exception e1) {
+                i.setPackage("com.whatsapp.w4b");
+                try { cx.startActivity(i); } catch (Exception e2) { call.reject("no whatsapp"); return; }
+            }
+            new Thread(new Runnable() {
+                public void run() {
+                    String res = "";
+                    for (int k = 0; k < 40 && res.isEmpty(); k++) {
+                        try { Thread.sleep(500); } catch (Exception e) { }
+                        res = sp.getString("wa_res", "");
+                    }
+                    try { Thread.sleep(1500); } catch (Exception e) { }
+                    sp.edit().putLong("wa_armed", 0).apply();
+                    try {
+                        Intent b = cx.getPackageManager().getLaunchIntentForPackage(cx.getPackageName());
+                        if (b != null) { b.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT); cx.startActivity(b); }
+                    } catch (Exception e) { }
+                    JSObject r = new JSObject();
+                    r.put("ok", res.equals("ok"));
+                    r.put("res", res.isEmpty() ? "timeout" : res);
+                    call.resolve(r);
+                }
+            }).start();
+        } catch (Exception e) {
+            call.reject(String.valueOf(e));
         }
     }
 }

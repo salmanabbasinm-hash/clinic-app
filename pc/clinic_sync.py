@@ -549,7 +549,7 @@ class App:
             results.append(self.apply_sms(sm))
         for m in body.get("meds", []):
             results.append(self.apply_med(m))
-        pdl = []  # حذف اب آگے منتقل نہیں ہوتا: ہر جگہ اپنا ریکارڈ خود حذف ہوتا ہے
+        pdl = [x for x in (body.get("patDelOk") or [])]  # صرف صارف کی تصدیق کے بعد
         if pdl:
             try:
                 make_backup()
