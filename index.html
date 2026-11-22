@@ -166,10 +166,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:center}
 .pastebox{margin-top:8px;border:1.5px dashed var(--primary);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--muted,#667);min-height:38px;line-height:1.7;-webkit-user-select:text;user-select:text}
 .examh{font-size:19px;font-weight:700;color:var(--primary);text-align:center;border-bottom:2px solid var(--primary);margin:6px 0 10px;line-height:2}
 .rxs.att{padding:8mm;align-items:center;justify-content:center}.rxs.att img{max-width:100%;max-height:100%;object-fit:contain}
-.rxs.bx .bxg{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:10px;min-height:0;margin-top:4px}
-.rxs .bxc{border:1.5px solid #1b5e3a;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.rxs .bxh{background:#1b5e3a;color:#fff;text-align:center;font-size:16px;line-height:1.9;font-weight:700}
-.rxs .bxb{flex:1;padding:4px 8px;line-height:1.85;white-space:pre-wrap;overflow:hidden}
+.rxs.bx{padding:10px 10px 10px!important}.rxs.bx .bxg{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:0!important;min-height:0;margin-top:2px;border-top:1.5px solid #0f4a2a;border-right:1.5px solid #0f4a2a}.rxs.bx .rxt{margin:0 0 2px}.rxs.bx .rxt span{font-size:20px;line-height:1.5}.rxs.bx .rxt:before,.rxs.bx .rxt:after{display:none}
+.rxs .bxc{border:0;border-left:1.5px solid #0f4a2a;border-bottom:1.5px solid #0f4a2a;border-radius:0;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.rxs .bxh{background:#0f4a2a;color:#fff;text-align:center;font-size:17px;line-height:1.7;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rxs .bxb{flex:1;padding:2px 6px;line-height:1.72;white-space:pre-wrap;overflow:hidden;color:#000;font-weight:600;text-align:justify}
 .plthumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.plth{width:96px;position:relative}.plth img{width:100%;border:1px solid var(--line,#ccd);border-radius:6px;display:block}.plth .btn{position:absolute;top:2px;left:2px;padding:0 8px;min-height:24px}
 .attv .pvpad .pvpage{background:#fff;margin-bottom:10px;padding:0;overflow:hidden}
 .attv{position:fixed;inset:0;z-index:99;background:#222;display:flex;flex-direction:column}.attv .pvscroll{flex:1;overflow:auto;padding:10px}.attv img{width:100%;display:block;background:#fff;margin-bottom:10px;border-radius:4px}
@@ -308,37 +308,37 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
   @page{size:A4;margin:0}
 }
 .pvpage{padding:0!important;overflow:hidden}
-.rxs{width:794px;height:1123px;background:#fff;color:#111;font-family:var(--f-ur);direction:rtl;padding:26px 40px 24px;display:flex;flex-direction:column;box-sizing:border-box;overflow:hidden;font-size:15px}
+.rxs{-webkit-print-color-adjust:exact;print-color-adjust:exact;width:794px;height:1123px;background:#fff;color:#111;font-family:var(--f-ur);direction:rtl;padding:26px 40px 24px;display:flex;flex-direction:column;box-sizing:border-box;overflow:hidden;font-size:15px}
 .rxs *{box-sizing:border-box}
 .rxs .dwtop{text-align:center;font-size:13px;line-height:1.6;color:#1b5e3a;margin:-8px 0 0;font-family:"Diwani Letter","Diwani Bent","Diwani Simple","Aref Ruqaa","Amiri",serif;font-weight:700}.rxs .ql{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;font-size:14px;color:#1b5e3a;line-height:2;margin:-6px 0 4px;align-items:center}.rxs .ql .r{text-align:right}.rxs .ql .c{text-align:center}.rxs .ql .l{text-align:left}.rxs .ql.ft{margin:6px 0 -4px;border-top:1.5px solid #1b5e3a;padding-top:4px}.rxs .hq{text-align:center;font-size:14px;color:#1b5e3a;line-height:2;margin:-6px 0 4px}
 .rxs .lh{margin:0 -20px;border-bottom:3px double #1b5e3a;padding-bottom:6px;position:relative;min-height:150px}
 .rxs .qr{position:absolute;top:0;left:0;direction:ltr}.rxs .qr svg{width:58px;height:58px;display:block}
-.rxs .rg{position:absolute;top:0;right:0;font-size:12.5px;line-height:1.8}.rxs .rg b{font-family:var(--f-ur)}
+.rxs .rg{position:absolute;top:0;right:0;font-size:14px;font-weight:700;color:#000;line-height:1.8}.rxs .rg b{font-family:var(--f-ur)}
 .rxs .lcc{position:absolute;top:0;left:50%;transform:translateX(-50%);text-align:center;width:200px}
 .rxs .lcc .cn{font-size:28px;color:#1b5e3a;font-weight:700;line-height:1.55}
 .rxs .lcc img{height:76px;width:76px;object-fit:contain;display:block;margin:0 auto}
 .rxs .lrs{padding-top:62px}
 .rxs .lr{display:flex;justify-content:space-between;align-items:baseline;white-space:nowrap;line-height:1.85;font-size:13px}
-.rxs .lr .e{font-size:11px;color:#222}.rxs .lr .u{color:#222}
+.rxs .lr .e{font-size:13px;color:#000;font-weight:600}.rxs .lr .u{color:#000;font-weight:600}
 .rxs .lr.d0 .u{font-size:19px;font-weight:700;color:#1b5e3a}.rxs .lr.d0 .e{font-size:14px;font-weight:700;color:#1b5e3a}
 .rxs .idrow{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:10px;margin:12px 0 8px}
 .rxs .idb,.rxs .dtb{border:1.5px solid #1b5e3a;border-radius:8px;padding:3px 10px;text-align:center;line-height:1.5}
-.rxs .idb i,.rxs .dtb i{display:block;font-style:normal;font-size:11px;color:#555}
+.rxs .idb i,.rxs .dtb i{display:block;font-style:normal;font-size:13.5px;color:#000;font-weight:700}
 .rxs .idb b{font-family:var(--f-ur);font-size:16px;letter-spacing:.5px}
 .rxs .dtb b{font-size:16px}
-.rxs .pinfo{display:grid;grid-template-columns:repeat(6,1fr);gap:0 14px;border:1px solid #bbb;border-radius:8px;padding:4px 12px;margin-bottom:8px}
-.rxs .kv{display:flex;gap:6px;align-items:baseline;border-bottom:1px dotted #bbb;padding:2px 0;line-height:1.9;min-height:30px}
-.rxs .kv span{color:#555;font-size:12.5px;white-space:nowrap}.rxs .kv b{font-weight:600;font-size:15px}
-.rxs .kv.s1{grid-column:span 1}.rxs .kv.s2{grid-column:span 2}.rxs .kv.s4{grid-column:span 4}.rxs .kv.wide{grid-column:1/-1;border-bottom:0}
+.rxs .pinfo{display:grid;grid-template-columns:repeat(6,1fr);gap:0 14px;border:1.2px solid #555;border-radius:8px;padding:4px 12px;margin-bottom:8px}
+.rxs .kv{display:flex;gap:6px;align-items:baseline;border-bottom:1px dotted #666;padding:2px 0;line-height:1.9;min-height:30px}
+.rxs .kv span{color:#000;font-size:14.5px;font-weight:700;white-space:nowrap}.rxs .kv b{font-weight:700;font-size:16.5px;color:#000}
+.rxs .rlh{font-style:normal;padding:0 5px;border-radius:5px}.rxs .rlh.on{background:#0f4a2a;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.rxs .rlh:not(.on){color:#555;font-weight:500}.rxs .kv.s1{grid-column:span 1}.rxs .kv.s2{grid-column:span 2}.rxs .kv.s4{grid-column:span 4}.rxs .kv.wide{grid-column:1/-1;border-bottom:0}
 .rxs .exr{display:flex;flex-wrap:wrap;gap:0 22px;margin-bottom:4px}.rxs .exr .kv{border:0;min-height:0}.rxs .rxt.ex{margin:2px 0}.rxs .rxt.ex span{font-size:22px}
-.rxs .sec{margin-bottom:6px}.rxs .st{font-size:13px;font-weight:700;color:#1b5e3a;border-bottom:1px solid #1b5e3a;margin-bottom:3px}
+.rxs .sec{margin-bottom:6px}.rxs .st{font-size:15px;font-weight:700;color:#0f4a2a;border-bottom:1px solid #1b5e3a;margin-bottom:3px}
 .rxs .sb{white-space:pre-wrap;line-height:1.9;font-size:14.5px}
 .rxs .tg{display:grid;grid-template-columns:repeat(3,1fr);gap:0 12px;font-size:13.5px;line-height:1.9}
 .rxs .tg i{display:inline-block;width:10px;height:10px;border:1.2px solid #333;margin-left:6px;vertical-align:middle}
 .rxs .rxt{display:flex;align-items:center;gap:10px;margin:6px 0 4px}.rxs .rxt:before,.rxs .rxt:after{content:"";flex:1;border-top:1.5px solid #1b5e3a}
 .rxs .rxt span{font-size:22px;font-weight:700;color:#1b5e3a;line-height:1.8}
 .rxs .rxb,.rxs .dietb{flex:1;overflow:hidden;font-size:16.5px;line-height:2.15;padding:0 6px}
-.rxs .rl{border-bottom:1px dotted #ccc}
+.rxs .rl{border-bottom:1px dotted #888}
 .rxs .rg2{display:grid;grid-template-columns:1fr 1fr;column-gap:0}.rxs .rg2 .rl{padding:0 10px;text-align:justify}.rxs .rg2 .rl:nth-child(odd){border-left:1px solid #e3e3e3}
 .rxs .rl .cn{display:inline-flex;align-items:center;justify-content:center;width:1.3em;height:1.3em;border:1.4px solid currentColor;border-radius:50%;font-size:.78em;line-height:1;margin-left:.4em;vertical-align:middle;font-family:var(--f-ur);padding-top:.1em;box-sizing:border-box;font-weight:700}
 .rxs .rg2 .rl{min-width:0;overflow-wrap:anywhere}
@@ -347,13 +347,13 @@ nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(
 .rxs .dl.none{color:#777}.rxs .dl.none:before{content:""}
 .rxs .ftr{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1.5px solid #1b5e3a;border-radius:8px;margin-top:8px;overflow:hidden}
 .rxs .fs{text-align:center;padding:3px 4px;border-left:1px solid #1b5e3a;line-height:1.7}.rxs .fs:last-child{border-left:0}
-.rxs .fs span{display:block;font-size:11.5px;color:#555}.rxs .fs b{font-size:15.5px}
-.rxs .sgn{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;font-size:12px;color:#444;min-height:36px}
+.rxs .fs span{display:block;font-size:13.5px;color:#000;font-weight:700}.rxs .fs b{font-size:15.5px}
+.rxs .sgn{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;font-size:14px;color:#000;font-weight:700;min-height:36px}
 .rxs .sgn>div:first-child{width:170px;text-align:center}.rxs .sgn hr{margin:22px 0 0;border:0;border-top:1px solid #333}
 .rxs .sig{height:56px;max-width:200px;object-fit:contain;margin-bottom:-6px;position:relative;z-index:1}
 .rxs .sgn{justify-content:flex-start}.rxs .sgn>div:first-child{order:2}.rxs .sgn .sig{order:1;margin-right:-185px;margin-left:0;align-self:flex-end;margin-bottom:26px}
-.rxs .cf{margin-top:8px;border-top:3px double #1b5e3a;padding-top:6px;text-align:center;font-size:12.5px;color:#222;line-height:1.8}
-.rxs .cfl{display:flex;justify-content:center;gap:22px;flex-wrap:wrap}.rxs .cfp{display:flex;justify-content:space-between;gap:14px;font-size:12.5px;color:#1b5e3a;line-height:1.9;margin-bottom:2px}
+.rxs .cf{margin-top:8px;border-top:3px double #1b5e3a;padding-top:6px;text-align:center;font-size:14.5px;color:#000;font-weight:600;line-height:1.8}
+.rxs .cfl{display:flex;justify-content:center;gap:22px;flex-wrap:wrap}.rxs .cfp{display:flex;justify-content:space-between;gap:14px;font-size:14.5px;color:#0f4a2a;font-weight:700;line-height:1.9;margin-bottom:2px}
 .rxs.bk .rxt{margin-top:0}
 .rxs:not(.bk):not(.bx):not(.att)>*{flex-shrink:0}.rxs:not(.bk):not(.bx):not(.att) .rxb{flex:1 0 auto;min-height:0}.rxs.bk .dietb{padding:0 6px}
 
@@ -712,6 +712,7 @@ function pdRowHtml(x,i,open){x=x||{};return '<div class="pdrow'+(open?' open':''
   '<label class="pdl">گزشتہ حالت</label><textarea class="pd-a" rows="2">'+esc(x.a||'')+'</textarea><label class="pdl">گزشتہ رپورٹس</label><textarea class="pd-r" rows="2">'+esc(x.r||'')+'</textarea></div></div>'}
 function pdCollect(){var rows=Array.prototype.map.call(document.querySelectorAll('#pd .pdrow'),function(r){function g(c){var e=r.querySelector(c);return e?e.value.trim():''}return {d:g('.pd-d'),m:g('.pd-m'),t:g('.pd-t'),a:g('.pd-a'),r:g('.pd-r')}}).filter(function(x){return x.d||x.m||x.t||x.a||x.r});return rows}
 var PDF={prevDoctor:'d',prevMethod:'m',prevDuration:'t',arrival:'a',oldReports:'r'};
+function relL(p){var h=p.rel==='h';return '<em class="rlh'+(h?'':' on')+'">والد</em> / <em class="rlh'+(h?' on':'')+'">شوہر</em>'}
 function setRel(p){var o=document.querySelector('label[for=f-father] .rel.on');if(o)p.rel=o.getAttribute('data-r')}
 function patVal(k){if(!$('#pd')||!PDF[k])return val('f-'+k);
   var rows=pdCollect();if(!rows.length)return '';var f=PDF[k];var parts=rows.map(function(x){return x[f]});return parts.some(function(z){return z})?parts.join(' | '):''}
@@ -816,7 +817,7 @@ async function scanQR(){
   function stop(){run=false;if(st)st.getTracks().forEach(function(t){t.stop()});ov.remove()}
   ov.querySelector('button').onclick=stop;
   try{st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});v.srcObject=st;await v.play()}catch(e){stop();fail('کیمرے کی اجازت نہیں ملی');return}
-  while(run){try{var r=await det.detect(v);if(r&&r.length){var rv0=String(r[0].rawValue||'');if(/^CID1\|/.test(rv0)){stop();var pr0=rv0.split('|');chLogin(pr0[1],pr0.slice(2).join('|'),false);return}var pp=parsePair(r[0].rawValue);if(pp){stop();S.cfg.server=pp.server;S.cfg.token=pp.token;await saveCfg();toast('PC جڑ گئی');render();doSync(true);return}}}catch(e){}await new Promise(function(z){setTimeout(z,250)})}
+  while(run){try{var r=await det.detect(v);if(r&&r.length){var rv0=String(r[0].rawValue||'');if(/^(SHC1|SHC VERIFIED RX)\|/.test(rv0)){stop();rxVerify(rv0);return}if(/^CID1\|/.test(rv0)){stop();var pr0=rv0.split('|');chLogin(pr0[1],pr0.slice(2).join('|'),false);return}var pp=parsePair(r[0].rawValue);if(pp){stop();S.cfg.server=pp.server;S.cfg.token=pp.token;await saveCfg();toast('PC جڑ گئی');render();doSync(true);return}}}catch(e){}await new Promise(function(z){setTimeout(z,250)})}
 }
 function bgPhoto(){var st=document.getElementById('bgph');if(!st){st=document.createElement('style');st.id='bgph';document.head.appendChild(st)}var d='';try{d=localStorage.getItem('bgphoto')||''}catch(e){}st.textContent=d?':root[data-skin="photo"] body{background-image:url('+d+')}':''}
 function applyPrefs(){bgPhoto();if(S.cfg.font==='kasheeda')loadKash();var r=document.documentElement,t=S.cfg.theme||'auto';var _sk=S.cfg.skin===undefined?'paper':S.cfg.skin;if(S.cfg.skin===undefined)r.setAttribute('data-pcdef','1');else r.removeAttribute('data-pcdef');if(_sk)r.setAttribute('data-skin',_sk);else r.removeAttribute('data-skin');if(S.cfg.font)r.setAttribute('data-font',S.cfg.font);else r.removeAttribute('data-font');r.style.setProperty('--fin',S.cfg.fin||'1.3');r.style.setProperty('--flb',S.cfg.flb||'1.3');if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
@@ -1095,7 +1096,7 @@ function histPrint(pu){var p=S.patients.find(function(x){return x.uid===pu});if(
   function kv(l,v,k){return '<div class="kv'+(k?' '+k:'')+'"><span>'+l+'</span><b>'+esc(v==null?'':v)+'</b></div>'}
   var tot=0,paid=0;visitsOf(p).forEach(function(v){tot+=num(v.fees);paid+=num(v.paid)});
   var rows=vs.map(function(v){var rx=String(v.rx||'').replace(/\s+/g,' ').slice(0,110);return '<tr><td>'+esc(fmt(v.date))+'</td><td>'+esc(v.pulse||'')+'</td><td>'+esc(v.weight||'')+'</td><td dir="ltr">'+esc(v.bp||'')+'</td><td>'+esc(rx)+'</td></tr>'}).join('');
-  var front='<div class="rxs">'+letterhead(c,pidL,'')+'<div class="pinfo">'+kv('نام مریض',p.name,'s2')+kv('والد / شوہر',p.father,'s2')+kv('عمر',p.age,'s1')+kv('جنس',p.gender,'s1')+kv('پتہ',p.address,'s4')+kv('فون',p.phone,'s2')+'</div>'+
+  var front='<div class="rxs">'+letterhead(c,pidL,'')+'<div class="pinfo">'+kv('نام مریض',p.name,'s2')+kv(relL(p),p.father,'s2')+kv('عمر',p.age,'s1')+kv('جنس',p.gender,'s1')+kv('پتہ',p.address,'s4')+kv('فون',p.phone,'s2')+'</div>'+
    '<div class="rxt"><span>مریض کی تاریخ — کل '+visitsOf(p).length+' وزٹس</span></div><table class="hst"><thead><tr><th>تاریخ</th><th>مزاج</th><th>وزن</th><th>بلڈ پریشر</th><th>تجویز</th></tr></thead><tbody>'+rows+'</tbody></table>'+
    '<div class="ftr"><div class="fs"><span>کل فیس</span><b>'+money(tot)+'</b></div><div class="fs"><span>وصول</span><b>'+money(paid)+'</b></div><div class="fs"><span>بقایا</span><b>'+money(tot-paid)+'</b></div></div>'+
    '<div class="sgn"><div>دستخط معالج<hr></div></div>'+pfooter(c)+'</div>';
@@ -1180,7 +1181,7 @@ function planPagesArr(pl){
     out.push(fitBx('<div class="rxs bx">'+(cc.dietTop?'<div class="dwtop">'+esc(cc.dietTop)+'</div>':'')+qline(cc.dietHdrR,cc.dietHdr,cc.dietHdrL)+'<div class="rxt"><span>علاج بال‍غذاء</span></div><div class="bxg" style="grid-template-columns:repeat('+T.c+',1fr);grid-template-rows:repeat('+T.r+',1fr)">'+ch.map(function(c,jj){return '<div class="bxc">'+(c.t?'<div class="bxh"><span class="bn">'+(i+jj+1)+'</span>'+esc(c.t)+'</div>':'')+'<div class="bxb">'+esc(c.x)+'</div></div>'}).join('')+'</div>'+qline(cc.dietFtrR,cc.dietFtr,cc.dietFtrL,'ft')+'</div>',T.n))}
   return out}
 function fitBx(html,n){var h=document.createElement('div');h.style.cssText='position:fixed;left:-9999px;top:0;visibility:hidden';h.innerHTML=html;document.body.appendChild(h);
-  try{var hi=n===1?40:n===2?32:n===4?27:n===6?24:22;h.querySelectorAll('.bxb').forEach(function(b){if(!b.textContent.trim())return;var lo=9,top=hi;
+  try{var hi=n===1?46:n===2?38:n===4?32:n===6?29:27;h.querySelectorAll('.bxb').forEach(function(b){if(!b.textContent.trim())return;var lo=9,top=hi;
     for(var i=0;i<8;i++){var m=(lo+top)/2;b.style.fontSize=m+'px';if(b.scrollHeight>b.clientHeight+1)top=m;else lo=m}b.style.fontSize=lo.toFixed(1)+'px'});
     return h.firstChild.outerHTML}catch(e){return html}finally{document.body.removeChild(h)}}
 function viewPlans(){
@@ -1301,7 +1302,7 @@ function viewSet(){
    '<h2>🧪 ٹسٹ کی نارمل حدیں</h2><div class="card"><div class="meta" style="line-height:1.9">اپنی لیب کی حدیں رکھنے کے لیے ٹسٹ کا نام لکھ کر تلاش کریں، پھر کم سے کم اور زیادہ سے زیادہ بدلیں۔ بدلی ہوئی حد نتائج کے رنگوں اور پرنٹ دونوں میں استعمال ہوگی۔'+(Object.keys(S.cfg.trov||{}).length?' (بدلی ہوئی: '+Object.keys(S.cfg.trov).length+')':'')+'</div><input id="lr-q" type="search" placeholder="مثلاً hb, glucose, creatinine" dir="ltr" autocomplete="off" style="margin-top:8px"><div id="lr-l"></div></div>'+
    '<h2>⚙️ اضافی سہولتیں</h2><div class="card"><label class="swrow"><input type="checkbox" id="s-exitcf"'+(c.exitCf===false?'':' checked')+'><span>بند کرنے سے پہلے تصدیق<div class="meta">موبائل کے بیک بٹن یا پی سی کے بند کرنے والے بٹن سے ایپ بند ہونے سے پہلے «ایپ بند کریں؟» پوچھا جاتا ہے</div></span></label><label class="swrow"><input type="checkbox" id="s-autosms"'+(S.cfg.autoSms?' checked':'')+'><span>خودکار SMS (صرف موبائل ایپ)<div class="meta">فی مریض صرف ایک پیغام۔ آئندہ معائنے سے ایک دن پہلے (جب ایک دن باقی ہو) صبح 9 سے رات 8 بجے کے درمیان مریض کو یاد دہانی SMS خود چلا جاتا ہے۔ ایپ کھلی ہو یا اسکرین پر آئے تب چیک ہوتا ہے۔ SMS آپ کی SIM کے پیکج سے جاتا ہے۔ اگر دو فون استعمال کرتے ہیں تو صرف ایک فون میں آن رکھیں۔</div></span></label><label class="swrow"><input type="checkbox" id="s-autowa"'+(S.cfg.autoWa?' checked':'')+'><span>خودکار واٹس ایپ (صرف موبائل ایپ)<div class="meta">یاددہانی کے وقت واٹس ایپ چیٹ کھلتی ہے اور «بھیجیں» خود دب جاتا ہے؛ اس کے لیے «ایکسیسبلٹی مددگار» آن ہو اور فون کی اسکرین کھلی ہو۔ جس نمبر پر واٹس ایپ نہ ہو اسے SMS جاتا ہے (اگر خودکار SMS آن ہو)۔ واٹس ایپ ایسی خودکاری پر پابندی لگا سکتا ہے، اس لیے روزانہ تھوڑے مریض ہوں تب استعمال کریں۔</div></span></label></div>'+
    '<h2>☁️ کلاؤڈ سنک</h2>'+chCard()+
-   '<h2>🧾 پرنٹ میں شامل کریں</h2><div class="card"><div class="meta" style="line-height:1.9;margin-bottom:6px">جو خانے ہر پرنٹ میں چھپوانے ہوں ان پر ٹک لگائیں؛ جن پر ٹک نہ ہو وہ پرنٹ میں نہیں آئیں گے۔</div><label class="swrow"><input type="checkbox" id="s-psym"'+(c.printSym===false?'':' checked')+'><span>علامات / مریض کی شکایات<div class="meta">پرنٹ میں شکایات کا خانہ</div></span></label><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پچھلا صفحہ (غذائیں)<div class="meta">علاج بالغذاء کا صفحہ</div></span></label><label class="swrow"><input type="checkbox" id="s-pkaif"'+(c.printKaif===true?' checked':'')+'><span>علاج کی صورتِ حال<div class="meta">وزٹ میں منتخب جملہ پرنٹ کی آخری لائن میں، «آئندہ معائنہ» سے اوپر</div></span></label>'+cfChk('showPhone','فون نمبر (فوٹر میں)')+cfChk('showEmail','ای میل (فوٹر میں)')+cfChk('showHours','اوقاتِ کار (فوٹر میں)')+cfChk('qr','QR کوڈ (PatientID|VisitID)')+'</div>'+
+   '<h2>🧾 پرنٹ میں شامل کریں</h2><div class="card"><div class="meta" style="line-height:1.9;margin-bottom:6px">جو خانے ہر پرنٹ میں چھپوانے ہوں ان پر ٹک لگائیں؛ جن پر ٹک نہ ہو وہ پرنٹ میں نہیں آئیں گے۔</div><label class="swrow"><input type="checkbox" id="s-psym"'+(c.printSym===false?'':' checked')+'><span>علامات / مریض کی شکایات<div class="meta">پرنٹ میں شکایات کا خانہ</div></span></label><label class="swrow"><input type="checkbox" id="s-pdiet"'+(c.printDiet===false?'':' checked')+'><span>پچھلا صفحہ (غذائیں)<div class="meta">علاج بالغذاء کا صفحہ</div></span></label><label class="swrow"><input type="checkbox" id="s-pkaif"'+(c.printKaif===true?' checked':'')+'><span>علاج کی صورتِ حال<div class="meta">وزٹ میں منتخب جملہ پرنٹ کی آخری لائن میں، «آئندہ معائنہ» سے اوپر</div></span></label>'+cfChk('showPhone','فون نمبر (فوٹر میں)')+cfChk('showEmail','ای میل (فوٹر میں)')+cfChk('showHours','اوقاتِ کار (فوٹر میں)')+cfChk('qr','QR کوڈ (نسخے کی اصلیت کی تصدیق کے ساتھ)')+'</div>'+
    '<h2>پرنٹ اور کلینک</h2><div class="card"><div class="field"><label for="s-dfmt">تاریخ کا انداز</label><select id="s-dfmt">'+[['dmy','16/11/2026'],['long','16 نومبر 2026'],['ymd','20261116'],['iso','2026-11-16']].map(function(o){return '<option value="'+o[0]+'"'+((S.cfg.dfmt||'dmy')===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></div>'+
    ''+clinicUI()+'</div>'+'<h2>🗑 مریض کا ریکارڈ حذف کریں</h2><div class="card"><div class="meta" style="line-height:1.9">نام، فون یا مریض نمبر سے تلاش کریں۔ حذف کرنے سے مریض اور اس کی تمام وزٹس صرف اسی ڈیوائس سے ہٹتی ہیں اور دوبارہ سنک میں واپس نہیں آتیں؛ دوسری جگہ (PC یا فون) کا ریکارڈ نہیں چھیڑا جاتا۔ حذف سے پہلے بیک اپ ضرور رکھیں۔</div><div class="field" style="margin-top:8px"><label for="delq">تلاش</label><input id="delq" placeholder="نام، فون یا نمبر"></div><div id="delres"></div></div>'+
    '<h2>🖨 پرنٹر (بغیر کسی اضافی ایپ کے)</h2><div class="card"><div class="meta" style="line-height:2">• <b>معیاری طریقہ:</b> نسخہ کھولیں اور «پرنٹ» دبائیں۔ ایپ فون کی اپنی پرنٹ سروس کھولتی ہے؛ اس کے لیے کوئی ایپ ڈاؤنلوڈ نہیں کرنی پڑتی۔ نئے اینڈرائیڈ میں «Default Print Service» پہلے سے موجود ہوتی ہے۔<br>• پرنٹر اور فون <b>ایک ہی وائی فائی</b> پر ہوں (یا پرنٹر کا Wi-Fi Direct جوڑ لیں)، پھر پرنٹ ونڈو کے اوپر والے مینو میں سے پرنٹر منتخب کریں؛ پہلی بار فون خود پرنٹر ڈھونڈ لیتا ہے۔<br>• پرنٹر نہ ملے تو فون کی سیٹنگ ← «پرنٹنگ» (Printing) میں «Default Print Service» آن کریں۔<br>• «PDF کے طور پر محفوظ کریں» کا اختیار بھی اسی ونڈو میں ہے۔<br>• <b>صرف بلوٹوتھ</b> والے پرنٹر (جو وائی فائی نہیں رکھتے) اینڈرائیڈ کی عام پرنٹ سروس میں نہیں آتے؛ ان کی کمپنی کی ایپ لازمی ہوتی ہے۔ اگر کبھی ضرورت پڑے تو نیچے لنک ہیں، ورنہ ان کی ضرورت نہیں۔</div><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:10px"><a class="btn alt grow" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=epson.print">Epson iPrint</a><a class="btn alt grow" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=com.hp.printercontrol">HP Smart</a><a class="btn alt grow" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=jp.co.canon.bsd.ad.pixmaprint">Canon PRINT</a><a class="btn alt grow" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=com.brother.mfc.brprint">Brother iPrint&amp;Scan</a></div></div>'+   '<h2>ℹ️ ایپ کے بارے میں (About)</h2><div class="card"><div style="text-align:center;font-weight:700;font-size:18px">'+esc(CL().nameUr||'HealthClinic')+'</div><div class="meta" style="text-align:center">کلینک مینجمنٹ ایپ — مریض، وزٹ، نسخہ، پرنٹ اور سنک</div><h3 class="abh" style="margin:18px 0 6px">📖 تعارف</h3>'+
@@ -1789,8 +1790,8 @@ async function saveForm(o){o=o||{};
 function back(){if(history.length>1){try{history.back();return}catch(e){}}go('/')}
 function qrSvg(text,px){
   var bytes=Array.from(new TextEncoder().encode(text));
-  var SP=[null,{n:21,d:16,e:10,cap:14},{n:25,d:28,e:16,cap:26,ap:18},{n:29,d:44,e:26,cap:42,ap:22},{n:33,d:64,e:18,cap:62,ap:26,b:2}];
-  var v=1;while(v<4&&bytes.length>SP[v].cap)v++;if(bytes.length>SP[v].cap)return '';
+  var SP=[null,{n:21,d:16,e:10,cap:14},{n:25,d:28,e:16,cap:26,ap:18},{n:29,d:44,e:26,cap:42,ap:22},{n:33,d:64,e:18,cap:62,ap:26,b:2},{n:37,d:86,e:24,cap:84,ap:30,b:2}];
+  var v=1;while(v<5&&bytes.length>SP[v].cap)v++;if(bytes.length>SP[v].cap)return '';
   var sp=SP[v],n=sp.n,bits=[];
   function put(val,len){for(var i=len-1;i>=0;i--)bits.push((val>>>i)&1)}
   put(4,4);put(bytes.length,8);bytes.forEach(function(b){put(b,8)});
@@ -1861,8 +1862,16 @@ function fitFront(html){var h=document.createElement('div');h.style.cssText='pos
     if(f<11){res=html.replace('<div class="rxs">','<div class="rxs" style="--tf:'+f+'px;--tp:'+pd+'px">')}}}catch(e){}
   h.remove();return res}
 function ll(a){return a.filter(Boolean).map(function(l){return '<div>'+esc(l)+'</div>'}).join('')}
-function letterhead(c,pidL,vidL){
-  var qr=c.qr?qrSvg(pidL+'|'+vidL,120):'';
+function rxCode(pid,vid){var c=CL(),str=[c.reg||'',c.nameUr||'',c.docUr||'',pid,vid,'shc-v1'].join('\u0001'),h1=0xdeadbeef,h2=0x41c6ce57;
+  for(var i=0;i<str.length;i++){var ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return ((h2>>>0).toString(36)+(h1>>>0).toString(36)).toUpperCase().slice(0,8)}
+function rxVerify(t){var p=String(t||'').split('|');if((p[0]!=='SHC1'&&p[0]!=='SHC VERIFIED RX')||p.length<6){alert('❌ یہ کلینک کے نسخے کا QR نہیں');return}
+  var ok=rxCode(p[2],p[3]+'|'+p[4]+'|'+p[1])===p[5];alert(ok?'✅ نسخہ اصلی ہے\n\nمریض نمبر: '+p[2]+'\nوزٹ نمبر: '+p[3]+'\nتاریخ: '+p[4]+'\nیہ QR اسی کلینک کا بنایا ہوا ہے اور اس میں تبدیلی نہیں ہوئی۔':'❌ تصدیق نہیں ہوئی\n\nیہ QR اس کلینک کا نہیں یا اس میں ردوبدل ہوا ہے۔')}
+function rxPay(c,pidL,vidL,date){var d=String(date||'').replace(/\D/g,'').slice(0,8),rg=String(c.reg||'-').replace(/[^\x20-\x7e]/g,'').replace(/\|/g,'').slice(0,16)||'-',t='SHC VERIFIED RX|'+rg+'|'+pidL+'|'+(vidL||'-')+'|'+(d||'-')+'|'+rxCode(pidL,(vidL||'-')+'|'+(d||'-')+'|'+rg);
+  if(new TextEncoder().encode(t).length>84){rg='-';t='SHC VERIFIED RX|-|'+pidL+'|'+(vidL||'-')+'|'+(d||'-')+'|'+rxCode(pidL,(vidL||'-')+'|'+(d||'-')+'|-')}return t}
+function letterhead(c,pidL,vidL,date){
+  var qr=c.qr?qrSvg(rxPay(c,pidL,vidL,date),120):'';
   var U=[c.docUr].concat(c.degUr,[c.apprUr]).filter(Boolean),E=[c.docEn].concat(c.degEn,[c.apprEn]).filter(Boolean),n=Math.max(U.length,E.length),rows='';
   for(var k=0;k<n;k++)rows+='<div class="lr'+(k===0?' d0':'')+'"><span class="u">'+esc(U[k]||'')+'</span><span class="e" dir="ltr">'+esc(E[k]||'')+'</span></div>';
   return qline(c.hdrQuoteR,c.hdrQuote,c.hdrQuoteL)+'<div class="lh"><div class="qr">'+qr+'</div>'+(c.reg?'<div class="rg">رجسٹریشن نمبر: <b dir="ltr">'+esc(c.reg)+'</b></div>':'')+
@@ -1884,10 +1893,10 @@ function printVisit(){
   var prevFs='',lf='—';try{var pv0=date?visitsOf(p).filter(function(x){return x.uid!==vv.uid&&x.date&&x.date<=date})[0]:null;
     if(pv0&&pv0.days!==''&&pv0.days!=null)lf=''+(+pv0.days-diffDays(date,pv0.date))}catch(e){}
   prevFs='<div class="fs"><span>بقیہ ایام (گزشتہ معائنہ کا)</span><b dir="ltr">'+lf+'</b></div>';
-  var head=letterhead(c,pidL,vidL);
+  var head=letterhead(c,pidL,vidL,date);
   var front='<div class="rxs">'+head+
    '<div class="idrow"><div class="idb"><i>PatientID</i><b dir="ltr">'+esc(pidL)+'</b></div><div class="dtb"><i>تاریخ معائنہ</i><b>'+esc(dateUr(date))+'</b></div><div class="idb"><i>VisitID</i><b dir="ltr">'+esc(vidL)+'</b></div></div>'+
-   '<div class="pinfo">'+kv('نام مریض',p.name,'s2')+kv('والد / شوہر',p.father,'s2')+kv('عمر',p.age,'s1')+kv('جنس',p.gender,'s1')+kv('پتہ',p.address,'s4')+kv('فون',p.phone,'s2')+'</div>'+
+   '<div class="pinfo">'+kv('نام مریض',p.name,'s2')+kv(relL(p),p.father,'s2')+kv('عمر',p.age,'s1')+kv('جنس',p.gender,'s1')+kv('پتہ',p.address,'s4')+kv('فون',p.phone,'s2')+'</div>'+
    ((pulse||val('f-weight')||val('f-bp')||(val('f-symptoms')&&S.cfg.printSym!==false))?'<div class="rxt ex"><span>معائنہ</span></div><div class="exr">'+(pulse?kv('مزاج',pulse):'')+(val('f-weight')?kv('وزن',val('f-weight')+' کلو'):'')+(val('f-bp')?kv('بلڈ پریشر',val('f-bp')):'')+'</div>'+((val('f-symptoms')&&S.cfg.printSym!==false)?'<div class="sec"><div class="st">علامات / مریض کی شکایات</div><div class="sb">'+starFx(esc(val('f-symptoms')))+'</div></div>':''):'')+
    (function(){var hs=trHas(vv,tests);return trPrint(trAbn(vv,p,tests),hs)})()+((tests.length&&!trHas(vv,tests))?'<div class="sec"><div class="st">مطلوبہ ٹسٹس</div><div class="tg">'+tests.map(function(t){return '<div><i></i>'+esc(t)+'</div>'}).join('')+'</div></div>':'')+
    '<div class="rxt"><span>تجویز</span></div><div class="rxb">'+rxHtml($('#f-rx').value)+'</div>'+
@@ -1953,7 +1962,7 @@ document.addEventListener('keydown',function(e){var t=e.target,tag=(t&&t.tagName
   if(k==='F5'&&inForm){/* Access: رکارڈ نمبر */return}
 });
 
-var APP_VER='3.0.63',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest',UPD_URL='https://salmanabbasinm-hash.github.io/clinic-updates/version.json',UPD={last:0,ready:null,exe:''};function exeUrl(){return UPD.exe||REL_BASE+'HealthClinic.exe'}
+var APP_VER='3.0.64',VER_URL='https://salmanabbasinm-hash.github.io/clinic-app/version.json',WEB_URL='https://salmanabbasinm-hash.github.io/clinic-app/',REL_BASE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest/download/',REL_PAGE='https://github.com/salmanabbasinm-hash/clinic-updates/releases/latest',UPD_URL='https://salmanabbasinm-hash.github.io/clinic-updates/version.json',UPD={last:0,ready:null,exe:''};function exeUrl(){return UPD.exe||REL_BASE+'HealthClinic.exe'}
 async function checkUpdate(manual){if(!manual&&Date.now()-UPD.last<12000)return;UPD.last=Date.now();
   try{var r=await fetch(VER_URL+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('v');var j=await r.json();
     var NA0=nativeApp(),web0=/github\.io$/.test(location.hostname)&&!NA0;
@@ -2642,6 +2651,7 @@ document.addEventListener('click',function(e){
   else if(a==='helpset'){var NH=nativeApp();if(NH&&NH.helperSettings)NH.helperSettings()}
   else if(a==='tgl'){var tb=document.getElementById(t.getAttribute('data-t'));if(tb){tb.hidden=!tb.hidden;if(!tb.hidden)try{tb.scrollIntoView({block:'nearest'})}catch(x){}}}
   else if(a==='chdlg'){chDialog()}
+  else if(a==='vscan'){if('BarcodeDetector' in window&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)scanQR();else{var vt=prompt('QR کا متن یہاں پیسٹ کریں (SHC1|...)');if(vt)rxVerify(vt.trim())}}
   else if(a==='chx'){var dm=document.getElementById('chm');if(dm)dm.remove()}
   else if(a==='chin'){chLogin(val('ch-id'),val('ch-pw2'),false).then(function(ok){if(ok){var dm=document.getElementById('chm');if(dm)dm.remove()}})}
   else if(a==='chnew'){var np=val('ch-np');if(pwBad(np)||np.length<6){toast('پاسورڈ کم از کم 6 حروف کا اور آسان نہ ہو');return}var nid=(function(){var A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r='',b=crypto.getRandomValues(new Uint8Array(10));for(var i=0;i<10;i++)r+=A[b[i]%A.length];return r.slice(0,5)+'-'+r.slice(5)})();chLogin(nid,np,true).then(function(ok){if(ok)chDialog()})}

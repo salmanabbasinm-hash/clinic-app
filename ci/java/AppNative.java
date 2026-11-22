@@ -82,7 +82,7 @@ public class AppNative extends Plugin {
                     WebView wv = getBridge().getWebView();
                     PrintManager pm = (PrintManager) getActivity().getSystemService(Context.PRINT_SERVICE);
                     PrintDocumentAdapter ad = wv.createPrintDocumentAdapter("Nuskha");
-                    pm.print("Nuskha", ad, new PrintAttributes.Builder().build());
+                    pm.print("Nuskha", ad, new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).setMinMargins(PrintAttributes.Margins.NO_MARGINS).setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME).build());
                     call.resolve();
                 } catch (Exception e) {
                     call.reject("print: " + e);

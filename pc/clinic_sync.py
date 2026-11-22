@@ -1315,7 +1315,7 @@ def open_app_window(url):
             try:
                 prof = os.path.join(HERE, "window")
                 t0 = time.time()
-                p = subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run",
+                p = subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run", "--kiosk-printing",
                                       "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
                                       "--disable-translate", "--lang=en-US", "--force-ui-direction=ltr"])
 
