@@ -299,6 +299,12 @@ public class AppNative extends Plugin {
             DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             Uri u = dm.getUriForDownloadedFile(savedId());
             if (u == null) throw new Exception("file missing");
+            try {
+                installSession(u);
+                call.resolve();
+                return;
+            } catch (Throwable se) {
+            }
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setDataAndType(u, "application/vnd.android.package-archive");
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -306,6 +312,36 @@ public class AppNative extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("installApk: " + e);
+        }
+    }
+
+    /** سیشن کے ذریعے انسٹال: اینڈرائیڈ 12+ پر اگلی اپ ڈیٹس بغیر تصدیق اسکرین کے ہو جاتی ہیں، اور ایکسیسبلٹی کی پابندی (Restricted setting) بھی ہٹ جاتی ہے۔ */
+    private void installSession(Uri u) throws Exception {
+        Context cx = getContext();
+        android.content.pm.PackageInstaller pi = cx.getPackageManager().getPackageInstaller();
+        android.content.pm.PackageInstaller.SessionParams sp = new android.content.pm.PackageInstaller.SessionParams(android.content.pm.PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+        if (Build.VERSION.SDK_INT >= 31) sp.setRequireUserAction(android.content.pm.PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
+        int sid = pi.createSession(sp);
+        android.content.pm.PackageInstaller.Session ss = pi.openSession(sid);
+        try {
+            InputStream in = cx.getContentResolver().openInputStream(u);
+            OutputStream out = ss.openWrite("clinic.apk", 0, -1);
+            byte[] b = new byte[65536];
+            int n;
+            while ((n = in.read(b)) > 0) out.write(b, 0, n);
+            ss.fsync(out);
+            in.close();
+            out.close();
+            Intent it = new Intent(cx, InstallResultReceiver.class);
+            it.setAction("com.salman.clinic.INSTALL_RESULT");
+            int fl = android.app.PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? android.app.PendingIntent.FLAG_MUTABLE : 0);
+            android.app.PendingIntent pend = android.app.PendingIntent.getBroadcast(cx, sid, it, fl);
+            ss.commit(pend.getIntentSender());
+        } catch (Exception e) {
+            ss.abandon();
+            throw e;
+        } finally {
+            ss.close();
         }
     }
 
