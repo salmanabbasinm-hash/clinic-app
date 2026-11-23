@@ -430,6 +430,7 @@ class State:
         CREATE TABLE IF NOT EXISTS sms_done(uid TEXT PRIMARY KEY);
         CREATE TABLE IF NOT EXISTS vmts(pid INTEGER, vid INTEGER, ts INTEGER, PRIMARY KEY(pid, vid));
         CREATE TABLE IF NOT EXISTS vtests(pid INTEGER, vid INTEGER, tests TEXT, PRIMARY KEY(pid, vid));
+        CREATE TABLE IF NOT EXISTS pdel(pid INTEGER PRIMARY KEY, name TEXT, nv INTEGER, by TEXT, ts INTEGER);
         CREATE TABLE IF NOT EXISTS kvx(k TEXT PRIMARY KEY, v TEXT, ts INTEGER, del INTEGER DEFAULT 0);
         CREATE TABLE IF NOT EXISTS reps(id TEXT PRIMARY KEY, pu TEXT, pid INTEGER, name TEXT, ts INTEGER, w INTEGER, h INTEGER, del INTEGER DEFAULT 0);
         """)
@@ -537,7 +538,9 @@ class App:
         queue = [dict(zip(["id", "phone", "text", "pid", "vid", "name", "kind", "created"], r)) for r in
                  self.s.c.execute("SELECT id,phone,text,pid,vid,name,kind,created FROM sms_queue WHERE status='pending' ORDER BY id")]
         return {"patients": pats, "visits": vis, "meds": self.b.list_meds(), "diets": self.b.list_diets(),
-                "queue": queue, "time": int(time.time() * 1000)}
+                "queue": queue, "time": int(time.time() * 1000),
+                "pdel": [dict(zip(["pid", "name", "nv", "by"], r)) for r in
+                         self.s.c.execute("SELECT pid,name,nv,by FROM pdel ORDER BY ts")]}
 
     def sync(self, body):
         results = []
@@ -549,6 +552,18 @@ class App:
             results.append(self.apply_sms(sm))
         for m in body.get("meds", []):
             results.append(self.apply_med(m))
+        for rq in body.get("patDelReq") or []:
+            try:
+                self.s.c.execute("INSERT OR REPLACE INTO pdel VALUES (?,?,?,?,?)",
+                                 (int(rq.get("pid")), rq.get("name") or "", int(rq.get("nv") or 0), body.get("dev") or "", int(time.time() * 1000)))
+            except Exception as e:
+                print("  !! pdel:", e)
+        for k in body.get("patKeep") or []:
+            try:
+                self.s.c.execute("DELETE FROM pdel WHERE pid=?", (int(k),))
+            except Exception as e:
+                print("  !! pkeep:", e)
+        self.s.c.commit()
         pdl = [x for x in (body.get("patDelOk") or [])]  # صرف صارف کی تصدیق کے بعد
         if pdl:
             try:
@@ -595,6 +610,11 @@ class App:
         try:
             p = int(pid) if str(pid).lstrip("-").isdigit() else pid
             self.b.delete_patient(p)
+            try:
+                self.s.c.execute("DELETE FROM pdel WHERE pid=?", (int(p),))
+                self.s.c.commit()
+            except Exception:
+                pass
             print("  - patient %s deleted (with visits)" % pid)
             return {"uid": str(pid), "kind": "patdel", "status": "ok"}
         except Exception as e:
