@@ -866,6 +866,14 @@ def make_handler(app):
                             return self.send(200, {"ok": True, "path": make_backup()})
                         except Exception as e:
                             return self.send(500, {"error": str(e)})
+                    if act in ("opbk", "oppg"):
+                        try:
+                            tgt = backup_dir() if act == "opbk" else HERE
+                            if os.name == "nt":
+                                os.startfile(tgt)
+                            return self.send(200, {"ok": True, "path": tgt})
+                        except Exception as e:
+                            return self.send(500, {"error": str(e)})
                     if act == "updst":
                         return self.send(200, dict(UPDST))
                     if act == "info":
@@ -1434,6 +1442,9 @@ def backup_dir():
     return d
 
 
+APPREF = [None]
+
+
 def make_backup():
     """Zip the program's data (consistent sqlite copy + settings) into Documents\\HealthClinic-Backup."""
     import zipfile, sqlite3, tempfile, shutil
@@ -1467,6 +1478,27 @@ def make_backup():
                     z.write(os.path.join(rd, fn), "reports/" + fn)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+    try:   # فون کی "فائل ملائیں" سے ملنے والی JSON کاپی (مریض + وزٹس)
+        import json as _j
+        ap = APPREF[0]
+        pats = ap.b.list_patients()
+        for x in pats:
+            x["uid"] = "p%s" % x["pid"]
+        vis = ap.b.list_visits()
+        for x in vis:
+            x["uid"] = "v%s_%s" % (x["pid"], x["vid"])
+            x["puid"] = "p%s" % x["pid"]
+        with open(out[:-4] + ".json", "w", encoding="utf-8") as jf:
+            _j.dump({"kind": "pc-backup", "time": int(time.time() * 1000), "patients": pats, "visits": vis}, jf, ensure_ascii=False)
+    except Exception as e:
+        print("  !! json backup:", e)
+    for ext in (".json",):
+        oj = sorted([f for f in os.listdir(d) if f.startswith("HealthClinic-backup-") and f.endswith(ext)])
+        for f in oj[:-10]:
+            try:
+                os.remove(os.path.join(d, f))
+            except Exception:
+                pass
     olds = sorted([f for f in os.listdir(d) if f.startswith("HealthClinic-backup-") and f.endswith(".zip")])
     for f in olds[:-10]:
         try:
@@ -1671,6 +1703,7 @@ def main():
     else:
         be = open_backend(a.mdb)
     app = App(be, State(os.path.join(HERE, "sync_state.db")), cfg["token"])
+    APPREF[0] = app
     ip = lan_ip()
     print("=" * 60)
     print(" Clinic Sync running.  Open on the phone (same Wi-Fi):")

@@ -45,7 +45,16 @@ VN=$(python3 -c "import json;print(json.load(open('version.json'))['v'])")
 VC=$(python3 -c "import json;p=json.load(open('version.json'))['v'].split('.');print(int(p[0])*1000000+int(p[1])*10000+int(p[2]))")
 sed -i "s/versionCode [0-9]*/versionCode $VC/; s/versionName \"[^\"]*\"/versionName \"$VN\"/" android/app/build.gradle
 npx cap sync android
-cd android && chmod +x gradlew && ./gradlew assembleDebug
+cd android && chmod +x gradlew
+if ! ./gradlew assembleDebug --console=plain > ../gradle.log 2>&1; then
+  echo "=== gradle failed, retrying once ==="
+  if ! ./gradlew assembleDebug --console=plain --stacktrace > ../gradle.log 2>&1; then
+    grep -E "error:|error |FAILED|What went wrong|Execution failed|AAPT|Caused by" ../gradle.log | head -25 | while IFS= read -r L; do echo "::error::${L:0:300}"; done
+    tail -40 ../gradle.log
+    exit 1
+  fi
+fi
+tail -3 ../gradle.log
 cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ClinicApp.apk
 FP=$(keytool -printcert -jarfile ClinicApp.apk | grep 'SHA256' | head -1)
 echo "APK signature: $FP"
