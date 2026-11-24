@@ -1338,11 +1338,12 @@ def open_app_window(url):
             try:
                 prof = os.path.join(HERE, "window")
                 t0 = time.time()
-                p = subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run", "--kiosk-printing",
+                p = subprocess.Popen([exe, "--app=" + url, "--start-maximized", "--user-data-dir=" + prof, "--no-first-run", "--kiosk-printing",
                                       "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
-                                      "--disable-translate", "--lang=en-US", "--force-ui-direction=ltr"])
+                                      "--disable-translate", "--lang=ur"])
 
                 APPWIN["pid"] = p.pid
+                threading.Thread(target=make_borderless, args=(p.pid,), daemon=True).start()
 
                 def _watch(p=p, t0=t0):
                     try:
@@ -1648,6 +1649,8 @@ def self_install():
         except Exception:
             pass
         try:
+            if any(x.upper() == "/SILENT" for x in sys.argv):
+                raise RuntimeError("silent update")
             ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nہیلتھ کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40)
         except Exception:
             pass
