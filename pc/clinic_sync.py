@@ -1653,7 +1653,7 @@ def self_install():
         except Exception:
             pass
         try:
-            ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nسلمان ہربل کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40)
+            ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nہیلتھ کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40)
         except Exception:
             pass
         subprocess.Popen([target, "--noinstall"], cwd=d, creationflags=0x00000008 | 0x00000200, close_fds=True)
