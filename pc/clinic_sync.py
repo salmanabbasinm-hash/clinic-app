@@ -1052,11 +1052,6 @@ def self_update(url):
         time.sleep(1.2)
         subprocess.Popen([tmp, "/SILENT", "/NORESTART", "/CLOSEAPPLICATIONS", "/SUPPRESSMSGBOXES"], creationflags=0x00000008 | 0x00000200, close_fds=True)
         time.sleep(0.5)
-        try:
-            if APPWIN["pid"] and os.name == "nt":
-                subprocess.run(["taskkill", "/F", "/T", "/PID", str(APPWIN["pid"])], capture_output=True, timeout=8)
-        except Exception:
-            pass
         os._exit(0)
     except Exception as e:
         UPDST.update(state="err", msg=str(e)[:120])
