@@ -56,7 +56,8 @@ jobs:
                   out.append("python3 - <<'Q'\ns=open('www/index.html',encoding='utf-8').read()\nimport os\nv=os.environ['PVER']\ns=s.replace(\"APP_VER='3.0.73'\",\"APP_VER='\"+v+\"'\")\nassert 'async function checkUpdate(manual){' in s\ns=s.replace('async function checkUpdate(manual){','async function checkUpdate(manual){return;',1)\nopen('www/index.html','w',encoding='utf-8').write(s)\nQ")
                   continue
               out.append(l)
-          s='\n'.join(out)
+          s='\n'.join(out)+'\n'
+          s=re.sub(r'tail -(\d+)',r'tail -n \1',s)
           s=s.replace("keyAlias 'androiddebugkey'","keyAlias 'androiddebugkey'",1)
           open(p,'w').write(s)
           PY
@@ -65,7 +66,7 @@ jobs:
           cat >> /tmp/play_build.sh <<'T'
           cd ..
           cp android/app/build/outputs/bundle/release/app-release.aab ClinicApp-Play.aab
-          jarsigner -verify -verbose:summary ClinicApp-Play.aab | tail -3 || true
+          jarsigner -verify -verbose:summary ClinicApp-Play.aab | tail -n 3 || true
           keytool -printcert -jarfile ClinicApp-Play.aab | grep SHA256 | head -1
           T
           bash /tmp/play_build.sh
