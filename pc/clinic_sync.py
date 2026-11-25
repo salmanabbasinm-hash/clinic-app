@@ -1052,6 +1052,11 @@ def self_update(url):
         time.sleep(1.2)
         subprocess.Popen([tmp, "/SILENT", "/NORESTART", "/CLOSEAPPLICATIONS", "/SUPPRESSMSGBOXES"], creationflags=0x00000008 | 0x00000200, close_fds=True)
         time.sleep(0.5)
+        try:
+            if APPWIN["pid"] and os.name == "nt":
+                subprocess.run(["taskkill", "/F", "/T", "/PID", str(APPWIN["pid"])], capture_output=True, timeout=8)
+        except Exception:
+            pass
         os._exit(0)
     except Exception as e:
         UPDST.update(state="err", msg=str(e)[:120])
@@ -1338,12 +1343,11 @@ def open_app_window(url):
             try:
                 prof = os.path.join(HERE, "window")
                 t0 = time.time()
-                p = subprocess.Popen([exe, "--app=" + url, "--start-maximized", "--user-data-dir=" + prof, "--no-first-run", "--kiosk-printing",
+                p = subprocess.Popen([exe, "--app=" + url, "--start-fullscreen", "--user-data-dir=" + prof, "--no-first-run", "--kiosk-printing",
                                       "--no-default-browser-check", "--disable-features=Translate,TranslateUI",
-                                      "--disable-translate", "--lang=ur"])
+                                      "--disable-translate", "--lang=en-US", "--force-ui-direction=ltr"])
 
                 APPWIN["pid"] = p.pid
-                threading.Thread(target=make_borderless, args=(p.pid,), daemon=True).start()
 
                 def _watch(p=p, t0=t0):
                     try:
