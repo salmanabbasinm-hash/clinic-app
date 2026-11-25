@@ -1,0 +1,75 @@
+name: playstore
+# صرف ہاتھ سے چلتا ہے (Run workflow)۔ پرانے exe/apk طریقے کو چھوتا نہیں اور کچھ publish نہیں کرتا۔
+on:
+  workflow_dispatch:
+    inputs:
+      ver:
+        description: 'Play version name'
+        default: '3.0.75'
+permissions:
+  contents: read
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Make icons
+        shell: bash
+        run: bash ci/make_icons.sh
+      - name: Build Play AAB
+        shell: bash
+        env:
+          PVER: ${{ inputs.ver }}
+        run: |
+          set -e
+          VN="$PVER"
+          IFS=. read A B C <<< "$VN"
+          VC=$((A*1000000+B*10000+C))
+          echo "Play version $VN code $VC"
+          cp ci/build_apk.sh /tmp/play_build.sh
+          python3 - <<'PY'
+          import re
+          p='/tmp/play_build.sh'
+          L=open(p).read().split('\n')
+          out=[]
+          bad=('REQUEST_INSTALL_PACKAGES','UPDATE_PACKAGES_WITHOUT_USER_ACTION','SYSTEM_ALERT_WINDOW','InstallHelperService')
+          for l in L:
+              if l.startswith('cd .. && cp android/app/build/outputs/apk/debug'):
+                  break
+              if any(b in l for b in bad) and l.startswith('grep -q'):
+                  continue
+              if l.startswith('VN=') or l.startswith('VC=') or l.startswith('sed -i "s/versionCode'):
+                  continue
+              l=l.replace('@capacitor/core@6','@capacitor/core@8').replace('@capacitor/cli@6','@capacitor/cli@8').replace('@capacitor/android@6','@capacitor/android@8')
+              l=l.replace('assembleDebug','bundleRelease')
+              if l.startswith('cp index.html'):
+                  out.append(l)
+                  out.append("python3 - <<'Q'\ns=open('www/index.html',encoding='utf-8').read()\nimport os\nv=os.environ['PVER']\ns=s.replace(\"APP_VER='3.0.73'\",\"APP_VER='\"+v+\"'\")\nassert 'async function checkUpdate(manual){' in s\ns=s.replace('async function checkUpdate(manual){','async function checkUpdate(manual){return;',1)\nopen('www/index.html','w',encoding='utf-8').write(s)\nQ")
+                  continue
+              out.append(l)
+          s='\n'.join(out)
+          s=s.replace("keyAlias 'androiddebugkey'","keyAlias 'androiddebugkey'",1)
+          open(p,'w').write(s)
+          PY
+          # release بھی اسی پکی کلید سے سائن ہو، اور ورژن کوڈ طے ہو
+          sed -i "s#^npx cap sync android#python3 - <<'R'\nq='android/app/build.gradle'\nt=open(q).read()\nt=t.replace('release {','release {\\\\n signingConfig signingConfigs.debug',1)\nopen(q,'w').write(t)\nR\nsed -i \"s/versionCode [0-9]*/versionCode $VC/; s/versionName \\\\\"[^\\\\\"]*\\\\\"/versionName \\\\\"$VN\\\\\"/\" android/app/build.gradle\nnpx cap sync android#" /tmp/play_build.sh
+          cat >> /tmp/play_build.sh <<'T'
+          cd ..
+          cp android/app/build/outputs/bundle/release/app-release.aab ClinicApp-Play.aab
+          jarsigner -verify -verbose:summary ClinicApp-Play.aab | tail -3 || true
+          keytool -printcert -jarfile ClinicApp-Play.aab | grep SHA256 | head -1
+          T
+          bash /tmp/play_build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ClinicApp-Play-AAB
+          path: ClinicApp-Play.aab
