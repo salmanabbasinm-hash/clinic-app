@@ -430,6 +430,21 @@ public class AppNative extends Plugin {
     }
 
     @PluginMethod
+    public void protectOn(PluginCall call) {
+        JSObject r = new JSObject();
+        boolean on = true;
+        try {
+            android.content.ContentResolver cr = getContext().getContentResolver();
+            int en = android.provider.Settings.Global.getInt(cr, "package_verifier_enable", 1);
+            int cs = android.provider.Settings.Global.getInt(cr, "package_verifier_user_consent", 0);
+            if (en == 0 || cs == -1) on = false;
+        } catch (Throwable e) {
+        }
+        r.put("on", on);
+        call.resolve(r);
+    }
+
+    @PluginMethod
     public void helperStatus(PluginCall call) {
         JSObject r = new JSObject();
         boolean on = false;

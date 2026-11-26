@@ -1028,6 +1028,20 @@ UPDST = {"state": "idle", "pct": 0, "msg": ""}
 APPWIN = {"pid": 0}
 
 
+def kill_old_windows():
+    """Close every leftover HealthClinic app window (Edge/Chrome started with our own profile folder) so only one window exists."""
+    if os.name != "nt":
+        return
+    try:
+        prof = os.path.join(HERE, "window").replace("'", "''")
+        ps = ("Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine -like '*--user-data-dir=" + prof + "*' } "
+              "| ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }")
+        subprocess.run(["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", ps],
+                       creationflags=0x08000000, capture_output=True, stdin=subprocess.DEVNULL, timeout=20)
+    except Exception:
+        pass
+
+
 def self_update(url):
     """Download the new installer ourselves (no browser warning), run it and quit; it replaces the installed copy."""
     import urllib.request
@@ -1057,6 +1071,7 @@ def self_update(url):
                 subprocess.run(["taskkill", "/F", "/T", "/PID", str(APPWIN["pid"])], capture_output=True, timeout=8)
         except Exception:
             pass
+        kill_old_windows()
         os._exit(0)
     except Exception as e:
         UPDST.update(state="err", msg=str(e)[:120])
@@ -1332,6 +1347,8 @@ def start_tunnel(port, token):
 def open_app_window(url):
     """Open the clinic program in a chrome-less window (looks like a normal desktop program)."""
     time.sleep(1.5)
+    kill_old_windows()
+    time.sleep(0.5)
     cands = []
     for env in ("ProgramFiles(x86)", "ProgramFiles", "LocalAppData"):
         base = os.environ.get(env)
@@ -1612,6 +1629,7 @@ def self_install():
         for im in ("HealthClinic.exe", "ClinicSync.exe"):
             subprocess.run(["taskkill", "/F", "/FI", "PID ne %d" % os.getpid(), "/IM", im],
                            creationflags=cnw, capture_output=True, stdin=subprocess.DEVNULL)
+        kill_old_windows()
         try:
             os.remove(os.path.join(d, "ClinicSync.exe"))
         except Exception:
@@ -1652,13 +1670,12 @@ def self_install():
             winreg.CloseKey(k)
         except Exception:
             pass
+        subprocess.Popen([target, "--noinstall"], cwd=d, creationflags=0x00000008 | 0x00000200, close_fds=True)
         try:
-            if any(x.upper() == "/SILENT" for x in sys.argv):
-                raise RuntimeError("silent update")
-            ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nہیلتھ کلینک انسٹال ہو گیا ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40)
+            time.sleep(2.5)
+            ctypes.windll.user32.MessageBoxW(0, "HealthClinic install ho gaya.\nDesktop par icon bana diya gaya hai.\n\nانسٹالیشن مکمل ہو گئی ہے۔\nڈیسک ٹاپ پر آئکن بن گیا ہے۔", "HealthClinic", 0x40 | 0x40000 | 0x10000)
         except Exception:
             pass
-        subprocess.Popen([target, "--noinstall"], cwd=d, creationflags=0x00000008 | 0x00000200, close_fds=True)
         os._exit(0)
     except Exception:
         return
