@@ -10,6 +10,7 @@ Test mode (any OS):  python clinic_sync.py --sqlite test.db
 The Access file is only changed by explicit phone changes (new patient / new visit /
 edited fields) and SMS history rows. Nothing is ever deleted.
 """
+import threading
 import sys, os, re, json, time, hmac, uuid, sqlite3, hashlib, socket, threading, secrets, datetime, argparse, shutil, subprocess
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
@@ -959,6 +960,21 @@ def make_handler(app):
     return H
 
 
+def _wa_autosend():
+    """Give WhatsApp time to open the chat, then paste the copied PDF (Ctrl+V) and press Enter twice-safe."""
+    try:
+        import ctypes, time
+        u = ctypes.windll.user32
+        def key(vk, up=False):
+            u.keybd_event(vk, 0, 2 if up else 0, 0)
+        time.sleep(5.5)
+        key(0x11); key(0x56); key(0x56, True); key(0x11, True)
+        time.sleep(2.2)
+        key(0x0D); key(0x0D, True)
+    except Exception:
+        pass
+
+
 def clip_file(body):
     """Save a PDF to a temp folder and put it on the Windows clipboard as a file (paste into WhatsApp with Ctrl+V)."""
     import base64, re, tempfile
@@ -980,8 +996,10 @@ def clip_file(body):
     if r.returncode == 0 and num:
         try:
             import urllib.parse
-            os.startfile("whatsapp://send?phone=%s&text=%s" % (num, urllib.parse.quote(str(body.get("text") or ""))))
+            os.startfile("whatsapp://send?phone=%s" % num)
             wa = True
+            if body.get("auto"):
+                threading.Thread(target=_wa_autosend, daemon=True).start()
         except Exception:
             wa = False
     return {"ok": r.returncode == 0, "path": path, "wa": wa}
