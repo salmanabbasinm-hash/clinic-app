@@ -5,7 +5,7 @@ on:
     inputs:
       ver:
         description: 'Play version name'
-        default: '3.0.89'
+        default: '3.0.90'
 permissions:
   contents: read
 jobs:
@@ -41,7 +41,7 @@ jobs:
           p='/tmp/play_build.sh'
           L=open(p).read().split('\n')
           out=[]
-          bad=('REQUEST_INSTALL_PACKAGES','UPDATE_PACKAGES_WITHOUT_USER_ACTION','SYSTEM_ALERT_WINDOW','InstallHelperService')
+          bad=('SEND_SMS','REQUEST_INSTALL_PACKAGES','UPDATE_PACKAGES_WITHOUT_USER_ACTION','SYSTEM_ALERT_WINDOW','InstallHelperService')
           for l in L:
               if l.startswith('cd .. && cp android/app/build/outputs/apk/debug'):
                   break
